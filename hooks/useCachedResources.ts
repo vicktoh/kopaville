@@ -2,10 +2,15 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-
+import { LOCAL_SYSTEM_INFO } from '../constants/Storage';
+import { getLocalData, getLocalUserData } from '../services/local';
+import { System } from '../types/System';
+import { User } from '../types/User';
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
-
+  const [auth, setAuth] = useState<User| null>(null);
+  const [isOnBoarded, setIsOnboarded] = useState<boolean>(false);
+  const [systemInfo, setSystemInfo ] = useState<System | null>(null);
   // Load any resources or data that we need prior to rendering the app
   useEffect(() => {
     async function loadResourcesAndDataAsync() {
@@ -15,8 +20,20 @@ export default function useCachedResources() {
         // Load fonts
         await Font.loadAsync({
           ...FontAwesome.font,
-          'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'Poppins Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+          'Poppins Medium': require('../assets/fonts/Poppins-Medium.ttf'),
+          'Poppins Light': require('../assets/fonts/Poppins-Light.ttf'),
+          'Poppins SemiBold': require('../assets/fonts/Poppins-SemiBold.ttf'),
+          'Poppins Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+
         });
+        const user: User = await getLocalUserData();
+        user && setAuth(user);
+        const info = await getLocalData(LOCAL_SYSTEM_INFO)
+        if(info) {
+           setIsOnboarded(true);
+        }
+      
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
@@ -29,5 +46,5 @@ export default function useCachedResources() {
     loadResourcesAndDataAsync();
   }, []);
 
-  return isLoadingComplete;
+  return {isLoadingComplete, auth, setAuth, isOnBoarded, systemInfo, setIsOnboarded};
 }
