@@ -1458,9 +1458,9 @@
   resolved "https://registry.npmjs.org/@firebase/firestore-types/-/firestore-types-2.5.0.tgz"
   integrity sha512-I6c2m1zUhZ5SH0cWPmINabDyH5w0PPFHk2UHsjBpKdZllzJZ2TwTkXbDtpHUZNmnc/zAa0WNMNMvcvbb/xJLKA==
 
-"@firebase/firestore@3.4.4":
+"@firebase/firestore@3.4.4", "@firebase/firestore@^3.4.4":
   version "3.4.4"
-  resolved "https://registry.npmjs.org/@firebase/firestore/-/firestore-3.4.4.tgz"
+  resolved "https://registry.yarnpkg.com/@firebase/firestore/-/firestore-3.4.4.tgz#6810b2b9a9fa2cafe7c1d1d83f9274e15b95268d"
   integrity sha512-IC8KZ6LbhECch9xPWp2Kj/0dqN+douzw7SWMAfWxXKmg+CjXpoyUoCh7UU/jshWafd4AUU3OV8QTv8tXRaMpdA==
   dependencies:
     "@firebase/component" "0.5.10"
@@ -1686,6 +1686,33 @@
   integrity sha512-K/HRGo6EMnCbhpth/y3u4rW4aXkmQNqRe1L2G+Y5jNr3v0gYhvaucV8WixNju/INAMbPBlbsRBRo/nfjnoOnxQ==
   dependencies:
     tslib "^2.1.0"
+
+"@fortawesome/fontawesome-common-types@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.3.0.tgz#949995a05c0d8801be7e0a594f775f1dbaa0d893"
+  integrity sha512-CA3MAZBTxVsF6SkfkHXDerkhcQs0QPofy43eFdbWJJkZiq3SfiaH1msOkac59rQaqto5EqWnASboY1dBuKen5w==
+
+"@fortawesome/fontawesome-svg-core@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-1.3.0.tgz#343fac91fa87daa630d26420bfedfba560f85885"
+  integrity sha512-UIL6crBWhjTNQcONt96ExjUnKt1D68foe3xjEensLDclqQ6YagwCRYVQdrp/hW0ALRp/5Fv/VKw+MqTUWYYvPg==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.3.0"
+
+"@fortawesome/free-solid-svg-icons@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.0.0.tgz#bed4a501b631c6cfa35c09830f7cb63ffca1589d"
+  integrity sha512-o4FZ1XbndcgeWNb8Wh0y+Hgf73CjmyOQowUSaqQCtgIIdS+XliSBSOwCl330wER+I6CGYE96hT27bHBPmzX2Gg==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.3.0"
+
+"@fortawesome/react-native-fontawesome@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@fortawesome/react-native-fontawesome/-/react-native-fontawesome-0.2.7.tgz#2fea96c4afeb19cdab641b8fbb6022a8e6ee4aec"
+  integrity sha512-H3FjE01PDKGTZW+pXMsaCklT0FADaHo4D+Ni63BSXNQclmFgKj2Xlky37cx0s1BaIIw1geuHcyg0hdFxbACusw==
+  dependencies:
+    humps "^2.0.1"
+    prop-types "^15.7.2"
 
 "@grpc/grpc-js@^1.3.2":
   version "1.5.5"
@@ -2613,7 +2640,7 @@
 
 "@react-navigation/drawer@^6.3.1":
   version "6.3.1"
-  resolved "https://registry.npmjs.org/@react-navigation/drawer/-/drawer-6.3.1.tgz"
+  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-6.3.1.tgz#1d572254d098c81a4740cbd8de02a21af045ae04"
   integrity sha512-4mAoDj+qQPlThP8pK52ie+0dVPVGx83EVjTPX9o6+kUK/S3inCHXh6xyIx9Q7OEvE4ZerABvyVJ4zc5Xb1Oqrw==
   dependencies:
     "@react-navigation/elements" "^1.3.1"
@@ -3084,7 +3111,7 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash@*":
+"@types/lodash@*", "@types/lodash@^4.14.175":
   version "4.14.178"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.178.tgz"
   integrity sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==
@@ -4603,6 +4630,11 @@ expo-font@~10.0.4, expo-font@~10.0.5:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-json-utils@~0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.2.1.tgz#a8d15181e361f3fc782d5241ce381851bab4465b"
+  integrity sha512-wU7gXGtaUlyxFLTp5e3PbnJB90/92r6gEc2BuMHdqE0OxhTQKyKzRszk2szCsdkeI7L4XntvZhCs1Px+gL1gvA==
+
 expo-keep-awake@~10.0.2:
   version "10.0.2"
   resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-10.0.2.tgz"
@@ -4617,6 +4649,13 @@ expo-linking@~3.0.0:
     invariant "^2.2.4"
     qs "^6.9.1"
     url-parse "^1.4.4"
+
+expo-manifests@~0.2.2:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.2.4.tgz#28aa7a0b21d8b932e1a49c836cfc31b5a9cd1f9c"
+  integrity sha512-8PrMPyvElKXflYd1ApDHJR9JF0SR996iVEVQgHAMLzVP7OqEAM6dQaFeqrRqVn/DSsxEWkJTpxv8WJ5NWrT4Lg==
+  dependencies:
+    expo-json-utils "~0.2.0"
 
 expo-modules-autolinking@0.5.5, expo-modules-autolinking@~0.5.1:
   version "0.5.5"
@@ -4649,6 +4688,31 @@ expo-status-bar@~1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.2.0.tgz"
   integrity sha512-pVZZ/kDCXFK79E4dCtRecs3XLC8aiwlciutSd/fFmUPJSQZ1Txia6hlKajPt0GAYft8/YnT0V3URXzWZOBniYQ==
+
+expo-structured-headers@~2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-2.1.1.tgz#bdbf8752af36c7d3203540476af55562546b6aeb"
+  integrity sha512-0up4sfHHsiK2YLpTwD/ssUD2oeSGzVUeARnu/itKAJO4zHqjpc+m8N1s7HPSJcdC7fdDpMjzcdrDasT0o+cOAw==
+
+expo-updates-interface@~0.5.0:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.5.1.tgz#b390622f60b353bb352def895a32dc800a21a4dc"
+  integrity sha512-RLvC69o1BkhHP6hNaWiIvSiTgXABB9v4HnoietoXKFHlAyxlQCupy6ki164KpZNrOS/PFJ2WWqZOvKfiyDVO+w==
+
+expo-updates@~0.11.6:
+  version "0.11.6"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.11.6.tgz#5541f2f791d51cd51c4a37a3e241c8d167226d2d"
+  integrity sha512-nTzEc/z0/QHwu6gJhYSh5TWDSzNLO9bmtP4aQzStfqT8RRoh1bYRomszxjc7e3CsZT8xrG88XKlZ4iKL6zHLoQ==
+  dependencies:
+    "@expo/config" "^6.0.6"
+    "@expo/config-plugins" "^4.0.2"
+    "@expo/metro-config" "~0.2.6"
+    expo-manifests "~0.2.2"
+    expo-structured-headers "~2.1.0"
+    expo-updates-interface "~0.5.0"
+    fbemitter "^2.1.1"
+    resolve-from "^5.0.0"
+    uuid "^3.4.0"
 
 expo-web-browser@~10.1.0:
   version "10.1.1"
@@ -5247,6 +5311,11 @@ human-signals@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/human-signals/-/human-signals-1.1.1.tgz"
   integrity sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==
+
+humps@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/humps/-/humps-2.0.1.tgz#dd02ea6081bd0568dc5d073184463957ba9ef9aa"
+  integrity sha1-3QLqYIG9BWjcXQcxhEY5V7qe+ao=
 
 hyphenate-style-name@^1.0.2, hyphenate-style-name@^1.0.4:
   version "1.0.4"
@@ -6931,6 +7000,11 @@ mz@^2.7.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
+nanoclone@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/nanoclone/-/nanoclone-0.2.1.tgz#dd4090f8f1a110d26bb32c49ed2f5b9235209ed4"
+  integrity sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA==
+
 nanoid@^3.1.23:
   version "3.2.0"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.2.0.tgz"
@@ -7555,6 +7629,11 @@ prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
+property-expr@^2.0.4:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/property-expr/-/property-expr-2.0.5.tgz#278bdb15308ae16af3e3b9640024524f4dc02cb4"
+  integrity sha512-IJUkICM5dP5znhCckHSv30Q4b5/JA5enCtkRHYaOVOAocnH/1BQEYTC5NMfT3AVl/iXKdr3aqQbQn9DxyWknwA==
+
 protobufjs@^6.10.0:
   version "6.11.2"
   resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.2.tgz"
@@ -7679,10 +7758,10 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-gesture-handler@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.2.0.tgz"
-  integrity sha512-WF25CNgn164bF9juW8N/jICIFXiEOgsxCuY7DRlnFdiH5ZfvMYtZHRC+zr1fFMap2ty1f2HWDQNVVSo0FDXP4A==
+react-native-gesture-handler@~2.1.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.1.2.tgz#ff68f399a7739440cab157d3e396d9fdfffbe8bd"
+  integrity sha512-xxP/oqSVDQp6GXSa8479cXNLLLuXp2IZNWOnzfyoMg0GY3yLA8cCKOKR70aJqbR6JMUQjDKC9gMZHdX9uB2aMA==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -7703,10 +7782,10 @@ react-native-keyboard-aware-scroll-view@^0.9.5:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-react-native-reanimated@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.4.1.tgz"
-  integrity sha512-kvf7ylGlwa5hxMQ+wpPFjQrI2c6eexf53/xRo+dvXBNefGmSYaYR5sFtD0XMMzIPQlkCB9tJ0Pu9+2WCQUY7Cg==
+react-native-reanimated@~2.3.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.3.2.tgz#3b132db186dac04a5ed710f5e4ed5733c89020c5"
+  integrity sha512-iJwnxroNhECGIB+XRLjQhLKJp3iVxuUtnRTGh6WYvPMZHRft0Mf/HvsKiqz2fEFuZgQgGBB9N26Og85cb1HjTA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     "@types/invariant" "^2.2.35"
@@ -8793,6 +8872,11 @@ toidentifier@1.0.1:
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
+toposort@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/toposort/-/toposort-2.0.2.tgz#ae21768175d1559d48bef35420b2f4962f09c330"
+  integrity sha1-riF2gXXRVZ1IvvNUILL0li8JwzA=
+
 tough-cookie@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/tough-cookie/-/tough-cookie-4.0.0.tgz"
@@ -9363,3 +9447,16 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+yup@^0.32.11:
+  version "0.32.11"
+  resolved "https://registry.yarnpkg.com/yup/-/yup-0.32.11.tgz#d67fb83eefa4698607982e63f7ca4c5ed3cf18c5"
+  integrity sha512-Z2Fe1bn+eLstG8DRR6FTavGD+MeAwyfmouhHsIUgaADz8jvFKbO/fXc2trJKZg+5EBjh4gGm3iU/t3onKlXHIg==
+  dependencies:
+    "@babel/runtime" "^7.15.4"
+    "@types/lodash" "^4.14.175"
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+    nanoclone "^0.2.1"
+    property-expr "^2.0.4"
+    toposort "^2.0.2"

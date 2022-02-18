@@ -31,7 +31,9 @@ export default function useCachedResources() {
         user && setAuth(user);
         const info = await getLocalData(LOCAL_SYSTEM_INFO)
         if(info) {
+          setSystemInfo(info);
            setIsOnboarded(true);
+
         }
       
       } catch (e) {

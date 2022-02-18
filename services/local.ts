@@ -20,12 +20,22 @@ export const getLocalData = async(key: string) => {
     }
 }
 
-export const setLocalData = async( key:string, data: any) =>{
+export const setLocalData = async( key:string, data: string) =>{
     try {
         await AsyncStorage.setItem(key, data);
         return true
     } catch (error) {
         console.log(error);
         return false;
+    }
+}
+
+export const removeLocalData = async(key: string) =>{
+    try {
+        await AsyncStorage.removeItem(LOCAL_USER_INFO);
+        return true
+    } catch (error) {
+        return false
+        
     }
 }

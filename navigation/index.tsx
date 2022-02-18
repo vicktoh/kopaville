@@ -11,17 +11,31 @@ import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
-import { useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import useColorScheme from '../hooks/useColorScheme';
+import { setAuth } from '../reducers/authSlice';
 import { StoreType } from '../reducers/store';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
+import { User } from '../types/User';
 import { AppNavigationStack } from './AppNavigation';
+import { HomeDrawerNavigation } from './HomeDrawerNavigation';
 import { AuthNavigation } from './AuthNavigation';
 import LinkingConfiguration from './LinkingConfiguration';
+import { System } from '../types/System';
+import { setSystemInfo } from '../reducers/systemSlice';
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
-  const {auth} = useAppSelector<StoreType>(( store ) =>  store);
+export default function Navigation({ colorScheme, localAuth, localSystemInfo }: { colorScheme: ColorSchemeName, localAuth: User | null, localSystemInfo: System | null }) {
+  const {auth, systemInfo} = useAppSelector<StoreType>(( store ) =>  store);
+  const dispatch = useAppDispatch();
+  React.useEffect(()=>{
+    if(localAuth && !auth) {
+      dispatch(setAuth(localAuth));
+    }
+    if(localSystemInfo && !systemInfo){
+      dispatch(setSystemInfo(localSystemInfo))
+    }
+  }, [localAuth, localSystemInfo])
   
   return (
     <NavigationContainer

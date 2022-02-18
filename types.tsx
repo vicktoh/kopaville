@@ -30,6 +30,15 @@ export type AppStackParamList = {
   Dating: undefined
 };
 
+export type DrawerParamList = {
+  Posts: undefined;
+  "Dating Profile": undefined;
+  "Career Profile": undefined;
+  Profile: undefined;
+  Bookstore: undefined;
+  Historyville: undefined
+}
+
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
   RootStackParamList,
   Screen
