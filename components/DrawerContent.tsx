@@ -26,7 +26,7 @@ import { RotateInUpLeft } from 'react-native-reanimated';
 
 export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
     const auth = useAppSelector(({ auth }) => auth);
-    const initial = auth?.displayName
+    const initial = auth?.displayName.split('').slice(0, 2).join("");
     const getIcon = (key: keyof DrawerParamList, values: { size: number; color: string, focused: boolean }) => {
         switch (key) {
             case 'Bookstore':
@@ -46,19 +46,19 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
 
    
     return (
-        <DrawerContentScrollView {...props} style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 24 }}>
-            <Flex direction="column" pr = {20}>
+        <DrawerContentScrollView {...props} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 24 }}>
+            <Flex direction="column" ml={10} flex={1} pr={20} >
                 <HStack space={2}>
                     <Avatar bg="primary.200" source={{ uri: auth?.photoUrl }}>
                         {initial}
                     </Avatar>
                     <VStack space={1}>
                         <Heading fontSize= "md">{auth?.displayName || 'Hello there👋🏽'}</Heading>
-                        <Text fontSize="xs">Click on your avatar to edit your profile</Text>
+                        <Text fontSize="xs">Click on to edit profile</Text>
                     </VStack>
                 </HStack>
             </Flex>
-            <Box mt={50} pl={20} >
+            <Flex flex ={1} mt={50} pl={10} direction="column" alignItems="center" justifyContent={"center"} >
             {props.state.routeNames.map((name, i) => {
                 const { index } = props.navigation.getState();
                 const isActive = index === i;
@@ -83,8 +83,7 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
                     );
                 }
             })}
-            </Box>
-            
+            </Flex>
         </DrawerContentScrollView>
     );
 };

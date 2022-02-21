@@ -31,7 +31,8 @@ export const AppNavigationStack = ()=>{
             },
             tabBarActiveTintColor: '#2A9A4A',
             tabBarInactiveTintColor: 'black',
-            tabBarStyle: {backgroundColor: '#FDFBF0', paddingTop: 10,}
+            tabBarStyle: {backgroundColor: '#FDFBF0', paddingTop: 10,},
+        
         })}>
             <AppTabNavigator.Screen name = "Home" component = {HomeDrawerNavigation} options={{headerShown: false}} />
             <AppTabNavigator.Screen name = "Jobs" component = {TabOneScreen} />

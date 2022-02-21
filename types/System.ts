@@ -1,7 +1,7 @@
 
-type Checklist = {
+export type Checklist = {
     "Complete Profile": boolean;
-    "Complete Bussiness Profile": boolean;
+    "Complete Dating Profile": boolean;
     "Complete Career Profile": boolean;
 }
 

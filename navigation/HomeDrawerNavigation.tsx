@@ -7,8 +7,8 @@ const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const HomeDrawerNavigation = () => {
     return (
-        <Drawer.Navigator initialRouteName='Posts' drawerContent={DrawerContent} >
-            <Drawer.Screen name="Posts" component={HomepageScreen} />
+        <Drawer.Navigator initialRouteName='Posts' drawerContent={DrawerContent} screenOptions={{headerBackgroundContainerStyle: {backgroundColor: 'white', borderWidth: 0 }, drawerLabel : ""}} >
+            <Drawer.Screen name="Posts" component={HomepageScreen} options={{ headerTitle : ""}} />
             <Drawer.Screen name="Profile" component={TabTwoScreen} />
             <Drawer.Screen name="Dating Profile" component={TabTwoScreen} />
             <Drawer.Screen name="Career Profile" component={TabTwoScreen} />
