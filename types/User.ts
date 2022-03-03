@@ -5,7 +5,7 @@ export type User = {
     userId: string;
     password: string;
     photoUrl?: string;
-    displayName: string;
+    displayName: string | null;
     refreshToken?: string;
-    phoneNumber?: string;
+    phoneNumber?: string | null;
 }
