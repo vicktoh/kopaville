@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Profile } from './types/Profile';
 
 declare global {
   namespace ReactNavigation {
@@ -30,11 +31,16 @@ export type AppStackParamList = {
   Dating: undefined
 };
 
+export type ProfileStackParamList = {
+  Main: undefined;
+  Edit: undefined;
+}
+
 export type DrawerParamList = {
   Posts: undefined;
-  "Dating Profile": undefined;
-  "Career Profile": undefined;
-  Profile: undefined;
+  "Dating Profile": {profile?: Profile};
+  "Career Profile": {profile?: Profile};
+  Profile: {profile?: Profile};
   Bookstore: undefined;
   Historyville: undefined
 }

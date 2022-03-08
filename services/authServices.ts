@@ -34,7 +34,7 @@ export const initializeApp = async (localUser: User | null) => {
 };
 
 export const registerUser = async (registration: FormValues) => {
-    const { email, password, fullname, type } = registration;
+    const { email, password, fullname, type, username } = registration;
     const auth = getAuth(firebaseApp);
     try {
         const credentials = await createUserWithEmailAndPassword(auth, email, password);
@@ -42,6 +42,7 @@ export const registerUser = async (registration: FormValues) => {
         await setDoc(doc(fireStore, 'users', credentials.user.uid), {
             loginInfo: {
                 fullname,
+                username,
                 type,
                 email,
                 userId: credentials.user.uid,

@@ -18,6 +18,7 @@ import { DrawerParamList } from '../types';
 import { SetupChecklist } from '../components/SetupChecklist';
 import { useAppSelector } from '../hooks/redux';
 import { countComplette, onboardingCheckListComplete } from '../services/helpers';
+import { UserTimeline } from '../components/UserTimeline';
 const corperTwins = require('../assets/images/corpertwins.png');
 type HomepageScreenProps = NativeStackScreenProps<DrawerParamList, 'Posts'>;
 export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
@@ -26,10 +27,11 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
     const firstname = (auth?.displayName || "").split(" ")[0];
     const showChecklist = !!!(systemInfo?.checkList && onboardingCheckListComplete(systemInfo.checkList)); 
     const count = systemInfo?.checkList ? countComplette(systemInfo.checkList) : 0; 
+    
     return (
         <KeyboardAvoidingView flex={1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} bg= "white">
-            <ScrollView flex = {1}  bg= "white">
-                <Flex   bg="blue" position="relative" py={2}>
+            <ScrollView flex = {1}  bg= "white" >
+                <Flex  position="relative" py={2}>
                     <Flex px={5} direction="row" mt = {5}>
                        <Heading fontSize="xl" >{ auth  ? `Hello, ${firstname}👋🏽`: 'Hello there👋🏽'}</Heading>
                     </Flex>
@@ -37,6 +39,8 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
                         showChecklist ? <SetupChecklist /> : null
                     }
                 </Flex>
+                <UserTimeline  />
+
             </ScrollView>
         </KeyboardAvoidingView>
     );

@@ -1,4 +1,5 @@
 import { FontAwesome } from '@expo/vector-icons';
+import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -27,6 +28,8 @@ export default function useCachedResources() {
           'Poppins Bold': require('../assets/fonts/Poppins-Bold.ttf'),
 
         });
+        // Load images
+        await Asset.fromModule(require('../assets/images/datingcover.png')).downloadAsync();
         const user: User = await getLocalUserData();
         user && setAuth(user);
         const info = await getLocalData(LOCAL_SYSTEM_INFO)

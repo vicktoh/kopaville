@@ -8,6 +8,5 @@ export type Checklist = {
 
 export interface System {
     dateOnboarded: number;
-    checkList?: Checklist
-    
+    checkList?: Checklist  
 }

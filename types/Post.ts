@@ -15,3 +15,5 @@ export interface ImagePost extends Post {
 export interface TextPost extends Post {
     text: string;
 }
+
+export type GeneralPost = TextPost | ImagePost

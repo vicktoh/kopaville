@@ -8,10 +8,11 @@ import { theme } from './theme';
 import { NativeBaseProvider } from 'native-base';
 import { AppLoading } from './screens/AppLoading';
 import { Provider } from 'react-redux';
-import { store } from './reducers/store';
+import { store, persistor } from './reducers/store';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import {LogBox} from 'react-native';
 import { initializeApp } from './services/authServices';
+import { PersistGate } from 'redux-persist/integration/react'
 
 LogBox.ignoreLogs(['NativeBase:']);
 export default function App() {
@@ -31,10 +32,13 @@ export default function App() {
           
             <NativeBaseProvider theme={theme} config = {{strictMode: 'off'}}>
                 <Provider store={store}>
+                    <PersistGate persistor={persistor} loading = {<AppLoading />}>
                     <SafeAreaProvider style={{flex: 1}}>
                         <Navigation colorScheme={colorScheme} localAuth={ auth } localSystemInfo = {systemInfo}  />
                         <StatusBar />
                     </SafeAreaProvider>
+                    </PersistGate>
+                    
                 </Provider>
             </NativeBaseProvider>
         );
