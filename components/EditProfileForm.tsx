@@ -115,7 +115,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                                 borderColor="primary.400"
                             >
                                 {states.map((name, i) => (
-                                    <Select.Item key={`origin-state-${i}`} value={name} label={name} />
+                                    <Select.Item key={`origin-state-${name}`} value={name} label={name} />
                                 ))}
                             </Select>
                             <FormControl.ErrorMessage>
@@ -205,7 +205,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                                 borderColor="primary.400"
                             >
                                 {states.map((name, i) => (
-                                    <Select.Item key={`serving-state-${i}`} value={name} label={name} />
+                                    <Select.Item key={`serving-state-${name}`} value={name} label={name} />
                                 ))}
                             </Select>
                             <FormControl.ErrorMessage>

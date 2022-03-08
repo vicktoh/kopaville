@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Business, Education, Profile } from '../types/Profile';
 import { Button, Flex, FormControl, HStack, Image, Input, Progress, TextArea } from 'native-base';
 import { Formik } from 'formik';
@@ -39,7 +39,18 @@ export const BussinessForm: FC<BussinessFormProps> = ({ onClose, business, mode,
     };
     const dispatch = useAppDispatch();
     const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    
+    const deleteBusiness = async(index: number) =>{
+        const copyofBusiness = [...profile?.careerProfile?.business || []];
+        copyofBusiness.splice(index, 1);
+        setIsDeleting(true)
+        await updateProfileInfo(auth?.userId || "", { careerProfile: { business: copyofBusiness}});
+        dispatch(setProfile({...profile, careerProfile : {...profile?.careerProfile, business: copyofBusiness}}));
+        setIsDeleting(false);
+        onClose();
 
+    }
 
     return (
         <Formik
@@ -152,8 +163,15 @@ export const BussinessForm: FC<BussinessFormProps> = ({ onClose, business, mode,
                     >
                         Cancel
                     </Button>
+                    {
+                        mode ==="edit" ? 
+                        <Button my={2} isLoading={isDeleting} isLoadingText="Removing Education" variant="outline" colorScheme="red" onPress={()=> index !==undefined &&  deleteBusiness(index)}>
+                            Delete
+                        </Button>:
+                        null
+                    }
                     <Button
-                        isLoadingText="Updating Bussiness"
+                        isLoadingText="Updating Business"
                         isLoading={isSubmitting}
                         mt={2}
                         size="lg"

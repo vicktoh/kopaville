@@ -42,8 +42,9 @@ export interface Profile {
 
     };
     datingProfile?:{
+        coverUrl?: string;
         profile: string;
-        interest: string [];
+        interest?: string [];
         status: string;
     };
     followerships?: {

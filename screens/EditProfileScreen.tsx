@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Modal} from 'react-native';
+import {Modal, Platform} from 'react-native';
 import { Flex, IconButton, ArrowBackIcon, Text, Heading, useDisclose, ScrollView, KeyboardAvoidingView, HStack } from 'native-base';
 import { ProfileSection } from '../components/ProfileSection';
 import { DrawerParamList, ProfileStackParamList } from '../types';
@@ -14,7 +14,7 @@ type EditProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, "Edi
 export const EditProfileScreen : FC<EditProfileScreenProps> = ({navigation}) =>{
     const { profile } = useAppSelector(({profile}) => ({profile}));
     return (
-        <KeyboardAvoidingView bg="white">
+        <KeyboardAvoidingView bg="white"  behavior={Platform.OS === "ios" ? "padding" : "height"}>
                 <ScrollView bg="white">
                 <Flex flex = {1} direction="column" bg="white" py={5} px={5} borderRadius="2xl" safeArea>
                     <IconButton onPress={()=> navigation.goBack() } icon= {<ArrowBackIcon/>} mb={3}/>
@@ -24,6 +24,6 @@ export const EditProfileScreen : FC<EditProfileScreenProps> = ({navigation}) =>{
                     <EditProfileForm onCancel={()=> navigation.goBack()} />
                 </Flex>
                 </ScrollView>
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
     )
 }

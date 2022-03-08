@@ -7,12 +7,12 @@ import {
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import { DrawerParamList, ProfileStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
-
 import { CareerProfile } from '../components/CareerProfile';
+import { DatingProfile } from '../components/DatingProfile';
 
-type CareerScreenProps = DrawerScreenProps<DrawerParamList, 'Career Profile'>;
+type DatingScreenProps = DrawerScreenProps<DrawerParamList, 'Career Profile'>;
 
-export const CareerScreen: FC<CareerScreenProps> = ({ navigation, route }) => {
+export const DatingScreen: FC<DatingScreenProps> = ({ navigation, route }) => {
     const { profile, auth } = useAppSelector(({ profile, auth }) => ({
         profile,
         auth,
@@ -21,9 +21,9 @@ export const CareerScreen: FC<CareerScreenProps> = ({ navigation, route }) => {
     const profileToshow  =  route.params?.profile || profile
     return (
         
-        <ScrollView flex={1} bg="white" px={5}>
+        <ScrollView flex={1} bg="white">
          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-         {profileToshow && <CareerProfile  profile={profileToshow} />}
+         {profileToshow && <DatingProfile  profile={profileToshow} />}
          </KeyboardAvoidingView>
         </ScrollView>
     );

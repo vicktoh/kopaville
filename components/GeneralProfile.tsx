@@ -85,7 +85,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
             <Heading size="sm" mt={5} mb={2}>
                 Bio
             </Heading>
-            <Text>
+            <Text fontSize="md">
                 {generalProfile?.bio ? generalProfile.bio : 'You do not have bio yet, edit your profile to get one'}
             </Text>
 
