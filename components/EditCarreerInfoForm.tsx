@@ -4,9 +4,11 @@ import { Button, Flex, FormControl, Image, Input, Progress, TextArea } from 'nat
 import { Formik } from 'formik';
 import * as ImagePicker from 'expo-image-picker';
 import * as yup from 'yup';
-import { updateCarrerInfo } from '../services/profileServices';
+import { updateCareerInfo } from '../services/profileServices';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setProfile } from '../reducers/profileSlice';
+import { setSystemInfo } from '../reducers/systemSlice';
+import { Checklist } from '../types/System';
 type EditCarreerInfoFormProps = {
     onClose: () => void;
     carreerProfile: Profile['careerProfile'];
@@ -26,7 +28,7 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
         uploadProgress: 0,
     };
     const dispatch = useAppDispatch();
-    const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
+    const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo }));
 
     const pickDocument = async (callback: (result: ImagePicker.ImagePickerResult) => void) => {
         try {
@@ -50,13 +52,19 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
                     profile: values.profile || '',
                     ...(values.cvResult?.cancelled ? {} : { uri: values.cvResult?.uri }),
                 };
-                await updateCarrerInfo(
+                await updateCareerInfo(
                     auth?.userId || '',
                     profileData,
                     (data: { profile: string; cvUrl?: string }) => {
                         dispatch(setProfile({ ...profile, careerProfile: { ...profile?.careerProfile, ...data } }));
                         setSubmitting(false);
                         onClose();
+                        const { checkList = {}} = systemInfo || {};
+                        if(!checkList?.['Complete Career Profile']){
+                            const newChecklist: Checklist = { ...checkList, 'Complete Career Profile' :  true}
+                            console.log(newChecklist)
+                            dispatch(setSystemInfo({...systemInfo, checkList: {... newChecklist}}));
+                        }
                     }
                 );
             }}

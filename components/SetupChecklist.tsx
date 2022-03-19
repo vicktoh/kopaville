@@ -35,6 +35,7 @@ const ONBOARDING_CHECKLIST: CheckListCardProps[] = [
 export const SetupChecklist: FC = () => {
     const {auth, systemInfo} = useAppSelector(({auth, systemInfo }) => ({ auth , systemInfo}));
     const count = systemInfo?.checkList ? countComplete(systemInfo.checkList) : 0; 
+    console.log({systemInfo});
     const renderChecklist: ListRenderItem<CheckListCardProps> = ({ item, index, separators }) => {
         if(systemInfo?.checkList && item?.path && systemInfo.checkList[item.key]){
             return null
@@ -44,7 +45,7 @@ export const SetupChecklist: FC = () => {
         );
     };
     return (
-        <Flex mt = {8}>
+        <Flex mt = {8} flex={1}>
             <Text ml={5} fontSize="md">{`Setup check list (${count}/${ONBOARDING_CHECKLIST.length})`}</Text>
             <FlatList contentContainerStyle={{paddingVertical: 10, paddingLeft: 20}} data={ONBOARDING_CHECKLIST}  renderItem = { renderChecklist} horizontal = {true}  />
         </Flex>

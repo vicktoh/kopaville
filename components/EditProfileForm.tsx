@@ -19,6 +19,8 @@ import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import * as yup from 'yup';
 import { updateProfileInfo } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
+import { Checklist } from '../types/System';
+import { setSystemInfo } from '../reducers/systemSlice';
 
 const states: string[] = require('../assets/static/states.json');
 
@@ -42,7 +44,7 @@ const ProfileSchema = yup.object().shape({
 });
 
 export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
-    const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
+    const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo }));
     const dispatch = useAppDispatch();
     const initialValue: EditFormValuesType = profile?.profile || {
         twitter: '',
@@ -67,6 +69,11 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                     const res = await updateProfileInfo(auth?.userId || '', { profile: values });
                     if (res.status === 'success') {
                         dispatch(setProfile({ ...profile, profile: values }));
+                        const {checkList = {}} = systemInfo || {};
+                        if(!checkList?.['Complete Profile']){
+                            const newChecklist: Checklist = { ...checkList, "Complete Profile":  true}
+                            dispatch(setSystemInfo({...systemInfo, checkList: {... newChecklist}}));
+                        }
                         onCancel()
                     } else {
                         setFieldValue('formError', res?.message || 'Unexpected Error');
@@ -81,7 +88,6 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                     handleChange,
                     handleBlur,
                     isSubmitting,
-                    handleSubmit,
                     submitForm,
                     setFieldValue,
                 }) => (
@@ -127,7 +133,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             _text={{ fontSize: 'lg' }}
                             isRequired
                             mb={3}
-                            isInvalid={!!touched.stateOfOrigin && !!errors.stateOfOrigin}
+                            isInvalid={!!touched.dateOfBirth && !!errors.dateOfBirth}
                         >
                             <FormControl.Label>date of birth (DD - MM - YYYY)</FormControl.Label>
                             <HStack alignItems="center" space={5}>
@@ -161,7 +167,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             </HStack>
 
                             <FormControl.ErrorMessage>
-                                {touched.stateOfOrigin && errors.stateOfOrigin}
+                                {touched.dateOfBirth && errors.dateOfBirth}
                             </FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
@@ -189,7 +195,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             _text={{ fontSize: 'lg' }}
                             isRequired
                             mb={3}
-                            isInvalid={!!touched.stateOfOrigin && !!errors.stateOfOrigin}
+                            isInvalid={!!touched.servingState && !!errors.servingState}
                             bg="white"
                         >
                             <FormControl.Label>serving state</FormControl.Label>
@@ -205,11 +211,11 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                                 borderColor="primary.400"
                             >
                                 {states.map((name, i) => (
-                                    <Select.Item key={`serving-state-${name}`} value={name} label={name} />
+                                    <Select.Item key={`serving-state-${i}`} value={name} label={name} />
                                 ))}
                             </Select>
                             <FormControl.ErrorMessage>
-                                {touched.stateOfOrigin && errors.stateOfOrigin}
+                                {touched.servingState && errors.servingState}
                             </FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>

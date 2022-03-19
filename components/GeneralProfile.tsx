@@ -10,7 +10,6 @@ import { DrawerParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import { updateProfileInfo, uploadProfilePicture } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
-import { updateProfile } from 'firebase/auth';
 type GeneralProfileProps = {
     profile: Profile;
     onEdit?: () => void;
@@ -82,7 +81,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                 ) : null}
             </HStack>
 
-            <Heading size="sm" mt={5} mb={2}>
+            <Heading fontSize="sm" mt={5} mb={2}>
                 Bio
             </Heading>
             <Text fontSize="md">
@@ -90,7 +89,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
             </Text>
 
             <Flex direction="row" justifyContent="space-between" mt={5}>
-                <Heading size="sm" mt={5} mb={2}>
+                <Heading fontSize="sm" mt={5} mb={2}>
                     Career
                 </Heading>
                 <Button variant="link" colorScheme="primary" onPress={() => navigation.navigate('Career Profile', {})}>

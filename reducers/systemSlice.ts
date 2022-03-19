@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserInfo } from "firebase/auth";
 import { System } from "../types/System";
 
 

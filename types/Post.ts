@@ -1,19 +1,21 @@
-import { Timestamp } from "@firebase/firestore";
-
+import firebase from "firebase";
 export interface Post {
-    dateCreated: Timestamp;
+    dateCreated: firebase.firestore.Timestamp;
+    mediaType: 'Video'| 'Image' | 'None',
     creatorId: string;
     likes: number;
     comments: number;
-}
-
-export interface ImagePost extends Post {
-    imageUrl: string;
+    imageUrl?: string [];
+    videoUrl?: string;
     caption?: string;
+    postId?: string;
+    text?: string;
+    avartar: {
+        photoUrl?: string;
+        username: string;
+    }
+
 }
 
-export interface TextPost extends Post {
-    text: string;
-}
 
-export type GeneralPost = TextPost | ImagePost
+

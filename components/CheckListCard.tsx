@@ -16,7 +16,7 @@ export const CheckListCard: FC<CheckListCardProps> = ({ title = "", description 
     const navigation = useNavigation<NavigationProp<DrawerParamList>>()
     return (
         <Pressable onPress={ () => navigation.navigate(path) }>
-            <Flex direction="column" p={5} width="2xs" flex = {1} bg = {background} borderRadius="lg" mr={4}>
+            <Flex direction="column"  p={5} width="2xs" flex = {1} bg = {background} borderRadius="lg" mr={4}>
                 <Heading fontSize="xl" width="80%" my ={3}>{title}</Heading>
                 <Text fontSize="xs">{description}</Text>
             </Flex>

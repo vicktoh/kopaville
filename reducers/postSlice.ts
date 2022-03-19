@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TextPost, ImagePost } from "../types/Post";    
+import { Post } from "../types/Post";    
 
 
-const initialState : (TextPost| ImagePost)[] | null = null;
+const initialState : Post[] | null = null;
 
 
 export const postsSlice = createSlice({
-    name: 'auth',
+    name: 'post',
     initialState,
     reducers: {
-        setPosts: (state: any, action: PayloadAction< (TextPost |ImagePost)[] | null>) => {
+        setPosts: (state: any, action: PayloadAction< (Post)[] | null>) => {
             return action.payload as any
         }
     }

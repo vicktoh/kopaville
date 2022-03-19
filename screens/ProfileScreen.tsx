@@ -16,7 +16,8 @@ export const ProfileScreen : FC<ProfileScreenProps> = ({navigation}) =>{
     const { profile } = useAppSelector(({profile}) => ({profile}));
     const  {isOpen, onOpen, onClose, onToggle} = useDisclose();
     return (
-        <Flex flex= {1} safeArea bg="white">
+        <ScrollView flex = {1} bg = "white">
+            <Flex flex= {1} safeArea bg="white">
             <Flex direction="row" alignItems="flex-end"  py={3}>
                 <IconButton  size="md" icon = {<ArrowBackIcon />} onPress= {()=> navigation.goBack()} />
                 <Heading ml={10}   fontSize="lg">Profile</Heading>                
@@ -26,7 +27,8 @@ export const ProfileScreen : FC<ProfileScreenProps> = ({navigation}) =>{
                 <GeneralProfile onEdit={()=> navigation.navigate("Edit")} profile={profile} />:
                 null
             }
-           
-        </Flex>
+            </Flex>
+        </ScrollView>
+        
     )
 }

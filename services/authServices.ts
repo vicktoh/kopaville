@@ -1,62 +1,59 @@
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
-    updateProfile,
-    signInWithEmailAndPassword,
-    signOut,
-    sendPasswordResetEmail
-} from 'firebase/auth';
-import { LOCAL_USER_INFO } from '../constants/Storage';
+import { LOCAL_SYSTEM_INFO, LOCAL_USER_INFO } from '../constants/Storage';
 import { User } from '../types/User';
-import { firebaseApp, fireStore } from './firebase';
-import { setDoc, doc } from 'firebase/firestore';
-import { setLocalData } from './local';
+import { firebaseApp } from './firebase';
+import firebase from 'firebase';
+
+import { removeLocalData, setLocalData } from './local';
 import { FormValues } from '../components/RegisterForm';
-import { FirebaseError } from 'firebase/app';
 import { ErrorDict } from '../constants/Firebase';
 import { async, getUA } from '@firebase/util';
 
+import { persistor } from '../reducers/store';
+
 export const initializeApp = async (localUser: User | null) => {
-    const auth = getAuth(firebaseApp);
-    onAuthStateChanged(auth, async (user) => {
-        if (user && !localUser) {
-            // useris loggedin do nothing
+    const auth = firebase.auth(firebaseApp);
+
+
+    auth.onAuthStateChanged(async (user)=>{
+        if(user && !localUser){
+
         }
-        if (!user && localUser) {
+        if(!user && localUser){
             try {
-                const response = await signInWithEmailAndPassword(auth, localUser.email, localUser.password);
+                const response = await auth.signInWithEmailAndPassword(localUser.email, localUser.password);
             } catch (error) {
                 console.log(error);
             }
         }
-    });
+    })
 };
 
 export const registerUser = async (registration: FormValues) => {
     const { email, password, fullname, type, username } = registration;
-    const auth = getAuth(firebaseApp);
+    const auth = firebase.auth(firebaseApp);
     try {
-        const credentials = await createUserWithEmailAndPassword(auth, email, password);
-        const res = await updateProfile(credentials.user, { displayName: fullname });
-        await setDoc(doc(fireStore, 'users', credentials.user.uid), {
+        const credentials = await auth.createUserWithEmailAndPassword(email, password);
+        
+        const res = await auth.currentUser?.updateProfile({ displayName: fullname });
+        await firebase.firestore(firebaseApp).doc(`users/${auth?.currentUser?.uid}`).set({
             loginInfo: {
                 fullname,
                 username,
                 type,
                 email,
-                userId: credentials.user.uid,
+                userId: credentials?.user?.uid,
             },
-            userId: credentials.user.uid,
-        });
-        const { uid, refreshToken, displayName, phoneNumber } = credentials.user;
+            userId: credentials?.user?.uid,
+        })
+        
+        const { uid, refreshToken, displayName, phoneNumber } = credentials.user || {};
         return { user: { userId: uid, refreshToken, displayName, phoneNumber, email, password }, status: 'success' };
     } catch (error) {
-        if (error instanceof FirebaseError) {
-            console.log(error.code);
+        const err: any = error;
+        if (err) {
             return {
                 status: 'failed',
-                message: ErrorDict[error.code] || "Unexpected error try again",
+                message: ErrorDict[err?.code] || "Unexpected error try again",
             };
         }
     }
@@ -66,16 +63,17 @@ export const registerUser = async (registration: FormValues) => {
 
 
 export const loginUser = async ({ email, password}: {email: string; password: string}) =>{
-    const auth = getAuth(firebaseApp);
+    const auth = firebase.auth(firebaseApp);
     try {
-        const credentials = await  signInWithEmailAndPassword(auth, email, password);
-        const { uid, refreshToken, displayName, phoneNumber } = credentials.user;
+        const credentials = await  auth.signInWithEmailAndPassword(email, password);
+        const { uid, refreshToken, displayName, phoneNumber } = credentials.user || {};
         return { user: { userId: uid, refreshToken, displayName, phoneNumber, email, password }, status: 'success' };
     } catch (error) {
-        if (error instanceof FirebaseError) {
+        const err: any = error;
+        if (err) {
             return {
                 status: 'failed',
-                message: ErrorDict[error.code] || "Unexpected error try again",
+                message: ErrorDict[err?.code] || "Unexpected error try again",
             };
         }
     }
@@ -83,24 +81,27 @@ export const loginUser = async ({ email, password}: {email: string; password: st
 
 
 export const logOut = async() =>{
-    const auth = getAuth(firebaseApp);
-    await signOut(auth);
+    await removeLocalData(LOCAL_USER_INFO);
+    await removeLocalData(LOCAL_SYSTEM_INFO);
+    await persistor.purge();
+    await  firebase.auth(firebaseApp).signOut();
 }
 
 export const sendRecoverPassword = async(email: string)=>{
-    const auth = getAuth(firebaseApp);
+    const auth = firebase.auth(firebaseApp)
     try {
-    await sendPasswordResetEmail(auth, email);
+    await auth.sendPasswordResetEmail(email);
     return {
         status: 'success',
         message: 'Email has been sent to you'
     }
         
     } catch (error) {
-        if (error instanceof FirebaseError) {
+        const err: any = error;
+        if (err) {
             return {
                 status: 'failed',
-                message: ErrorDict[error.code] || "Unexpected error try again",
+                message: ErrorDict[err.code] || "Unexpected error try again",
             };
         }
     }
