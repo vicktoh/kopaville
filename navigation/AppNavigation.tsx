@@ -10,6 +10,7 @@ import { faBriefcase, faGlobeAfrica, faShoppingCart, faHeart, faHome } from '@fo
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeDrawerNavigation } from './HomeDrawerNavigation';
+import { JobNavigation } from './JobNavigation';
 const AppTabNavigator  = createBottomTabNavigator<AppStackParamList>();
 
 export const AppNavigationStack = ()=>{
@@ -35,8 +36,8 @@ export const AppNavigationStack = ()=>{
         
         })}>
             <AppTabNavigator.Screen name = "Home" component = {HomeDrawerNavigation} options={{headerShown: false}} />
-            <AppTabNavigator.Screen name = "Jobs" component = {TabOneScreen} />
-            <AppTabNavigator.Screen name = "MarketPlace" component = {TabTwoScreen} />
+            <AppTabNavigator.Screen name = "Jobs" component = {JobNavigation} options= {{headerShown: false}} />
+            <AppTabNavigator.Screen name = "MarketPlace" component = {TabOneScreen} />
             <AppTabNavigator.Screen name = "Dating" component = {TabOneScreen} />
         </AppTabNavigator.Navigator>
     )

@@ -5,6 +5,7 @@ const checklistKeys: ChecklistKeys[] = ['Complete Dating Profile', 'Complete Pro
 
 export const onboardingCheckListComplete = (checklist: Checklist) => {
     const isDone = checklist && checklistKeys.every((value) => checklist[value]);
+    return isDone
 };
 export const countComplette = (checklist: Checklist) => {
     let count = 0;

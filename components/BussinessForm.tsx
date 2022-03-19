@@ -4,7 +4,7 @@ import { Button, Flex, FormControl, HStack, Image, Input, Progress, TextArea } f
 import { Formik } from 'formik';
 import * as ImagePicker from 'expo-image-picker';
 import * as yup from 'yup';
-import { updateCarrerInfo, updateProfileInfo } from '../services/profileServices';
+import { updateCareerInfo, updateProfileInfo } from '../services/profileServices';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setProfile } from '../reducers/profileSlice';
 type BussinessFormProps = {

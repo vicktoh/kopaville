@@ -32,7 +32,7 @@ export const setLocalData = async( key:string, data: string) =>{
 
 export const removeLocalData = async(key: string) =>{
     try {
-        await AsyncStorage.removeItem(LOCAL_USER_INFO);
+        await AsyncStorage.removeItem(key);
         return true
     } catch (error) {
         return false

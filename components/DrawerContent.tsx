@@ -50,8 +50,8 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
     };
 
     return (
-        <DrawerContentScrollView {...props} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 24 }}>
-            <Pressable onPress={()=> navigation.navigate('Profile')}>
+        <DrawerContentScrollView {...props} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 24, backgroundColor: 'white' }}>
+            <Pressable onPress={()=> navigation.navigate('Profile', {})}>
             <Flex direction="column" ml={10} flex={1} pr={20}>
                 <HStack space={2}>
                     <Avatar source={{ uri: profile?.profileUrl }} bg="primary.200">

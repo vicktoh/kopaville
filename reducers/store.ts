@@ -6,7 +6,7 @@ import systemInfo from './systemSlice';
 import posts from './postSlice';
 import followerships from './followershipSlice';
 import profile from './profileSlice'
-import { ImagePost, TextPost } from '../types/Post';
+import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
 
@@ -44,7 +44,7 @@ export type RootState = ReturnType<typeof store.getState>;
 export type StoreType = {
     auth: User | null;
     systemInfo: System;
-    posts: (TextPost | ImagePost)[] | null;
+    posts: Post[] | null;
     followerships: Folowership | null;
     profile: Profile | null
 };

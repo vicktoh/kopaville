@@ -1,6 +1,6 @@
 
-import { initializeApp } from "firebase/app";
-import {getFirestore } from 'firebase/firestore'
+import firebase from 'firebase';
+
 const firebaseConfig = {
   apiKey: "AIzaSyAmkDZKnJg1IzuxjIy52j5wR6-zmRJKvRE",
   authDomain: "kopaville-dev.firebaseapp.com",
@@ -12,5 +12,4 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const firebaseApp = initializeApp(firebaseConfig);
-export const fireStore = getFirestore(firebaseApp)
+export const firebaseApp = firebase.initializeApp(firebaseConfig);

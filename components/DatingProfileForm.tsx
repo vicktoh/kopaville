@@ -16,10 +16,12 @@ import {
 } from 'native-base';
 import { FieldArray, Formik } from 'formik';
 import * as yup from 'yup';
-import { updateCarrerInfo, updateProfileInfo } from '../services/profileServices';
+import { updateCareerInfo, updateProfileInfo } from '../services/profileServices';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setProfile } from '../reducers/profileSlice';
 import { AntDesign } from '@expo/vector-icons';
+import { Checklist } from '../types/System';
+import { setSystemInfo } from '../reducers/systemSlice';
 type DatingFormProps = {
     onClose: () => void;
     profile?: Partial<Profile['datingProfile']>;
@@ -37,7 +39,7 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
         status: datingProfile?.status || '',
     };
     const dispatch = useAppDispatch();
-    const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
+    const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo }));
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [interest, setInterest] = useState<string>('');
 
@@ -49,6 +51,12 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                 const newDatingProfile = { ...datingProfile, ...values };
                 await updateProfileInfo(auth?.userId || '', { datingProfile: { ...newDatingProfile } });
                 dispatch(setProfile({ ...profile, datingProfile: { ...newDatingProfile } }));
+                let  { checkList= {} } = systemInfo || {};
+                        if(!checkList?.['Complete Dating Profile'] ){
+                            console.log("blah")
+                            const newChecklist: Checklist = { ...(checkList ||{}), 'Complete Dating Profile' :  true}
+                            dispatch(setSystemInfo({...systemInfo, checkList: {... newChecklist}}));
+                        }
                 onClose();
             }}
         >

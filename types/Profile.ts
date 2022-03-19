@@ -43,9 +43,9 @@ export interface Profile {
     };
     datingProfile?:{
         coverUrl?: string;
-        profile: string;
+        profile?: string;
         interest?: string [];
-        status: string;
+        status?: string;
     };
     followerships?: {
         following: number;

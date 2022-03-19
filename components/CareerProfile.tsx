@@ -147,7 +147,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                 </Flex>
 
                 <HStack mt={5} alignItems="center" justifyContent="space-between" space={5} mb={1}>
-                    <Heading size="md" color="primary.400">
+                    <Heading size="sm" color="primary.400">
                         Education
                     </Heading>
                     {auth?.userId === profile.userId ? (
@@ -192,7 +192,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                     </Text>
                 )}
                 <HStack mt={5} alignItems="center" space={5} justifyContent="space-between">
-                    <Heading size="md" color="primary.400">
+                    <Heading size="sm" color="primary.400">
                         Bussiness
                     </Heading>
                     {auth?.userId === profile.userId ? (

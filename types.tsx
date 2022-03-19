@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Business, Job } from './types/Job';
 import { Profile } from './types/Profile';
 
 declare global {
@@ -34,6 +35,13 @@ export type AppStackParamList = {
 export type ProfileStackParamList = {
   Main: undefined;
   Edit: undefined;
+}
+
+export type JobStackParamList = {
+  Main: undefined;
+  "Add Job": undefined;
+  "Add Business": undefined;
+  "Job Details": {job: Job & Business}
 }
 
 export type DrawerParamList = {
