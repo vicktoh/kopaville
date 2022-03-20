@@ -29,7 +29,7 @@ export default function useCachedResources() {
 
         });
         // Load images
-        await Asset.fromModule(require('../assets/images/datingcover.png')).downloadAsync();
+        await Asset.fromModule(require('../assets/images/datingcover1.jpg')).downloadAsync();
         const user: User = await getLocalUserData();
         user && setAuth(user);
         const info = await getLocalData(LOCAL_SYSTEM_INFO)

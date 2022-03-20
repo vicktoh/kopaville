@@ -25,7 +25,7 @@ import { updateProfileInfo, uploadFileToFirestore } from '../services/profileSer
 import { setProfile } from '../reducers/profileSlice';
 import { useDispatch } from 'react-redux';
 
-const datingCover = require('../assets/images/datingcover.png');
+const datingCover = require('../assets/images/datingcover1.jpg');
 
 export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
     const { auth } = useAppSelector(({ auth }) => ({ auth }));
@@ -50,8 +50,8 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         const result = await uploadFileToFirestore(coverpath, uri);
         const newProfile = { ...(profile || {}) };
         if (result.status === 'success') {
-            dispatch(setProfile({ ...newProfile, datingProfile: { ...(datingProfile || {}), coverUrl: uri } }));
-            updateProfileInfo(auth?.userId || '', { datingProfile: { ...datingProfile, coverUrl: uri } });
+            dispatch(setProfile({ ...newProfile, datingProfile: { ...(datingProfile || {}), coverUrl: result.url } }));
+            updateProfileInfo(auth?.userId || '', { datingProfile: { ...datingProfile, coverUrl: result.url } });
         }
         if (result.status === 'failed') {
             toast.show({
@@ -90,7 +90,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
     };
     return (
         <ScrollView flex={1}>
-            <Flex flex={1} bg="white" safeArea>
+            <Flex flex={1} bg="white" >
                 <Flex direction="row" alignItems="center">
                     <IconButton size="sm" icon={<ArrowBackIcon />} onPress={() => navigation.goBack()} />
                     <Heading ml={10} fontSize="md">
@@ -105,15 +105,16 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                         width={windowWidth}
                         height={windowHeight * 0.39}
                         borderBottomRadius="2xl"
+                        fallbackSource={datingCover}
                     />
-                    <IconButton
+                    { auth?.userId === profile?.userId ? (<IconButton
                         ml="auto"
                         mt="auto"
                         mr={5}
                         mb={5}
                         icon={<Icon color="primary.500" as={AntDesign} name="edit" />}
                         onPress={onOpenCoverModal}
-                    />
+                    />) :null}
                 </Flex>
                 <Flex direction="column" px={5}>
                     <Heading mb={1} mt={5} fontSize="xl">

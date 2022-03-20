@@ -43,6 +43,10 @@ export type JobStackParamList = {
   "Add Business": undefined;
   "Job Details": {job: Job & Business}
 }
+export type DatingStackParamList = {
+  Main: undefined;
+  "Profile": {profile: Profile};
+}
 
 export type DrawerParamList = {
   Posts: undefined;
