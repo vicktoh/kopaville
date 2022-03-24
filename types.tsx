@@ -43,6 +43,10 @@ export type JobStackParamList = {
   "Add Business": undefined;
   "Job Details": {job: Job & Business}
 }
+export type DatingStackParamList = {
+  Main: undefined;
+  "Profile": {profile: Profile};
+}
 
 export type DrawerParamList = {
   Posts: undefined;
@@ -51,6 +55,15 @@ export type DrawerParamList = {
   Profile: {profile?: Profile};
   Bookstore: undefined;
   Historyville: undefined
+}
+
+export type HomeStackParamList = {
+  Home: undefined;
+  "Explore Post": undefined;
+  "Explore Users": undefined;
+  Profile: { profile?: Profile, userId?:string, fetch?: boolean}
+  Comments: { postId: string}
+  
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

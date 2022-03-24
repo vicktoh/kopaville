@@ -26,6 +26,7 @@ export type FormValues = {
     email: string;
     username: string;
     type: 'individual' | 'organisation';
+    gender?: 'male' |  'female' | 'others' | '';
     password: string;
     confirm: string;
     agreed: boolean;
@@ -38,6 +39,7 @@ const initialValues: FormValues = {
     username: '',
     password: '',
     type: 'individual',
+    gender: '',
     confirm: '',
     agreed: false,
 };
@@ -45,6 +47,7 @@ const RegistrationSchema = yup.object().shape({
     email: yup.string().email('Invalid Email').required('Required!'),
     fullname: yup.string().required('Required!').min(5, 'Must be at least 5 characters'),
     username: yup.string().required('Required!'),
+    gender: yup.string().required('Required!'),
     password: yup.string().min(6, 'Must be at least 6 characters').required('Required!'),
     confirm: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
     type: yup.string().required('Required!'),
@@ -141,6 +144,31 @@ export const RegisterForm: FC = () => {
                             _text={{ fontSize: 'lg' }}
                             isRequired
                             mb={3}
+                            isInvalid={!!touched.username && !!errors.username}
+                        >
+                            <FormControl.Label>gender</FormControl.Label>
+                            <Select
+                                onValueChange={(value) => setFieldValue('gender', value)}
+                                _actionSheetContent={{ bg: 'white' }}
+                                _selectedItem={{ bg: 'primary.100', color: 'gray.700' }}
+                                bg="primary.100"
+                                dropdownIcon={<ChevronDownIcon color="black" />}
+                                accessibilityLabel="Choose account type"
+                                size="lg"
+                                selectedValue={values.gender}
+                                variant="filled"
+                            >
+                                <Select.Item value="male" label="Male" />
+                                <Select.Item value="female" label="Female" />
+                                <Select.Item value="others" label="Others" />
+                            </Select>
+                            <FormControl.ErrorMessage>{touched.gender && errors.gender}</FormControl.ErrorMessage>
+                            <FormControl.HelperText></FormControl.HelperText>
+                        </FormControl>
+                        <FormControl
+                            _text={{ fontSize: 'lg' }}
+                            isRequired
+                            mb={3}
                             isInvalid={!!touched.type && !!errors.type}
                             bg="white"
                         >
@@ -207,7 +235,7 @@ export const RegisterForm: FC = () => {
                             _text={{ fontSize: 'lg' }}
                             isRequired
                             mb={3}
-                            isInvalid={!!touched.password && !!errors.password}
+                            isInvalid={!!touched.agreed && !!errors.agreed}
                         >
                             <HStack space={3}>
                                 <Checkbox
@@ -218,7 +246,7 @@ export const RegisterForm: FC = () => {
                                 />
                                 <FormControl.Label>Agree to our terms and conditions</FormControl.Label>
                             </HStack>
-                            <FormControl.ErrorMessage>{touched.password && errors.password}</FormControl.ErrorMessage>
+                            <FormControl.ErrorMessage>{touched.agreed && errors.agreed}</FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
                         <Button

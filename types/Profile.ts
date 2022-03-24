@@ -15,6 +15,7 @@ export interface Profile {
         fullname: string;
         type: string;
         username: string;
+        gender?: string;
     },
     userId: string;
     profileUrl: string;

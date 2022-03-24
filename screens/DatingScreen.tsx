@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Platform } from 'react-native';
-import { ScrollView, KeyboardAvoidingView } from 'native-base';
+import { ScrollView, Flex, KeyboardAvoidingView } from 'native-base';
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import { DrawerParamList, ProfileStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
@@ -16,8 +16,8 @@ export const DatingScreen: FC<DatingScreenProps> = ({ navigation, route }) => {
 
     const profileToshow = route.params?.profile || profile;
     return (
-        <ScrollView flex={1} bg="white">
+        <Flex flex={1} bg="white" safeArea>
                 {profileToshow && <DatingProfile profile={profileToshow} />}
-        </ScrollView>
+        </Flex>
     );
 };

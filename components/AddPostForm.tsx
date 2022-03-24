@@ -163,7 +163,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                             key={'gallery'}
                             bg="secondary.400"
                             size="xs"
-                            leftIcon={<Icon size="sm" as={Entypo} name="image" />}
+                            leftIcon={<Icon size="xs" as={Entypo} name="image" />}
                         >
                             Add Image
                         </Button>
@@ -172,7 +172,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                             onPress={pickImageFromCamera}
                             bg="secondary.400"
                             size="xs"
-                            leftIcon={<Icon size="sm" as={Entypo} name="camera" />}
+                            leftIcon={<Icon size="xs" as={Entypo} name="camera" />}
                         >
                             Add Image
                         </Button>
@@ -183,7 +183,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                         onPress={() => pickVideoFromGallery()}
                         bg="secondary.400"
                         size="xs"
-                        leftIcon={<Icon size="sm" as={Entypo} name="video-camera" />}
+                        leftIcon={<Icon size="xs" as={Entypo} name="video-camera" />}
                     >
                         Add Video
                     </Button>
