@@ -1,6 +1,7 @@
 import { firebaseApp } from './firebase';
 import firebase from 'firebase';
 import { Post } from '../types/Post';
+import { Profile } from '../types/Profile';
 
 
 export const listenOnTimeline = (
@@ -19,6 +20,37 @@ export const listenOnTimeline = (
         onsuccessCallback(data)
     }, (error)=> {onErrorMessage(error.message)})
 };
+
+
+export const explorePosts = async ()=>{
+    const db = firebase.firestore(firebaseApp)
+    const snapshot =  await  db.collection('posts').orderBy('dateCreated', 'desc').orderBy('likes', 'desc').limit(50).get();
+    const data: (Post & {id?: string})[] = [];
+    snapshot.forEach((snap)=>{
+        const post: Post & {id?: string} = snap.data() as Post;
+        post.id = snap.id;
+        data.push(post);
+    });
+
+    return data;
+}
+
+export const exploreUsers = async (servingState?: string)=>{
+    const db = firebase.firestore(firebaseApp);
+    let  query = db.collection('users').orderBy('followerships.following', 'desc');
+    if(servingState){
+        query = query.where('profile.servingState', '==', servingState);
+    }
+    const snapshot = await query.get();
+
+    const data: Profile[] = [];
+    snapshot.forEach((snap)=>{
+        const profile = snap.data() as Profile
+        data.push(profile);
+    })
+
+    return data;
+}
 
 export const listenOnFollowers = (userId: string, onSuccessCallback: (data: any) => void) => {
     const db = firebase.firestore(firebaseApp);

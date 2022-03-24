@@ -57,6 +57,15 @@ export type DrawerParamList = {
   Historyville: undefined
 }
 
+export type HomeStackParamList = {
+  Home: undefined;
+  "Explore Post": undefined;
+  "Explore Users": undefined;
+  Profile: { profile?: Profile, userId?:string, fetch?: boolean}
+  Comments: { postId: string}
+  
+}
+
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
   RootStackParamList,
   Screen

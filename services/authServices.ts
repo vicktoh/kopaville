@@ -29,7 +29,7 @@ export const initializeApp = async (localUser: User | null) => {
 };
 
 export const registerUser = async (registration: FormValues) => {
-    const { email, password, fullname, type, username } = registration;
+    const { email, password, fullname, type, username, gender } = registration;
     const auth = firebase.auth(firebaseApp);
     try {
         const credentials = await auth.createUserWithEmailAndPassword(email, password);
@@ -41,9 +41,14 @@ export const registerUser = async (registration: FormValues) => {
                 username,
                 type,
                 email,
+                gender,
                 userId: credentials?.user?.uid,
             },
             userId: credentials?.user?.uid,
+            followerships: {
+                followers: 0,
+                following: 0
+            }
         })
         
         const { uid, refreshToken, displayName, phoneNumber } = credentials.user || {};
