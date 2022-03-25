@@ -6,7 +6,7 @@ const initialState : Post[] | null = null;
 
 
 export const postsSlice = createSlice({
-    name: 'post',
+    name: 'posts',
     initialState,
     reducers: {
         setPosts: (state: any, action: PayloadAction< (Post)[] | null>) => {

@@ -17,7 +17,6 @@ type ProfileSectionProps = {
 export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, promptAvatarChange = ()=> null }) =>{
     const { loginInfo, profile:generalProfile, profileUrl, userId: profileId  } = profile || {};
     const { followers = 0, following = 0} = profile?.followerships || {}
-
     return(
         <Flex direction="column">
             <VStack space={1}>
@@ -33,9 +32,9 @@ export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, prompt
                 <Text fontSize="md">{`@${loginInfo?.username}`}</Text>
             </VStack>
             <HStack _text={{fontSize: 'md'}} space={2} mt={3}>
-                <Text fontSize="md" fontWeight="bold">{followers}</Text>
-                <Text fontSize="md">Following</Text>
                 <Text fontSize="md" fontWeight="bold">{following}</Text>
+                <Text fontSize="md">Following</Text>
+                <Text fontSize="md" fontWeight="bold">{followers}</Text>
                 <Text fontSize="md">Followers</Text>
                 {
                     generalProfile?.servingState ? 

@@ -35,7 +35,7 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
     return (
         <Flex flex={1} bg="white">
             {showChecklist ? (
-                <Flex py={2} flex={1} minHeight="120">
+                <Flex py={2} flex={1} minHeight="50">
                     <Flex px={5} direction="row" mt={5}>
                         <Heading fontSize="xl">{auth ? `Hello, ${firstname}👋🏽` : 'Hello there👋🏽'}</Heading>
                     </Flex>

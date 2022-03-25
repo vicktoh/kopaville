@@ -2,9 +2,12 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ArrowBackIcon, FlatList, Flex, Heading, IconButton, useToast } from 'native-base';
 import React, {FC, useEffect, useState} from 'react';
 import { ActivityIndicator, ListRenderItemInfo } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { EmptyState } from '../components/EmptyeState';
 import { UserListItem } from '../components/UserListItem';
 import { useAppSelector } from '../hooks/redux';
+import { addFollowing } from '../reducers/followershipSlice';
+import { Follower, followUser } from '../services/followershipServices';
 import { exploreUsers } from '../services/postsServices';
 import { HomeStackParamList } from '../types';
 import { Profile } from '../types/Profile';
@@ -16,18 +19,20 @@ import { Profile } from '../types/Profile';
 export const ExploreUsersScreen : FC = () =>{
 
 
-    const {auth, profile} = useAppSelector(({auth, profile}) => ({ auth, profile}));
+    const {auth, profile, followerships} = useAppSelector(({auth, profile, followerships}) => ({ auth, profile, followerships }));
     const [loading, setLoading] = useState<boolean>();
     const [users, setUsers] = useState<Profile[]| null> ();
     const [refresh, setRefresh] = useState<boolean>(false);
     const toast = useToast();
-    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+
+   
 
     useEffect(()=>{
         const fetchusers = async()=>{
             try {
                 setLoading(true);
-                const data = await exploreUsers(profile?.profile?.servingState);
+                let following = [...(followerships?.following?.map(({userId}) => userId) || []), auth?.userId || ""];
+                const data = await exploreUsers(following, profile?.profile?.servingState);
                 setUsers(data);
             } catch (error) {
                 const err: any = error;
@@ -42,14 +47,12 @@ export const ExploreUsersScreen : FC = () =>{
     }, [profile?.profile])
 
     const renderItem = (listItem: ListRenderItemInfo<Profile>) =>{
+        const {loginInfo: {username, fullname}, userId, profileUrl} = listItem.item;
+        const follower: Follower = { username, fullname, userId, photoUrl: profileUrl || ""}
         return (<UserListItem  profile={listItem.item}/>)
     }
     return(
-        <Flex flex = {1} bg="white" >
-            <Flex direction = "row" alignItems="center" my = {2}>
-                <IconButton icon = {<ArrowBackIcon/>} onPress = {()=> navigation.goBack()} />
-                <Heading fontSize="md" ml ={5}>Find Friends</Heading>
-            </Flex>
+        <Flex flex = {1} bg="white" py={5} >
             {
                 loading && !users?.length ? 
                 <ActivityIndicator />: 

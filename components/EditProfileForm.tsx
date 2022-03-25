@@ -167,7 +167,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             </HStack>
 
                             <FormControl.ErrorMessage>
-                                {touched.dateOfBirth && errors.dateOfBirth}
+                                {touched.dateOfBirth?.month && errors.dateOfBirth?.month}
                             </FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>

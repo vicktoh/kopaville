@@ -61,7 +61,9 @@ export type HomeStackParamList = {
   Home: undefined;
   "Explore Post": undefined;
   "Explore Users": undefined;
-  Profile: { profile?: Profile, userId?:string, fetch?: boolean}
+  ProfilePreview: { profile?: Profile, userId?:string, fetch?: boolean};
+  CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
+  DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
   Comments: { postId: string}
   
 }

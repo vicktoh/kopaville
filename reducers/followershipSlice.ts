@@ -5,16 +5,23 @@ const initialState : Folowership | null =  null;
 
 
 export const followershipSlice = createSlice({
-    name: 'auth',
+    name: 'followerships',
     initialState,
     reducers: {
         setFollowership: (state: any, action: PayloadAction<Partial<Folowership>>) => {
             return {...(state || {}), ...action.payload}
+        },
+        addFollower: (state: any, action: PayloadAction<{userId: string, photoUrl: string, fullname: string; username: string }>) =>{
+            return {...(state || {}), followers: [...(state?.following || []), action.payload]}
+        },
+        addFollowing: (state: any, action: PayloadAction<{userId: string, photoUrl: string, fullname: string; username: string }>) =>{
+            return {...(state || {}), following: [...(state?.following || []), action.payload]}
         }
+        
     }
 });
 
 
-export const { setFollowership } =  followershipSlice.actions;
+export const { setFollowership, addFollower, addFollowing } =  followershipSlice.actions;
 
 export default followershipSlice.reducer

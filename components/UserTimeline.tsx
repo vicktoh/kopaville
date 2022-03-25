@@ -26,7 +26,7 @@ export const UserTimeline: FC<UserTimelineProps> = () => {
     const renderPostItem = (info: ListRenderItemInfo<Post>) =>{
         return (<UserPost post={info.item} key = {`post-${info.index}`} />)
     }
-    console.log({posts})
+    // console.log({posts})
     if(!posts){
         return (
             <Text>Loading</Text>

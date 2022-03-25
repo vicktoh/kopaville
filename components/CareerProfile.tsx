@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
     ScrollView,
     IconButton,
@@ -14,34 +14,40 @@ import {
     Icon,
     useDisclose,
     KeyboardAvoidingView,
-    Toast,
     useToast,
 } from 'native-base';
-import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import { Business, Education, Profile } from '../types/Profile';
 import { getInitialsFromName } from '../services/helpers';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../hooks/redux';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { Modal, Platform, useWindowDimensions } from 'react-native';
 import { EditCarreerInfoForm } from './EditCarreerInfoForm';
 import { EducationForm } from './EducationForm';
 import { BussinessForm } from './BussinessForm';
+import { Follower, followUser, unfollowUser } from '../services/followershipServices';
 
 interface CareerProfileProps {
     profile: Profile;
 }
 
 export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
-    const auth = useAppSelector(({ auth }) => auth);
+    const {auth, followerships} = useAppSelector(({ auth, followerships }) => ({auth, followerships}));
     const { width: windowWidth, height: windowHeight } = useWindowDimensions();
     const { profile: generalProfile, careerProfile, loginInfo, userId, profileUrl } = profile;
     const { followers = 0, following = 0 } = profile?.followerships || {};
+    const [loading, setLoading] = useState<boolean>(false);
+
     const navigation = useNavigation();
     const { isOpen: carreerModalOpen, onClose: onCloseCarreerModal, onOpen: onOpenCareerModal } = useDisclose();
     const { isOpen: educationModalOpen, onClose: onCloseEducationMoal, onOpen: onOpenEducationModal } = useDisclose();
     const { isOpen: bussinessModalOpen, onClose: onCloseBussinessModal, onOpen: onOpenBussinessModal } = useDisclose();
     const { isOpen: cvModalOpen, onClose: onCloseCVModal, onOpen: onOpenCVModal } = useDisclose();
+    const followings = useMemo(
+        () => (followerships?.following || []).filter(({ userId }) => userId == profile.userId),
+        [profile]
+    );
 
     const [educationMode, setEductationMode] = useState<'add' | 'edit'>('add');
     const [bussinessMode, setBussinessMode] = useState<'add' | 'edit'>('add');
@@ -74,11 +80,50 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
     };
     const openLink = async (link: string) => {
         try {
-            await Linking.openURL(link);
+            await WebBrowser.openBrowserAsync(link);
         } catch (error) {
             toast.show({ title: 'Invalid Link', description: 'cannot open this link', status: 'error' });
         }
     };
+    const follow = async () => {
+        try {
+            setLoading(true);
+            const { userId = "", profileUrl = "", loginInfo: { username, fullname}} = profile;
+            const follower: Follower = { userId, username, fullname, photoUrl: profileUrl};
+            await followUser(auth?.userId || '', follower);
+        } catch (error) {
+            console.log(error);
+            let err: any = error;
+            toast.show({
+                placement: 'top',
+                title: 'error',
+                description: err?.message || 'Could not follow user, Try again',
+                status: "error"
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+    const unfollow = async () => {
+        try{
+            setLoading(true);
+            await unfollowUser(auth?.userId || "", profile?.userId);
+        }
+        catch (error) {
+            console.log(error);
+            let err: any = error;
+            toast.show({
+                placement: 'top',
+                title: 'error',
+                description: err?.message || 'Could not follow user, Try again',
+                status: "error"
+            });
+        } finally {
+            setLoading(false);
+            navigation.goBack();
+        }
+
+    }
     return (
         <ScrollView flex={1} bg="white" px={3}>
             <Flex flex={1} safeArea bg="white">
@@ -90,20 +135,20 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                 </Flex>
                 <HStack alignItems="center" space={3}>
                     <Avatar size="lg" source={{ uri: profileUrl }}>
-                        {getInitialsFromName(auth?.displayName || '')}
+                        {getInitialsFromName(loginInfo?.fullname || '')}
                     </Avatar>
                     <VStack>
-                        <Heading>{auth?.displayName || ''}</Heading>
+                        <Heading>{loginInfo?.fullname || ''}</Heading>
                         {loginInfo?.username ? <Text fontSize="md">{`@${loginInfo?.username}`}</Text> : null}
                     </VStack>
                 </HStack>
                 <HStack _text={{ fontSize: 'md' }} space={2} mt={3}>
                     <Text fontSize="md" fontWeight="bold">
-                        {followers}
+                        {following}
                     </Text>
                     <Text fontSize="md">Following</Text>
                     <Text fontSize="md" fontWeight="bold">
-                        {following}
+                        {followers}
                     </Text>
                     <Text fontSize="md">Followers</Text>
                     {generalProfile?.servingState ? (
@@ -116,7 +161,11 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                             Edit
                         </Button>
                     ) : (
-                        <Button variant="solid">Follow</Button>
+                        (
+                            followings.length ?
+                            <Button variant="outline" isLoading = {loading} onPress={unfollow}>Unfollow</Button>:
+                            <Button variant="solid" isLoading = {loading} onPress = {follow}>Follow</Button>
+                        )
                     )}
                 </HStack>
 
@@ -244,7 +293,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                                     <Button
                                         onPress={() => openLink(instagram)}
                                         variant="link"
-                                        leftIcon={<Icon size="xs" as={Feather} name="twitter" />}
+                                        leftIcon={<Icon size="xs" as={AntDesign} name="instagram" />}
                                     >
                                         Instagram
                                     </Button>
