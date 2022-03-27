@@ -35,9 +35,11 @@ export const explorePosts = async ()=>{
     return data;
 }
 
-export const exploreUsers = async (servingState?: string)=>{
+export const exploreUsers = async (following: string[] = [], servingState?: string,)=>{
     const db = firebase.firestore(firebaseApp);
-    let  query = db.collection('users').orderBy('followerships.following', 'desc');
+    let  query = db.collection('users').where('userId', 'not-in', following);
+    query = query.orderBy('userId', 'desc');
+    query = query.orderBy('followerships.followers', 'desc');
     if(servingState){
         query = query.where('profile.servingState', '==', servingState);
     }
@@ -68,6 +70,7 @@ export const listenonFollowing = (userId: string, onSuccessCallback: (data: any)
 
     const db = firebase.firestore(firebaseApp);
     return db.collection(`users/${userId}/following`).onSnapshot((snapshot)=>{
+        console.log('hey I just got data')
         const data:any[] = [];
         snapshot.forEach((snap) => {
             data.push(snap.data());

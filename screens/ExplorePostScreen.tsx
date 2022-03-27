@@ -43,11 +43,8 @@ export const ExplorePostScreen: FC = () => {
         return <UserPost post= { listItem.item}  />
     }
     return(
-        <Flex flex = {1} bg="white" >
-            <Flex direction = "row" alignItems="center" my = {2}>
-                <IconButton icon = {<ArrowBackIcon/>} onPress = {()=> navigation.goBack()} />
-                <Heading fontSize="md" ml ={5}>Explore Posts</Heading>
-            </Flex>
+        <Flex flex = {1} bg="white" py={5} >
+            
             {
                 loading && !posts?.length ? 
                 <ActivityIndicator />: 

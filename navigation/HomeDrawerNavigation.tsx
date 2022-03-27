@@ -19,7 +19,7 @@ export const HomeDrawerNavigation = () => {
                 headerStyle: { backgroundColor: 'white' },
             }}
         >
-            <Drawer.Screen name="Posts" component={HomeStackNavigation} options={{ headerTitle: 'Timeline' }} />
+            <Drawer.Screen name="Posts" component={HomeStackNavigation} options={{ headerShown: false }} />
             <Drawer.Screen name="Profile" component={ProfileNavigation} options={{ headerShown: false }} />
             <Drawer.Screen name="Dating Profile" component={DatingScreen} options={{ headerShown: false }} />
             <Drawer.Screen name="Career Profile" component={CareerScreen} options={{ headerShown: false }} />

@@ -1,17 +1,30 @@
 import { firebaseApp } from './firebase';
 import firebase from 'firebase';
 import { Profile } from '../types/Profile';
+import { SnapshotViewIOSBase } from 'react-native';
 
-export const fetchUserProfile = async(
+export const listenOnProfile = (
     userId: string,
     onSuccessCallback:(data: any) => void
 ) => {
     const db = firebase.firestore(firebaseApp);
-    const snapshot =  await db.doc(`users/${userId}`).get();
-    if(snapshot.exists){
-        onSuccessCallback(snapshot.data())
-    }
+    // const snapshot =  await db.doc(`users/${userId}`).get();
+    return db.doc(`users/${userId}`).onSnapshot((snapshot)=> {
+        if(snapshot.exists){
+            onSuccessCallback(snapshot.data())
+        }
+    })
+    
 };
+
+
+export const fetchUserProfile = async (userId: string) =>{
+    const userSnapshot = await firebase.firestore().doc(`users/${userId}`).get();
+    if(userSnapshot.exists){
+        return userSnapshot.data();
+    }
+    return null;
+}
 
 
 export const updateProfileInfo = async (userId:string, profile: Partial<Profile>)=>{

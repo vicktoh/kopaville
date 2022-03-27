@@ -14,10 +14,10 @@ export const ImageScroller: FC<ImageScrollerProps> = ({images, postId, onLike})=
     const {width : windowWidth} = useWindowDimensions();
 
    const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) =>{
-       console.log(e)
+    //    console.log(e)
    }
    return (
-    <ScrollView horizontal style = {{ height: windowWidth * 5/4, width: windowWidth}} contentContainerStyle={{justifyContent: "center", alignItems: "center"}} pagingEnabled={true} onScroll= {handleScroll}>
+    <ScrollView horizontal style = {{ height: windowWidth * 5/4, width: windowWidth}} contentContainerStyle={{justifyContent: "center", alignItems: "center"}} pagingEnabled={true} >
 
         {
             images.map((uri, i)=>(

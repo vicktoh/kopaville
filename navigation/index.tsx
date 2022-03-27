@@ -15,7 +15,7 @@ import { setSystemInfo } from '../reducers/systemSlice';
 import { listenOnFollowers, listenonFollowing, listenOnTimeline } from '../services/postsServices';
 import { setFollowership } from '../reducers/followershipSlice';
 import { setPosts } from '../reducers/postSlice';
-import { fetchUserProfile } from '../services/profileServices';
+import { listenOnProfile } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 
 export default function Navigation({
@@ -39,36 +39,36 @@ export default function Navigation({
     }, [localAuth, localSystemInfo, followerships]);
 
     React.useEffect(() => {
-        if (!followerships?.followers && auth) {
+        if (auth) {
             try {
                 const unsubscribe = listenOnFollowers(auth.userId, (data) =>
-                    dispatch(setFollowership({ followers: data }))
+                    dispatch(setFollowership({ ...(followerships || {}),  followers: data }))
                 );
                 return unsubscribe;
             } catch (error) {
                 console.log(error);
             }
         }
-    }, [followerships?.followers, auth]);
+    }, [auth]);
 
     React.useEffect(() => {
-        if (!followerships?.following && auth) {
+        if (auth) {
             try {
                 const unsubscribe = listenonFollowing(auth.userId, (data) =>
-                    dispatch(setFollowership({ following: data }))
+                    dispatch(setFollowership({ ... followerships, following: data }))
                 );
                 return unsubscribe;
             } catch (error) {
                 console.log(error);
             }
         }
-    }, [followerships?.following, auth]);
+    }, [auth]);
 
     React.useEffect(() => {
-        if (followerships?.following && auth) {
+        if (auth) {
             try {
                 const unsubscribe = listenOnTimeline(
-                    [...followerships.following.map(({ userId }) => userId), auth.userId],
+                    [...(followerships?.following || []).map(({ userId }) => userId), auth.userId],
                     (data) => dispatch(setPosts(data)),
                     (e) => console.log(e)
                 );
@@ -80,16 +80,17 @@ export default function Navigation({
     }, [followerships?.following, auth]);
 
     React.useEffect(() => {
-        if (auth && !profile) {
+        if (auth) {
+            console.log('heeyyyyyyyy')
             try {
-                const unsubscribe = fetchUserProfile(auth.userId, (data) => {
+                const unsubscribe = listenOnProfile(auth.userId, (data) => {
                     dispatch(setProfile(data));
                 });
             } catch (error) {
                 console.log(error);
             }
         }
-    }, [auth, profile]);
+    }, [auth]);
     return (
         <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             {auth ? <AppNavigationStack /> : <AuthNavigation />}

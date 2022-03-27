@@ -1,27 +1,35 @@
-import { Button, Flex, Heading, Text, Box, HStack, IconButton, Icon, useDisclose } from 'native-base';
-import React, { FC, useState } from 'react';
+import { Button, Flex, Heading, Text, Box, HStack, IconButton, Icon, useDisclose, useToast } from 'native-base';
+import React, { FC, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { ProfileSection } from './ProfileSection';
 import { Profile } from '../types/Profile';
 import { Modal, Pressable, View } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { DrawerParamList } from '../types';
+import { DrawerParamList, HomeStackParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import { updateProfileInfo, uploadProfilePicture } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
+import { Follower, followUser, unfollowUser } from '../services/followershipServices';
+import { setFollowership } from '../reducers/followershipSlice';
 type GeneralProfileProps = {
     profile: Profile;
     onEdit?: () => void;
 };
 
 export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => {
-    const auth = useAppSelector(({ auth }) => auth);
+    const {auth, profile: localProfile, followerships} = useAppSelector(({ auth, profile, followerships }) => ({auth, profile, followerships}));
     const { profile: generalProfile, careerProfile, datingProfile, userId } = profile;
     const [isUploadingFromLibrary, setUploadingFromLibrary] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const { isOpen, onOpen, onClose } = useDisclose();
     const dispatch = useAppDispatch();
-    const navigation = useNavigation<NavigationProp<DrawerParamList>>();
+    const navigation = useNavigation<NavigationProp<DrawerParamList& HomeStackParamList >>();
+    const toast = useToast();
+    const following = useMemo(
+        () => (followerships?.following || []).filter(({ userId }) => userId == profile.userId),
+        [profile]
+    );
     const pickImageFromGallery = async () => {
         let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permission.granted === false) {
@@ -41,6 +49,44 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
             onClose();
         }
     };
+    const follow = async () => {
+        try {
+            setLoading(true);
+            const { userId = "", profileUrl = "", loginInfo: { username, fullname}} = profile;
+            const follower: Follower = { userId, username, fullname, photoUrl: profileUrl};
+            await followUser(auth?.userId || '', follower);
+        } catch (error) {
+            console.log(error);
+            let err: any = error;
+            toast.show({
+                placement: 'top',
+                title: 'error',
+                description: err?.message || 'Could not follow user, Try again',
+                status: "error"
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+    const unfollow = async () => {
+        try{
+            setLoading(true);
+            await unfollowUser(auth?.userId || "", profile?.userId);
+        }
+        catch (error) {
+            console.log(error);
+            let err: any = error;
+            toast.show({
+                placement: 'top',
+                title: 'error',
+                description: err?.message || 'Could not follow user, Try again',
+                status: "error"
+            });
+        } finally {
+            setLoading(false);
+        }
+
+    }
     return (
         <Flex py={3} px={5} position="relative" bg="white">
             <View
@@ -63,7 +109,9 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                         Edit
                     </Button>
                 ) : (
-                    <Button variant="solid">Follow</Button>
+                    following.length ?
+                    <Button variant="outline" isLoading = {loading} onPress={unfollow}>Unfollow</Button>:
+                    <Button variant="solid" isLoading = {loading} onPress = {follow}>Follow</Button>
                 )}
                 {generalProfile?.instagram ? (
                     <IconButton
@@ -92,7 +140,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                 <Heading fontSize="sm" mt={5} mb={2}>
                     Career
                 </Heading>
-                <Button variant="link" colorScheme="primary" onPress={() => navigation.navigate('Career Profile', {})}>
+                <Button variant="link" colorScheme="primary" onPress={() => auth?.userId === userId ? navigation.navigate('Career Profile', {}): navigation.navigate("CareerPreview", { profile })}>
                     See More
                 </Button>
             </Flex>
@@ -107,7 +155,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                 <Heading fontSize="sm" mt={5} mb={2}>
                     Relationship
                 </Heading>
-                <Button variant="link" colorScheme="primary" onPress={() => navigation.navigate('Dating Profile', {})}>
+                <Button variant="link" colorScheme="primary" onPress={() => auth?.userId === userId ? navigation.navigate('Dating Profile', {}): navigation.navigate("DatingPreview", {profile})}>
                     See More
                 </Button>
             </Flex>
