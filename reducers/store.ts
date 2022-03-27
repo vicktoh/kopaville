@@ -5,7 +5,8 @@ import auth from './authSlice';
 import systemInfo from './systemSlice';
 import posts from './postSlice';
 import followerships from './followershipSlice';
-import profile from './profileSlice'
+import profile from './profileSlice';
+import likes from './likesSlice';
 import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
     systemInfo,
     posts,
     followerships,
-    profile
+    profile,
+    likes
 })
 
 const persistConfig = {
@@ -46,7 +48,8 @@ export type StoreType = {
     systemInfo: System;
     posts: Post[] | null;
     followerships: Folowership | null;
-    profile: Profile | null
+    profile: Profile | null,
+    likes: string[]
 };
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

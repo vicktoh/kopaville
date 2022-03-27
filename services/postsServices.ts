@@ -35,6 +35,33 @@ export const explorePosts = async ()=>{
     return data;
 }
 
+export const addPostTolikes = async (userId: string, postId: string) => {
+    const db = firebase.firestore(firebaseApp);
+    const docRef = db.collection(`users/${userId}/likes`).doc(postId);
+    const likeData: any = {
+        postId,
+        dateLiked: firebase.firestore.Timestamp.now()
+    }
+    await docRef.set(likeData);
+}
+
+export const removePostFromLikes = async(userId: string, postId: string) =>{
+    const db = firebase.firestore(firebaseApp);
+    const docRef = db.doc(`users/${userId}/likes/${postId}`);
+    await docRef.delete();
+}
+
+export const listenOnlikes = (userId: string, onSuccessCallback: (data: any)=> void) => {
+    const db = firebase.firestore(firebaseApp);
+    return db.collection(`users/${userId}/likes/`).onSnapshot((snapshot)=>{
+        const likes: string[] = [];
+        snapshot.forEach((snap)=> {
+            likes.push(snap.id);
+        });
+        onSuccessCallback(likes);
+    })
+}
+
 export const exploreUsers = async (following: string[] = [], servingState?: string,)=>{
     const db = firebase.firestore(firebaseApp);
     let  query = db.collection('users').where('userId', 'not-in', following);
@@ -59,7 +86,6 @@ export const listenOnFollowers = (userId: string, onSuccessCallback: (data: any)
     return db.collection(`users/${userId}/followers`).onSnapshot((snapshot)=>{
         const data:any[] = [];
 
-        console.log('hey there I have data')
         snapshot.forEach((snap) => {
             data.push(snap.data());
         });
@@ -70,7 +96,6 @@ export const listenonFollowing = (userId: string, onSuccessCallback: (data: any)
 
     const db = firebase.firestore(firebaseApp);
     return db.collection(`users/${userId}/following`).onSnapshot((snapshot)=>{
-        console.log('hey I just got data')
         const data:any[] = [];
         snapshot.forEach((snap) => {
             data.push(snap.data());

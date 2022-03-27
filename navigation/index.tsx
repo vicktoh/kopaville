@@ -1,4 +1,8 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import {
+    NavigationContainer,
+    DefaultTheme,
+    DarkTheme,
+} from '@react-navigation/native';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
@@ -12,11 +16,17 @@ import { AuthNavigation } from './AuthNavigation';
 import LinkingConfiguration from './LinkingConfiguration';
 import { System } from '../types/System';
 import { setSystemInfo } from '../reducers/systemSlice';
-import { listenOnFollowers, listenonFollowing, listenOnTimeline } from '../services/postsServices';
+import {
+    listenOnFollowers,
+    listenonFollowing,
+    listenOnlikes,
+    listenOnTimeline,
+} from '../services/postsServices';
 import { setFollowership } from '../reducers/followershipSlice';
 import { setPosts } from '../reducers/postSlice';
 import { listenOnProfile } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
+import { setLike } from '../reducers/likesSlice';
 
 export default function Navigation({
     colorScheme,
@@ -27,7 +37,8 @@ export default function Navigation({
     localAuth: User | null;
     localSystemInfo: System | null;
 }) {
-    const { auth, systemInfo, followerships, posts, profile } = useAppSelector<StoreType>((store) => store);
+    const { auth, systemInfo, followerships, posts, profile } =
+        useAppSelector<StoreType>((store) => store);
     const dispatch = useAppDispatch();
     React.useEffect(() => {
         if (localAuth && !auth) {
@@ -42,7 +53,12 @@ export default function Navigation({
         if (auth) {
             try {
                 const unsubscribe = listenOnFollowers(auth.userId, (data) =>
-                    dispatch(setFollowership({ ...(followerships || {}),  followers: data }))
+                    dispatch(
+                        setFollowership({
+                            ...(followerships || {}),
+                            followers: data,
+                        })
+                    )
                 );
                 return unsubscribe;
             } catch (error) {
@@ -55,7 +71,9 @@ export default function Navigation({
         if (auth) {
             try {
                 const unsubscribe = listenonFollowing(auth.userId, (data) =>
-                    dispatch(setFollowership({ ... followerships, following: data }))
+                    dispatch(
+                        setFollowership({ ...followerships, following: data })
+                    )
                 );
                 return unsubscribe;
             } catch (error) {
@@ -68,7 +86,12 @@ export default function Navigation({
         if (auth) {
             try {
                 const unsubscribe = listenOnTimeline(
-                    [...(followerships?.following || []).map(({ userId }) => userId), auth.userId],
+                    [
+                        ...(followerships?.following || []).map(
+                            ({ userId }) => userId
+                        ),
+                        auth.userId,
+                    ],
                     (data) => dispatch(setPosts(data)),
                     (e) => console.log(e)
                 );
@@ -81,18 +104,35 @@ export default function Navigation({
 
     React.useEffect(() => {
         if (auth) {
-            console.log('heeyyyyyyyy')
             try {
                 const unsubscribe = listenOnProfile(auth.userId, (data) => {
                     dispatch(setProfile(data));
                 });
+
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }, [auth]);
+
+    React.useEffect(() => {
+        if (auth) {
+            try {
+                const unsubscribe = listenOnlikes(auth.userId, (data) => {
+                    dispatch(setLike(data));
+                });
+                return () => unsubscribe();
             } catch (error) {
                 console.log(error);
             }
         }
     }, [auth]);
     return (
-        <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <NavigationContainer
+            linking={LinkingConfiguration}
+            theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        >
             {auth ? <AppNavigationStack /> : <AuthNavigation />}
         </NavigationContainer>
     );
