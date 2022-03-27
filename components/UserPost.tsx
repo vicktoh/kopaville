@@ -44,10 +44,10 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         mediaType = 'None',
         imageUrl = [],
         videoUrl,
-        text,
+        text = "",
         comments,
         likes,
-        postId,
+        postId = "",
     } = post;
     const [videoPlaybackStatus, setPlayBackStatus] =
         useState<AVPlaybackStatus>();
@@ -56,6 +56,10 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     const videoRef = useRef<Video>(null);
 
     const likePost = async () => {
+        console.log({
+            userId: auth?.userId,
+            postId
+        })
         try {
             setIsLiking(true);
             await addPostTolikes(auth?.userId || '', postId || '');
@@ -127,11 +131,12 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             {videoUrl ? (
                 <Pressable
                     onPress={() => {
+                        console.log({videoPlaybackStatus})
                         videoPlaybackStatus &&
                         videoPlaybackStatus.isLoaded &&
                         videoPlaybackStatus.isPlaying
-                            ? videoRef.current?.playAsync()
-                            : videoRef.current?.pauseAsync();
+                            ? videoRef.current?.pauseAsync()
+                            : videoRef.current?.playAsync();
                     }}
                 >
                     <Video
@@ -141,6 +146,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                             height: (windowWidth * 5) / 4,
                             alignSelf: 'center',
                         }}
+                        isLooping={true}
                         source={{ uri: videoUrl }}
                         resizeMode="cover"
                         shouldPlay={true}
@@ -178,6 +184,8 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                                 color="primary.400"
                             />
                         }
+
+                        onPress= {()=> navigation.navigate("Comments", {postId, postText: text, postUsername: username })}
                     />
                     <Text fontSize="md" mr={3}>
                         {comments}

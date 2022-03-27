@@ -2,6 +2,7 @@ import { firebaseApp } from './firebase';
 import firebase from 'firebase';
 import { Post } from '../types/Post';
 import { Profile } from '../types/Profile';
+import { Comment } from '../types/Comment';
 
 
 export const listenOnTimeline = (
@@ -28,7 +29,7 @@ export const explorePosts = async ()=>{
     const data: (Post & {id?: string})[] = [];
     snapshot.forEach((snap)=>{
         const post: Post & {id?: string} = snap.data() as Post;
-        post.id = snap.id;
+        post.postId = snap.id;
         data.push(post);
     });
 
@@ -150,3 +151,23 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
     };
     await newPostRef.set(postData)
 };
+
+export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Comment[]) => void) =>{
+    const db = firebase.firestore(firebaseApp);
+    return db.collection('comments').where('postId', '==', postId).onSnapshot((snapshot) => {
+        const data : Comment[] = [];
+        snapshot.forEach((snap)=>{
+            const comment = snap.data() as Comment;
+            comment.id = snap.id;
+            data.push(comment)
+        })
+
+        onSuccessCallback(data);
+    })
+
+}
+
+export const commentOnPost = (comment: Comment) => {
+    const db = firebase.firestore(firebaseApp);
+    return db.collection('comments').doc().set(comment);
+}

@@ -21,8 +21,8 @@ export const EmptyState: FC<EmptyStateProps> = ({ title, description }) => {
             <Heading mb={2}>{title || "There's nothing to show here"}</Heading>
             {description ? (
                 <Text lineHeight="xl">
-                    Watch out on this space for jobs you can apply for in across different locations in Nigeria. You can
-                    also post your own buisness or service for people to find you
+                    { description || `Watch out on this space for jobs you can apply for in across different locations in Nigeria. You can
+                    also post your own buisness or service for people to find you`}
                 </Text>
             ) : null}
         </Flex>

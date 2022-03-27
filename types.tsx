@@ -64,7 +64,7 @@ export type HomeStackParamList = {
   ProfilePreview: { profile?: Profile, userId?:string, fetch?: boolean};
   CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
   DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
-  Comments: { postId: string}
+  Comments: { postId: string, postText: string; postUsername: string}
   
 }
 
