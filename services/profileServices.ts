@@ -18,6 +18,9 @@ export const listenOnProfile = (
 };
 
 
+
+
+
 export const fetchUserProfile = async (userId: string) =>{
     const userSnapshot = await firebase.firestore().doc(`users/${userId}`).get();
     if(userSnapshot.exists){
