@@ -105,7 +105,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             <Pressable
                 onPress={() =>
                     auth?.userId === post.creatorId
-                        ? navigation.navigate('Profile', {})
+                        ? navigation.navigate("General Profile", {})
                         : navigation.navigate('ProfilePreview', {
                               userId: post.creatorId,
                           })
@@ -146,10 +146,8 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                             height: (windowWidth * 5) / 4,
                             alignSelf: 'center',
                         }}
-                        isLooping={true}
                         source={{ uri: videoUrl }}
                         resizeMode="cover"
-                        shouldPlay={true}
                         onPlaybackStatusUpdate={(status) =>
                             setPlayBackStatus(() => status)
                         }

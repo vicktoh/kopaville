@@ -1,5 +1,5 @@
 import { AntDesign } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import {
     Flex,
     ScrollView,
@@ -24,18 +24,21 @@ import { DatingProfileForm } from './DatingProfileForm';
 import { updateProfileInfo, uploadFileToFirestore } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { useDispatch } from 'react-redux';
+import { AppStackParamList, MessageStackParamList } from '../types';
+import { Recipient } from '../types/Conversation';
+import { conversationExists } from '../services/messageServices';
 
 const datingCover = require('../assets/images/datingcover1.jpg');
 
 export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
-    const { auth } = useAppSelector(({ auth }) => ({ auth }));
+    const { auth, chats } = useAppSelector(({ auth, chats }) => ({ auth, chats }));
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
     const [isUploadingFromLibrary, setIsUploadingFromLibrary] = useState<boolean>(false);
     const [isUploadingFromCamera, setIsUploadingFromCamera] = useState<boolean>(false);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
     const toast = useToast();
     const dispatch = useDispatch();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<any>>();
     const { datingProfile } = profile || {};
     const {
         onOpen: onOpenDatingProfileModal,
@@ -88,6 +91,24 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
             onCloseCoverModal();
         }
     };
+    const message = () => {
+        if(profile?.userId === auth?.userId){
+            return;
+        }
+        const to : Recipient = {
+            userId: profile?.userId || "",
+            photoUrl: profile?.profileUrl || "",
+            fullname: profile?.loginInfo?.fullname || "",
+            username: profile?.loginInfo?.username || ""
+        }
+
+        const conversationId = conversationExists(profile?.userId || "", chats);
+        if(conversationId){
+            console.log('conversation exists as ', conversationId);
+        }
+        navigation.navigate("Message", { screen: "MessageBubble", params: {conversationId: conversationId || undefined,recipient: to}});
+        // navigation.navigate("MessageBubble", { conversationId : conversationId || undefined, recipient: to});
+    }
     return (
         <ScrollView flex={1}>
             <Flex flex={1} bg="white" >
@@ -124,7 +145,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
 
                     <Flex direction="row" mt={5}>
                         {auth?.userId !== profile?.userId ? (
-                            <Button size="md" mt={3}>
+                            <Button size="md" mt={3} onPress = {()=> message()} >
                                 Message
                             </Button>
                         ) : (

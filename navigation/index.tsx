@@ -17,6 +17,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { System } from '../types/System';
 import { setSystemInfo } from '../reducers/systemSlice';
 import {
+    listenOnChats,
     listenOnFollowers,
     listenonFollowing,
     listenOnlikes,
@@ -27,6 +28,7 @@ import { setPosts } from '../reducers/postSlice';
 import { listenOnProfile } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { setLike } from '../reducers/likesSlice';
+import { setChats } from '../reducers/chatSlice';
 
 export default function Navigation({
     colorScheme,
@@ -121,6 +123,18 @@ export default function Navigation({
             try {
                 const unsubscribe = listenOnlikes(auth.userId, (data) => {
                     dispatch(setLike(data));
+                });
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }, [auth]);
+    React.useEffect(() => {
+        if (auth) {
+            try {
+                const unsubscribe = listenOnChats(auth.userId, (data) => {
+                    dispatch(setChats(data));
                 });
                 return () => unsubscribe();
             } catch (error) {

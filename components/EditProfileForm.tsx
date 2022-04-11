@@ -198,7 +198,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             isInvalid={!!touched.servingState && !!errors.servingState}
                             bg="white"
                         >
-                            <FormControl.Label>serving state</FormControl.Label>
+                            <FormControl.Label>Serving State</FormControl.Label>
                             <Select
                                 onValueChange={(value) => setFieldValue('servingState', value)}
                                 _actionSheetContent={{ bg: 'white' }}
@@ -225,7 +225,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             mb={3}
                             isInvalid={!!touched.lga && !!errors.lga}
                         >
-                            <FormControl.Label>LGA</FormControl.Label>
+                            <FormControl.Label>L.G.A</FormControl.Label>
                             <Input
                                 size="md"
                                 value={values.lga}
@@ -238,7 +238,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
                         <FormControl _text={{ fontSize: 'lg' }} mb={3} isInvalid={!!touched.ppa && !!errors.ppa}>
-                            <FormControl.Label>place of Primary Assignment</FormControl.Label>
+                            <FormControl.Label>Place of Primary Assignment (P.P.A)</FormControl.Label>
                             <Input
                                 size="md"
                                 value={values.ppa}

@@ -10,14 +10,14 @@ const ONBOARDING_CHECKLIST: CheckListCardProps[] = [
         title: 'Complete Your Profile🧒🏽',
         description:
             'Hey there, you need to complete your profile, this will help us deliver better experience to you and tailor content specific to you',
-        path: 'Profile',
+        path: "General Profile",
         background: 'secondary.400',
         key: "Complete Profile",
     },
     {
-        title: 'Complete Career Profile💼',
+        title: 'Complete Career Profile 💼',
         description:
-            'Setup your resume and work experience, this will help employers find you  for jobs and place of primary assignments',
+            'Setup your resume and work experience, this will help employers find you  for jobs and Place of Primary Assignment (P.P.A)',
         path: 'Career Profile',
         background: 'primary.200',
         key: 'Complete Career Profile'
@@ -25,7 +25,7 @@ const ONBOARDING_CHECKLIST: CheckListCardProps[] = [
     {
         title: 'Setup Dating Profile❤️',
         description:
-            'Looking for love?. Setup your dating profile and interest so that we can help you in the journey to find the one ',
+            'Looking for love?. Setup your dating profile and interest so that we can help you in the journey to finding the one ',
         path: 'Dating Profile',
         background: 'red.200',
         key: 'Complete Dating Profile'

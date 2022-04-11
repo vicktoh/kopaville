@@ -20,10 +20,9 @@ export const HomeDrawerNavigation = () => {
             }}
         >
             <Drawer.Screen name="Posts" component={HomeStackNavigation} options={{ headerShown: false }} />
-            <Drawer.Screen name="Profile" component={ProfileNavigation} options={{ headerShown: false }} />
+            <Drawer.Screen name="General Profile" component={ProfileNavigation} options={{ headerShown: false }} />
             <Drawer.Screen name="Dating Profile" component={DatingScreen} options={{ headerShown: false }} />
             <Drawer.Screen name="Career Profile" component={CareerScreen} options={{ headerShown: false }} />
-            <Drawer.Screen name="Bookstore" component={TabTwoScreen} />
             <Drawer.Screen name="Historyville" component={TabTwoScreen} />
         </Drawer.Navigator>
     );

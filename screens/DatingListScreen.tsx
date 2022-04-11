@@ -68,8 +68,8 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
             <Flex px={5}>
                 <Heading>Find Love ❤️</Heading>
                 <Text>
-                    Find the love of your life, we show you dating profiles of single people around you, feel free to dm
-                    any one of them
+                    Find the love of your life, we show you dating profiles of single people around you, feel free to send a message
+                    to any one of your choices
                 </Text>
                 <Flex direction="row" alignItems="center">
                     <Button variant="link" size="sm" onPress={() => setShowFilter((filter) => !filter)}>

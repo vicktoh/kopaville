@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Recipient } from './types/Conversation';
 import { Business, Job } from './types/Job';
 import { Profile } from './types/Profile';
 
@@ -29,7 +30,8 @@ export type AppStackParamList = {
   Home: undefined;
   Jobs: undefined;
   MarketPlace: undefined;
-  Dating: undefined
+  Dating: undefined;
+  Message: undefined;
 };
 
 export type ProfileStackParamList = {
@@ -43,6 +45,11 @@ export type JobStackParamList = {
   "Add Business": undefined;
   "Job Details": {job: Job & Business}
 }
+
+export type MessageStackParamList = {
+  MessageList: undefined;
+  MessageBubble: {conversationId?: string, recipient: Recipient};
+}
 export type DatingStackParamList = {
   Main: undefined;
   "Profile": {profile: Profile};
@@ -52,8 +59,7 @@ export type DrawerParamList = {
   Posts: undefined;
   "Dating Profile": {profile?: Profile};
   "Career Profile": {profile?: Profile};
-  Profile: {profile?: Profile};
-  Bookstore: undefined;
+  "General Profile": {profile?: Profile};
   Historyville: undefined
 }
 

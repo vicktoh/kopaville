@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import { Post } from '../types/Post';
 import { Profile } from '../types/Profile';
 import { Comment } from '../types/Comment';
+import { Conversation } from '../types/Conversation';
 
 
 export const listenOnTimeline = (
@@ -60,6 +61,19 @@ export const listenOnlikes = (userId: string, onSuccessCallback: (data: any)=> v
             likes.push(snap.id);
         });
         onSuccessCallback(likes);
+    })
+}
+
+export const listenOnChats = (userId: string, onSuccessCallback: (data: any)=> void) =>{
+    const db = firebase.firestore(firebaseApp);
+    return db.collection(`users/${userId}/conversations/`).orderBy('dateUpdated',"desc" ).onSnapshot((snapshot)=> {
+        const chats: Conversation[] = [];
+        snapshot.forEach((snap)=>{
+            let chat = snap.data() as (Omit<Conversation,"dateCreated" | "dateUpdated"> & {dateCreated: firebase.firestore.Timestamp, dateUpdated: firebase.firestore.Timestamp});
+           
+            chats.push({...chat, dateCreated: chat.dateCreated.toMillis(), dateUpdated: chat.dateUpdated.toMillis()})
+        });
+        onSuccessCallback(chats);
     })
 }
 

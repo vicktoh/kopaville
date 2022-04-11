@@ -25,7 +25,7 @@ export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, prompt
                 </Pressable>
                 {
                     userId === profileId ? 
-                    (<Text fontSize="xs">Tap Avartar to change</Text>): null
+                    (<Text fontSize="xs">Tap Avatar to change</Text>): null
                 }
                 
                 <Heading fontSize="xl" mt={3}>{loginInfo?.fullname}</Heading>

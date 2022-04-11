@@ -80,7 +80,7 @@ export const EducationForm: FC<EducationFormProps> = ({ onClose, education, mode
                     >
                         <FormControl.Label>Institution</FormControl.Label>
                         <Input
-                            placeholder="Institution of Learing"
+                            placeholder="Institution of Learning"
                             size="md"
                             value={values.institution}
                             onBlur={handleBlur('institution')}

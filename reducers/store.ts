@@ -7,12 +7,14 @@ import posts from './postSlice';
 import followerships from './followershipSlice';
 import profile from './profileSlice';
 import likes from './likesSlice';
+import chats from './chatSlice';
 import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
 
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { Profile } from '../types/Profile';
+import { Conversation } from '../types/Conversation';
 
 
 const rootReducer = combineReducers({
@@ -21,7 +23,8 @@ const rootReducer = combineReducers({
     posts,
     followerships,
     profile,
-    likes
+    likes, 
+    chats
 })
 
 const persistConfig = {
@@ -49,7 +52,8 @@ export type StoreType = {
     posts: Post[] | null;
     followerships: Folowership | null;
     profile: Profile | null,
-    likes: string[]
+    likes: string[],
+    chats: Conversation []
 };
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
