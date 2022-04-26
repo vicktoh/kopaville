@@ -29,6 +29,8 @@ import { listenOnProfile } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { setLike } from '../reducers/likesSlice';
 import { setChats } from '../reducers/chatSlice';
+import { listenOnCategories } from '../services/productServices';
+import { setCategories } from '../reducers/categoriesSlice';
 
 export default function Navigation({
     colorScheme,
@@ -142,6 +144,18 @@ export default function Navigation({
             }
         }
     }, [auth]);
+    React.useEffect(()=> {
+        if(auth){
+            try {
+                const unsubscribe = listenOnCategories((data)=> {
+                    dispatch(setCategories(data));
+                });
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    })
     return (
         <NavigationContainer
             linking={LinkingConfiguration}

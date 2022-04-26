@@ -4,8 +4,8 @@ import { DrawerParamList } from '../types';
 import { DrawerContent } from '../components/DrawerContent';
 import { CareerScreen } from '../screens/CareerScreen';
 import { ProfileNavigation } from './ProfileNavigation';
-import { DatingScreen } from '../screens/DatingScreen';
 import { HomeStackNavigation } from './HomeStackNavigation';
+import { UserDatingNavigation } from './UserDatingNavigation';
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const HomeDrawerNavigation = () => {
@@ -21,9 +21,9 @@ export const HomeDrawerNavigation = () => {
         >
             <Drawer.Screen name="Posts" component={HomeStackNavigation} options={{ headerShown: false }} />
             <Drawer.Screen name="General Profile" component={ProfileNavigation} options={{ headerShown: false }} />
-            <Drawer.Screen name="Dating Profile" component={DatingScreen} options={{ headerShown: false }} />
+            <Drawer.Screen name="Dating Profile" component={UserDatingNavigation} options={{ headerShown: false }} />
             <Drawer.Screen name="Career Profile" component={CareerScreen} options={{ headerShown: false }} />
-            <Drawer.Screen name="Historyville" component={TabTwoScreen} />
+            {/* <Drawer.Screen name="Historyville" component={TabTwoScreen} /> */}
         </Drawer.Navigator>
     );
 };

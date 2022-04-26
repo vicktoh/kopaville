@@ -8,6 +8,7 @@ import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/n
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Recipient } from './types/Conversation';
 import { Business, Job } from './types/Job';
+import { Product } from './types/Product';
 import { Profile } from './types/Profile';
 
 declare global {
@@ -29,7 +30,7 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Home: undefined;
   Jobs: undefined;
-  MarketPlace: undefined;
+  "Kopa Market": undefined;
   Dating: undefined;
   Message: undefined;
 };
@@ -46,6 +47,13 @@ export type JobStackParamList = {
   "Job Details": {job: Job & Business}
 }
 
+export type MarketStackParamList = {
+  Market: undefined;
+  "Product Detail": {product: Product};
+  "Cart": undefined;
+  "Billing": undefined;
+}
+
 export type MessageStackParamList = {
   MessageList: undefined;
   MessageBubble: {conversationId?: string, recipient: Recipient};
@@ -53,6 +61,10 @@ export type MessageStackParamList = {
 export type DatingStackParamList = {
   Main: undefined;
   "Profile": {profile: Profile};
+}
+export type UserDatingStackParamList = {
+  "My Dating Profile": undefined;
+  "Edit Dating Profile": {profile: Profile};
 }
 
 export type DrawerParamList = {

@@ -17,6 +17,7 @@ import { HomeDrawerNavigation } from './HomeDrawerNavigation';
 import { JobNavigation } from './JobNavigation';
 import { DatingNavigation } from './DatingNavigation';
 import { MessageNavigation } from './MessageNavigation';
+import { MarketNavigation } from './MarketNavigation';
 const AppTabNavigator = createBottomTabNavigator<AppStackParamList>();
 
 export const AppNavigationStack = () => {
@@ -43,7 +44,7 @@ export const AppNavigationStack = () => {
                             />
                         );
                     }
-                    if (route.name === 'MarketPlace') {
+                    if (route.name === 'Kopa Market') {
                         return (
                             <FontAwesomeIcon
                                 icon={faShoppingCart}
@@ -87,8 +88,9 @@ export const AppNavigationStack = () => {
                 options={{ headerShown: false }}
             />
             <AppTabNavigator.Screen
-                name="MarketPlace"
-                component={TabOneScreen}
+                name="Kopa Market"
+                component={MarketNavigation}
+                options={{headerShown: false}}
             />
             <AppTabNavigator.Screen
                 name="Dating"

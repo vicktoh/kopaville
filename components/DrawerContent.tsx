@@ -37,8 +37,6 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
                 return <FontAwesomeIcon icon={faBriefcase} {...values} />;
             case 'Dating Profile':
                 return <FontAwesomeIcon icon={faHeart} {...values} />;
-            case 'Historyville':
-                return <FontAwesomeIcon icon={faHistory} {...values} />;
             case 'Posts':
                 return <FontAwesomeIcon icon={faHome} {...values} />;
             default:

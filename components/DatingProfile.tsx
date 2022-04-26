@@ -21,148 +21,268 @@ import { Modal, Platform, useWindowDimensions } from 'react-native';
 import { useAppSelector } from '../hooks/redux';
 import { Profile } from '../types/Profile';
 import { DatingProfileForm } from './DatingProfileForm';
-import { updateProfileInfo, uploadFileToFirestore } from '../services/profileServices';
+import {
+    updateProfileInfo,
+    uploadFileToFirestore,
+} from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { useDispatch } from 'react-redux';
 import { AppStackParamList, MessageStackParamList } from '../types';
 import { Recipient } from '../types/Conversation';
 import { conversationExists } from '../services/messageServices';
+import { ImagePreview } from './ImagePreview';
+import { DatingCover } from './DatingCover';
 
 const datingCover = require('../assets/images/datingcover1.jpg');
 
 export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
-    const { auth, chats } = useAppSelector(({ auth, chats }) => ({ auth, chats }));
+    const { auth, chats } = useAppSelector(({ auth, chats }) => ({
+        auth,
+        chats,
+    }));
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
-    const [isUploadingFromLibrary, setIsUploadingFromLibrary] = useState<boolean>(false);
-    const [isUploadingFromCamera, setIsUploadingFromCamera] = useState<boolean>(false);
+    const [isUploadingFromLibrary, setIsUploadingFromLibrary] =
+        useState<boolean>(false);
+    const [isUploadingFromCamera, setIsUploadingFromCamera] =
+        useState<boolean>(false);
+    const [isUploadingImages, setIsUploadingImages] = useState<boolean>(false);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
+    const [datingCovers, setDatingCovers] = useState<string[]>([]);
     const toast = useToast();
     const dispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<any>>();
     const { datingProfile } = profile || {};
-    const {
-        onOpen: onOpenDatingProfileModal,
-        onClose: onCloseDatingProfileModal,
-        isOpen: isDatingProfileModalOpen,
-    } = useDisclose();
+    console.log({ datingProfile });
 
-    const { onOpen: onOpenCoverModal, onClose: onCloseCoverModal, isOpen: isCoverModalOpen } = useDisclose();
+    const {
+        onOpen: onOpenCoverModal,
+        onClose: onCloseCoverModal,
+        isOpen: isCoverModalOpen,
+    } = useDisclose();
 
     const _uploadImage = async (uri: string) => {
         const coverpath = `dating_covers/${auth?.userId}`;
         const result = await uploadFileToFirestore(coverpath, uri);
         const newProfile = { ...(profile || {}) };
         if (result.status === 'success') {
-            dispatch(setProfile({ ...newProfile, datingProfile: { ...(datingProfile || {}), coverUrl: result.url } }));
-            updateProfileInfo(auth?.userId || '', { datingProfile: { ...datingProfile, coverUrl: result.url } });
+            dispatch(
+                setProfile({
+                    ...newProfile,
+                    datingProfile: {
+                        ...(datingProfile || {}),
+                        coverUrl: result.url,
+                    },
+                })
+            );
+            updateProfileInfo(auth?.userId || '', {
+                datingProfile: { ...datingProfile, coverUrl: result.url },
+            });
         }
         if (result.status === 'failed') {
             toast.show({
                 title: 'Upload Failed',
                 status: 'error',
-                description: result?.message as string || 'unexpected error, Make sure you have a good internet connection',
+                description:
+                    (result?.message as string) ||
+                    'unexpected error, Make sure you have a good internet connection',
             });
         }
     };
+    const _uploadImages = async () => {
+        const coverpath = `dating_covers/${auth?.userId}`;
+        const covers = [];
+        setIsUploadingImages(true);
+        for (let i = 0; i < datingCovers.length; i++) {
+            const result = await uploadFileToFirestore(
+                `${coverpath}-${i}`,
+                datingCovers[i]
+            );
+            if (result.status === 'success') {
+                covers.push(result.url);
+                setUploadProgress(uploadProgress + 1);
+            } else {
+                console.log(result);
+            }
+        }
+        if (covers.length) {
+            const newProfile = { ...(profile || {}) };
+            dispatch(
+                setProfile({
+                    ...newProfile,
+                    datingProfile: { ...(datingProfile || {}), covers },
+                })
+            );
+            updateProfileInfo(auth?.userId || '', {
+                datingProfile: { ...datingProfile, covers },
+            });
+            setDatingCovers([]);
+            onCloseCoverModal();
+        }
+        setIsUploadingImages(false);
+    };
     const pickImageFromGallery = async () => {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permission.granted) {
             return;
         }
 
-        const pickerResult = await ImagePicker.launchImageLibraryAsync({ aspect: [3, 1], base64: true });
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+            aspect: [3, 1],
+            quality: 0.2,
+            allowsEditing: true,
+        });
         if (!pickerResult.cancelled) {
-            setIsUploadingFromLibrary(true);
-            await _uploadImage(pickerResult.uri);
-            setIsUploadingFromLibrary(false);
-            onCloseCoverModal();
+            setDatingCovers((covers) => [...(covers || []), pickerResult.uri]);
         }
     };
+
     const pickImageFromCamera = async () => {
         const permission = await ImagePicker.requestCameraPermissionsAsync();
         if (!permission.granted) {
             return;
         }
-        const pickerResult = await ImagePicker.launchCameraAsync({ aspect: [3, 1], base64: true });
+        const pickerResult = await ImagePicker.launchCameraAsync({
+            aspect: [3, 1],
+            quality: 0.2,
+            allowsEditing: true,
+        });
         if (!pickerResult.cancelled) {
-            setIsUploadingFromCamera(true);
-            await _uploadImage(pickerResult.uri);
-            setIsUploadingFromCamera(false);
-            onCloseCoverModal();
+            setDatingCovers((covers) => [...(covers || []), pickerResult.uri]);
         }
     };
     const message = () => {
-        if(profile?.userId === auth?.userId){
+        if (profile?.userId === auth?.userId) {
             return;
         }
-        const to : Recipient = {
-            userId: profile?.userId || "",
-            photoUrl: profile?.profileUrl || "",
-            fullname: profile?.loginInfo?.fullname || "",
-            username: profile?.loginInfo?.username || ""
-        }
+        const to: Recipient = {
+            userId: profile?.userId || '',
+            photoUrl: profile?.profileUrl || '',
+            fullname: profile?.loginInfo?.fullname || '',
+            username: profile?.loginInfo?.username || '',
+        };
 
-        const conversationId = conversationExists(profile?.userId || "", chats);
-        if(conversationId){
+        const conversationId = conversationExists(profile?.userId || '', chats);
+        if (conversationId) {
             console.log('conversation exists as ', conversationId);
         }
-        navigation.navigate("Message", { screen: "MessageBubble", params: {conversationId: conversationId || undefined,recipient: to}});
+        navigation.navigate('Message', {
+            screen: 'MessageBubble',
+            params: {
+                conversationId: conversationId || undefined,
+                recipient: to,
+            },
+        });
         // navigation.navigate("MessageBubble", { conversationId : conversationId || undefined, recipient: to});
-    }
+    };
+
+    const removePreview = (i: number) => {
+        const coverCopy = [...(datingCovers || [])];
+        coverCopy.splice(i, 1);
+        setDatingCovers(coverCopy);
+    };
     return (
         <ScrollView flex={1}>
-            <Flex flex={1} bg="white" >
+            <Flex flex={1} bg="white">
                 <Flex direction="row" alignItems="center">
-                    <IconButton size="sm" icon={<ArrowBackIcon />} onPress={() => navigation.goBack()} />
+                    <IconButton
+                        size="sm"
+                        icon={<ArrowBackIcon />}
+                        onPress={() => navigation.goBack()}
+                    />
                     <Heading ml={10} fontSize="md">
                         Dating Profile
                     </Heading>
                 </Flex>
-                <Flex width={windowWidth} height={windowHeight * 0.4}>
-                    <Image
-                        alt="cover image"
-                        source={datingProfile?.coverUrl ? { uri: datingProfile.coverUrl } : datingCover}
-                        position="absolute"
-                        width={windowWidth}
-                        height={windowHeight * 0.39}
-                        borderBottomRadius="2xl"
-                        fallbackSource={datingCover}
-                    />
-                    { auth?.userId === profile?.userId ? (<IconButton
-                        ml="auto"
-                        mt="auto"
-                        mr={5}
-                        mb={5}
-                        icon={<Icon color="primary.500" as={AntDesign} name="edit" />}
-                        onPress={onOpenCoverModal}
-                    />) :null}
-                </Flex>
+                {datingProfile?.covers && datingProfile?.covers.length ? (
+                    <ScrollView horizontal={true} pagingEnabled={true}>
+                        {datingProfile?.covers.map((value, index) => (
+                            <DatingCover key = {`cover-${index}`} imageUri={value} index={index} />
+                        ))}
+                    </ScrollView>
+                ) : (
+                    <Flex width={windowWidth} height={windowHeight * 0.4}>
+                        <Image
+                            alt="cover image"
+                            source={
+                                datingProfile?.coverUrl
+                                    ? { uri: datingProfile.coverUrl }
+                                    : datingCover
+                            }
+                            position="absolute"
+                            width={windowWidth}
+                            height={windowHeight * 0.39}
+                            borderBottomRadius="2xl"
+                            fallbackSource={datingCover}
+                        />
+                        {auth?.userId === profile?.userId ? (
+                            <IconButton
+                                ml="auto"
+                                mt="auto"
+                                mr={5}
+                                mb={5}
+                                icon={
+                                    <Icon
+                                        color="primary.500"
+                                        as={AntDesign}
+                                        name="edit"
+                                    />
+                                }
+                                onPress={onOpenCoverModal}
+                            />
+                        ) : null}
+                    </Flex>
+                )}
                 <Flex direction="column" px={5}>
                     <Heading mb={1} mt={5} fontSize="xl">
-                        {profile?.loginInfo?.fullname || ''}
+                        {datingProfile?.alias ||
+                            profile?.loginInfo?.fullname ||
+                            ''}
                     </Heading>
-                    <Text fontSize="md">@{profile?.loginInfo?.username}</Text>
-
                     <Flex direction="row" mt={5}>
                         {auth?.userId !== profile?.userId ? (
-                            <Button size="md" mt={3} onPress = {()=> message()} >
+                            <Button size="md" mt={3} onPress={() => message()}>
                                 Message
                             </Button>
                         ) : (
-                            <Button variant="outline" size="md" onPress={onOpenDatingProfileModal}>
-                                Edit
-                            </Button>
+                            <>
+                                <Button
+                                    variant="outline"
+                                    size="md"
+                                    onPress={() =>
+                                        navigation.navigate(
+                                            'Edit Dating Profile',
+                                            {
+                                                profile,
+                                            }
+                                        )
+                                    }
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    ml="auto"
+                                    variant="outline"
+                                    onPress={onOpenCoverModal}
+                                >
+                                    Add Photos
+                                </Button>
+                            </>
                         )}
                     </Flex>
 
                     <Heading fontSize="sm" mt={5} mb={1}>
                         Profile
                     </Heading>
-                    <Text fontSize="md">{datingProfile?.profile || 'No Dating Profile yet ❤️ '}</Text>
+                    <Text fontSize="md">
+                        {datingProfile?.profile || 'No Dating Profile yet ❤️ '}
+                    </Text>
                     <Heading fontSize="sm" mt={5} mb={1}>
                         Relationship Status
                     </Heading>
-                    <Text fontSize="md">{datingProfile?.status || 'No status available'}</Text>
+                    <Text fontSize="md">
+                        {datingProfile?.status || 'No status available'}
+                    </Text>
                     <Heading fontSize="sm" mt={5} mb={1}>
                         Interests
                     </Heading>
@@ -182,52 +302,98 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                                 </Button>
                             ))
                         ) : (
-                            <Text fontSize="md" fontWeight="semibold" color="muted.300">
+                            <Text
+                                fontSize="md"
+                                fontWeight="semibold"
+                                color="muted.300"
+                            >
                                 No interest added Yet 🍔
                             </Text>
                         )}
                     </Flex>
                 </Flex>
-                <Modal visible={isDatingProfileModalOpen} transparent={true} animationType="slide">
-                    <ScrollView contentContainerStyle={{ flex: 1, paddingTop: 1 }}>
-                        <KeyboardAvoidingView
-                            style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
-                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+
+                <Modal
+                    visible={isCoverModalOpen}
+                    transparent={true}
+                    animationType="slide"
+                >
+                    <Flex
+                        bg="white"
+                        marginTop="auto"
+                        shadow="5"
+                        borderRadius="2xl"
+                        pb={10}
+                        direction="column"
+                        p={5}
+                    >
+                        <Heading mb={1}>Select Photos</Heading>
+                        <Text mb={3}>Select at least 3 to 5 pictures</Text>
+                        <Flex
+                            direction="row"
+                            flexWrap="wrap"
+                            py={3}
+                            width="100%"
                         >
-                            <Flex flex={1} borderColor="red" backgroundColor="rgba(0, 0, 0, 0.0)">
-                                <Flex marginTop="auto" bg="white" px={5} py={10} borderRadius="2xl" shadow="4">
-                                    <Heading>Dating Profile</Heading>
-                                    <DatingProfileForm
-                                        profile={profile?.datingProfile}
-                                        onClose={onCloseDatingProfileModal}
-                                    />
-                                </Flex>
-                            </Flex>
-                        </KeyboardAvoidingView>
-                    </ScrollView>
-                </Modal>
-                <Modal visible={isCoverModalOpen} transparent={true} animationType="slide">
-                    <Flex bg="white" marginTop="auto" shadow="5" borderRadius="2xl" pb={10} direction="column" p={5}>
-                        <Heading mb={5}>Select Avatar</Heading>
-                        <Button
-                            isLoading={isUploadingFromLibrary}
-                            isLoadingText="Uploadiing Image"
-                            size="lg"
-                            onPress={pickImageFromGallery}
+                            {datingCovers?.length
+                                ? datingCovers.map((uri, i) => (
+                                      <ImagePreview
+                                          key={`imageuri-${i}`}
+                                          uri={uri}
+                                          remove={() => removePreview(i)}
+                                      />
+                                  ))
+                                : null}
+                        </Flex>
+                        {isUploadingImages ? (
+                            <Text>{`Uploaded ${uploadProgress} of ${datingCovers.length} images`}</Text>
+                        ) : null}
+                        <Flex
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
                         >
-                            Pick From Gallery
-                        </Button>
+                            <Button
+                                disabled={datingCovers?.length >= 5}
+                                isLoading={isUploadingFromLibrary}
+                                isLoadingText="Uploadiing Image"
+                                size="md"
+                                variant="outline"
+                                onPress={pickImageFromGallery}
+                            >
+                                Pick From Gallery
+                            </Button>
+                            <Button
+                                isLoading={isUploadingFromCamera}
+                                isLoadingText="Uploading Image"
+                                size="md"
+                                variant="outline"
+                                onPress={pickImageFromCamera}
+                                disabled={
+                                    datingCovers?.length >= 5 ||
+                                    isUploadingImages
+                                }
+                            >
+                                Pick From Camera
+                            </Button>
+                        </Flex>
+
                         <Button
-                            isLoading={isUploadingFromCamera}
+                            isLoading={isUploadingImages}
                             isLoadingText="Uploading Image"
-                            size="lg"
+                            size="md"
                             my={3}
-                            onPress={pickImageFromCamera}
-                            disabled={isUploadingFromLibrary}
+                            onPress={_uploadImages}
+                            disabled={isUploadingImages}
                         >
-                            Pick From Camera
+                            Upload Images
                         </Button>
-                        <Button disabled={isUploadingFromCamera || isUploadingFromLibrary} size="lg" variant="outline" onPress={onCloseCoverModal}>
+                        <Button
+                            disabled={isUploadingImages}
+                            size="lg"
+                            variant="outline"
+                            onPress={onCloseCoverModal}
+                        >
                             Cancel
                         </Button>
                     </Flex>

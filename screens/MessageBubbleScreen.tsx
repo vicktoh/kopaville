@@ -82,7 +82,10 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
                 from,
                 recipient,
                 message,
-                (data) => setConversation(data)
+                (data) => {
+                    setConversation(data);
+                    setMessage('');
+                 }
             );
         } catch (error) {
             console.log(error);
