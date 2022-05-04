@@ -7,6 +7,7 @@ export interface Business {
     instagram?: string;
     twitter?: string;
     link?: string;
+    description?: string;
 }
 
 export interface Profile {

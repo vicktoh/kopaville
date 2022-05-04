@@ -7,6 +7,7 @@ import {
     Flex,
     FormControl,
     Heading,
+    HStack,
     Icon,
     IconButton,
     PresenceTransition,
@@ -17,7 +18,7 @@ import {
 } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MarketStackParamList } from '../types';
-import { Entypo } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import { useAppSelector } from '../hooks/redux';
 import { CategoryCard } from '../components/CategoryCard';
 import { Product, ProductFilter } from '../types/Product';
@@ -73,7 +74,7 @@ export const ExploreMarket: FC<ExploreMarketScreenProps> = ({
         setFilter({ category: undefined });
     };
     return (
-        <Flex flex={1} safeArea px={5}>
+        <Flex flex={1} safeArea px={5} bg="white">
             <Flex
                 direction="row"
                 alignItems="center"
@@ -82,8 +83,10 @@ export const ExploreMarket: FC<ExploreMarketScreenProps> = ({
                 px={2}
             >
                 <Heading fontSize="lg">Kopa Market</Heading>
+                <HStack alignItems="center">
+                    <IconButton onPress={()=> navigation.navigate("Orders")} mt={2} size="sm" icon = {<Icon color="primary.500" as = {Entypo} name = "list" />} />   
                 <VStack>
-                   {
+                {
                       cart?.length ?
                       <Badge  colorScheme='red' rounded="full" mb={-4} mr={-4} zIndex={1} variant="solid" alignSelf="flex-end" _text={{fontSize: "xs"}}>
                          {cart.length}
@@ -96,6 +99,7 @@ export const ExploreMarket: FC<ExploreMarketScreenProps> = ({
                     icon={<Icon color="primary.500" size="sm" as={Entypo} name="shopping-cart" />}
                 />
                 </VStack>
+                </HStack>
                 
             </Flex>
             

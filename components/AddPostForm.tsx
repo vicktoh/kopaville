@@ -15,6 +15,7 @@ import {
 } from 'native-base';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { Video } from 'expo-av';
 import { useWindowDimensions } from 'react-native';
 import { sendPost } from '../services/postsServices';
 import { useAppSelector } from '../hooks/redux';
@@ -31,6 +32,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
     const [blobs, setBlob] = useState<Blob[]>([]);
     const [videoBlob, setVideoBlob] = useState<Blob>();
     const [pickedVideo, setPickedVideo] = useState<ImagePicker.ImagePickerResult>();
+    const [videoThumbnail, setVideoThumbnail] = useState<string>('');
     const [postFormError, setPostFormError] = useState<string>('');
     const [posting, setPosting] = useState<boolean>(false);
     const { width: windowWidth } = useWindowDimensions();
@@ -47,10 +49,11 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             return;
         }
 
-        const result = await ImagePicker.launchImageLibraryAsync({ base64: true, aspect: [4, 5] });
+        const result = await ImagePicker.launchImageLibraryAsync({ base64: true, aspect: [4, 5], quality: 0.2 });
         if (result.cancelled) {
             return;
         }
+        
         const blob = await getUploadBlob(result.uri);
         setBlob([...(blobs || []), blob]);
         setImageUri((images) => [...images, result.uri]);
@@ -68,13 +71,18 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             return;
         }
 
-        const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Videos });
+        const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Videos, videoQuality: 2 });
         if (result.cancelled) {
             return;
         }
+        try {
         const blob = await getUploadBlob(result.uri);
         setPickedVideo(result);
         setVideoBlob(blob);
+        } catch (error) {
+            console.log(error);
+        }
+        
     };
 
     const pickImageFromCamera = async () => {
@@ -90,7 +98,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             return;
         }
 
-        const result = await ImagePicker.launchCameraAsync({ base64: true, aspect: [4, 5] });
+        const result = await ImagePicker.launchCameraAsync({ base64: true, aspect: [4, 5], quality: .2 });
         if (result.cancelled) {
             return;
         }
@@ -213,11 +221,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                         : null}
                     {pickedVideo && !pickedVideo.cancelled ? (
                         <Box>
-                            <IconButton
-                                variant="outline"
-                                size="lg"
-                                icon={<Icon size="md" as={Entypo} name="video-camera" />}
-                            />
+                            <Video  style = {{width: 70, height: (70*5)/4}} source={{uri: pickedVideo.uri}} />
                             <Text fontSize="xs" my={1}>{`Video (${pickedVideo?.duration || 0/100})s`}</Text>
                             <Button onPress={removeVideo} size="xs" variant="solid" colorScheme="error">remove</Button>
                         </Box>

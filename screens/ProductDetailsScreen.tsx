@@ -40,7 +40,7 @@ export const ProductDetailsScreen : FC<ProductDetailsScreenProps> = ({navigation
 
    }
    return (
-      <Flex flex={1} safeArea px = {5}>
+      <Flex flex={1} safeArea px = {5} bg="white">
          <Flex
                 direction="row"
                 alignItems="center"

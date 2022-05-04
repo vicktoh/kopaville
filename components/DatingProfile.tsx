@@ -14,6 +14,9 @@ import {
     ArrowBackIcon,
     useToast,
     Progress,
+    HStack,
+    Box,
+    VStack,
 } from 'native-base';
 import React, { FC, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
@@ -48,11 +51,12 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
     const [isUploadingImages, setIsUploadingImages] = useState<boolean>(false);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [datingCovers, setDatingCovers] = useState<string[]>([]);
+    const [currentScrollIndex, setCurrentScrollIndex] = useState<number>(0);
     const toast = useToast();
     const dispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<any>>();
     const { datingProfile } = profile || {};
-    console.log({ datingProfile });
+    // console.log({ datingProfile });
 
     const {
         onOpen: onOpenCoverModal,
@@ -195,11 +199,29 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                     </Heading>
                 </Flex>
                 {datingProfile?.covers && datingProfile?.covers.length ? (
-                    <ScrollView horizontal={true} pagingEnabled={true}>
-                        {datingProfile?.covers.map((value, index) => (
-                            <DatingCover key = {`cover-${index}`} imageUri={value} index={index} />
-                        ))}
-                    </ScrollView>
+                    <>
+                        <ScrollView
+                            horizontal={true}
+                            pagingEnabled={true}
+                            scrollEventThrottle={16}
+                            onMomentumScrollEnd={({ nativeEvent }) => {
+                                const positionX = nativeEvent.contentOffset.x;
+                                const index = Math.round(
+                                    positionX / windowWidth
+                                );
+                                setCurrentScrollIndex(index);
+                            }}
+                        >
+                            {datingProfile?.covers.map((value, index) => (
+                                <DatingCover
+                                    userId={profile?.userId || ''}
+                                    key={`cover-${index}`}
+                                    imageUri={value}
+                                    index={index}
+                                />
+                            ))}
+                        </ScrollView>
+                    </>
                 ) : (
                     <Flex width={windowWidth} height={windowHeight * 0.4}>
                         <Image
@@ -233,6 +255,25 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                         ) : null}
                     </Flex>
                 )}
+                {datingProfile?.covers?.length ? (
+                    <Flex direction="row" justifyContent="center" py={3}>
+                        <HStack space={3}>
+                            {datingProfile?.covers.map((value, index) => (
+                                <Box
+                                    key={`paginationdot-${index}`}
+                                    width={2}
+                                    height={2}
+                                    borderRadius={4}
+                                    bg={
+                                        currentScrollIndex === index
+                                            ? 'primary.500'
+                                            : 'gray.300'
+                                    }
+                                ></Box>
+                            ))}
+                        </HStack>
+                    </Flex>
+                ) : null}
                 <Flex direction="column" px={5}>
                     <Heading mb={1} mt={5} fontSize="xl">
                         {datingProfile?.alias ||
@@ -283,6 +324,24 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                     <Text fontSize="md">
                         {datingProfile?.status || 'No status available'}
                     </Text>
+                    {datingProfile?.showBloodGroup ? (
+                        <Flex mt={5} mb={1} direction="row">
+                            <VStack space={1}>
+                                <Heading fontSize="sm">Blood Group</Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.bloodGroup ||
+                                        'Unavailable'}
+                                </Text>
+                            </VStack>
+                            <VStack space={1} ml = {8}>
+                                <Heading fontSize="sm">Genotype🩸</Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.genotype ||
+                                        'Unavailable'}
+                                </Text>
+                            </VStack>
+                        </Flex>
+                    ) : null}
                     <Heading fontSize="sm" mt={5} mb={1}>
                         Interests
                     </Heading>

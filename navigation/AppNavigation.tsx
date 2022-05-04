@@ -95,6 +95,7 @@ export const AppNavigationStack = () => {
             <AppTabNavigator.Screen
                 name="Dating"
                 component={DatingNavigation}
+                options= {{headerStyle: {backgroundColor: 'white'}, headerTitleStyle:{color: 'black'}}}
             />
             <AppTabNavigator.Screen
                 name="Message"

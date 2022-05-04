@@ -19,14 +19,14 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import { Business, Education, Profile } from '../types/Profile';
 import { getInitialsFromName } from '../services/helpers';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../hooks/redux';
 import { AntDesign } from '@expo/vector-icons';
 import { Modal, Platform, useWindowDimensions } from 'react-native';
 import { EditCarreerInfoForm } from './EditCarreerInfoForm';
 import { EducationForm } from './EducationForm';
-import { BussinessForm } from './BussinessForm';
 import { Follower, followUser, unfollowUser } from '../services/followershipServices';
+import { CareerStackParamList } from '../types';
 
 interface CareerProfileProps {
     profile: Profile;
@@ -39,10 +39,9 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
     const { followers = 0, following = 0 } = profile?.followerships || {};
     const [loading, setLoading] = useState<boolean>(false);
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<CareerStackParamList>>();
     const { isOpen: carreerModalOpen, onClose: onCloseCarreerModal, onOpen: onOpenCareerModal } = useDisclose();
     const { isOpen: educationModalOpen, onClose: onCloseEducationMoal, onOpen: onOpenEducationModal } = useDisclose();
-    const { isOpen: bussinessModalOpen, onClose: onCloseBussinessModal, onOpen: onOpenBussinessModal } = useDisclose();
     const { isOpen: cvModalOpen, onClose: onCloseCVModal, onOpen: onOpenCVModal } = useDisclose();
     const followings = useMemo(
         () => (followerships?.following || []).filter(({ userId }) => userId == profile.userId),
@@ -50,8 +49,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
     );
 
     const [educationMode, setEductationMode] = useState<'add' | 'edit'>('add');
-    const [bussinessMode, setBussinessMode] = useState<'add' | 'edit'>('add');
-    const [bussinessToEdit, setBussinessToEdit] = useState<{ bussiness: Business; index: number } | undefined>();
+    
     const [educationToEdit, setEducationToEdit] = useState<{ education: Education; index: number } | null>();
     const toast = useToast();
 
@@ -67,16 +65,12 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
         onOpenEducationModal();
     };
 
-    const onEditBussiness = (bussiness: Business, index: number) => {
-        setBussinessMode('edit');
-        setBussinessToEdit({ bussiness, index });
-        onOpenBussinessModal();
+    const onEditBussiness = (business: Business, index: number) => {
+        navigation.navigate("Bussiness", { business, index, mode: 'edit' });
     };
 
     const onAddBuissiness = () => {
-        setBussinessMode('add');
-        setBussinessToEdit(undefined);
-        onOpenBussinessModal();
+        navigation.navigate("Bussiness", {mode: 'add'})
     };
     const openLink = async (link: string) => {
         try {
@@ -251,7 +245,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                     ) : null}
                 </HStack>
                 {careerProfile?.business && careerProfile.business.length ? (
-                    careerProfile?.business.map(({ name, twitter, link, instagram }, i) => (
+                    careerProfile?.business.map(({ name, twitter, link, instagram, description }, i) => (
                         <Flex
                             key={`business-${i}`}
                             direction="column"
@@ -270,6 +264,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                                     </Button>
                                 ) : null}
                             </Flex>
+                            {description ? <Text isTruncated numberOfLines={2}>{description}</Text>: null}
                             <HStack alignItems="flex-end" justifyContent="flex-start" space={2}>
                                 {link ? (
                                     <Button
@@ -339,26 +334,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                         </Flex>
                     </KeyboardAvoidingView>
                 </Modal>
-                <Modal visible={bussinessModalOpen} transparent={true} animationType="slide">
-                    <KeyboardAvoidingView
-                        style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    >
-                        <ScrollView contentContainerStyle={{ flex: 1, paddingTop: 20 }}>
-                            <Flex flex={1} borderColor="red" backgroundColor="rgba(0, 0, 0, 0.0)">
-                                <Flex marginTop="auto" bg="white" px={5} py={10} borderRadius="2xl" shadow="4">
-                                    <Heading>Add Businness</Heading>
-                                    <BussinessForm
-                                        onClose={onCloseBussinessModal}
-                                        business={bussinessToEdit ? bussinessToEdit?.bussiness : undefined}
-                                        mode={bussinessMode}
-                                        index={bussinessToEdit ? bussinessToEdit.index : undefined}
-                                    />
-                                </Flex>
-                            </Flex>
-                        </ScrollView>
-                    </KeyboardAvoidingView>
-                </Modal>
+        
                 <Modal visible={cvModalOpen} animationType="slide">
                     <Flex direction="column" flex={1} bg="white" px={5} py={10} borderRadius="2xl" shadow="4">
                         <Image flex={1} source={{ uri: careerProfile?.cvUrl }} alt="Resume Image" />

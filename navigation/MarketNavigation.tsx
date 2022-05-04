@@ -8,6 +8,7 @@ import { JobDetailsScreen } from '../screens/JobDetailsScreen';
 import { ExploreMarket } from '../screens/ExploreMarket';
 import { ProductDetailsScreen } from '../screens/ProductDetailsScreen';
 import { CartScreen } from '../screens/CartScreen';
+import { OrderScreen } from '../screens/OrdersScreen';
 
 const MarketStack = createNativeStackNavigator<MarketStackParamList>();
 
@@ -24,6 +25,11 @@ export const MarketNavigation = () => {
                 <MarketStack.Screen
                     name="Product Detail"
                     component={ProductDetailsScreen}
+                    options={{ headerShown: false }}
+                />
+                <MarketStack.Screen
+                    name="Orders"
+                    component={OrderScreen}
                     options={{ headerShown: false }}
                 />
             </MarketStack.Group>

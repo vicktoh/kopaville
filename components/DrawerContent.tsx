@@ -1,34 +1,29 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC } from 'react';
 import {
     DrawerContentScrollView,
     DrawerContentComponentProps,
-    DrawerItemList,
-    DrawerItem,
+    
 } from '@react-navigation/drawer';
-import { DropFirst } from 'reselect/es/types';
-import { Button, Box, HStack, Text, Flex, Avatar, Heading, VStack } from 'native-base';
+import { Button, Box, HStack, Text, Flex, Avatar, Heading, VStack, IconButton, Icon } from 'native-base';
 import { useAppSelector } from '../hooks/redux';
-import { StoreType } from '../reducers/store';
 import { DrawerParamList } from '../types';
-import { User } from '../types/User';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faBriefcase,
     faGlobeAfrica,
     faHome,
-    faShoppingCart,
     faHeart,
-    faBook,
-    faHistory,
 } from '@fortawesome/free-solid-svg-icons';
-import { RotateInUpLeft } from 'react-native-reanimated';
 import { getInitialsFromName } from '../services/helpers';
 import { Pressable } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
+import { useLogout } from '../hooks/useLogOut';
 
 export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
     const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
     const { loginInfo  } = profile || {};
+    const logoutFlow = useLogout();
     const initial = getInitialsFromName(auth?.displayName || '');
     const navigation  = useNavigation<NavigationProp<DrawerParamList>>();
     const getIcon = (key: keyof DrawerParamList, values: { size: number; color: string; focused: boolean }) => {
@@ -45,7 +40,7 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
     };
 
     return (
-        <DrawerContentScrollView {...props} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 24, backgroundColor: 'white' }}>
+        <DrawerContentScrollView {...props} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 24, backgroundColor: 'white', flex: 1 }}>
             <Pressable onPress={()=> navigation.navigate("General Profile", {})}>
             <Flex direction="column" ml={10} flex={1} pr={20}>
                 <HStack space={2}>
@@ -87,6 +82,13 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
                     }
                 })}
             </Flex>
+            <Button ml={10} alignSelf="flex-start" variant="ghost" mt={15} onPress={()=> logoutFlow() }>
+               <HStack space={2} >
+                <Icon size="xs" as = {AntDesign} name="logout" />
+                <Text fontSize="xs">Logout</Text>
+            </HStack> 
+            </Button>
+            
         </DrawerContentScrollView>
     );
 };

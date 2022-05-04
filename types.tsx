@@ -7,9 +7,9 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Recipient } from './types/Conversation';
-import { Business, Job } from './types/Job';
+import {  Job, Business as JobBusiness } from './types/Job';
 import { Product } from './types/Product';
-import { Profile } from './types/Profile';
+import { Profile, Business } from './types/Profile';
 
 declare global {
   namespace ReactNavigation {
@@ -39,12 +39,20 @@ export type ProfileStackParamList = {
   Main: undefined;
   Edit: undefined;
 }
+export type CareerStackParamList = {
+  Main: undefined;
+  Bussiness: {
+    mode: 'add' | 'edit';
+    business?: Business;
+    index?: number
+  };
+}
 
 export type JobStackParamList = {
   Main: undefined;
   "Add Job": undefined;
   "Add Business": undefined;
-  "Job Details": {job: Job & Business}
+  "Job Details": {job: Job & JobBusiness}
 }
 
 export type MarketStackParamList = {
@@ -52,6 +60,7 @@ export type MarketStackParamList = {
   "Product Detail": {product: Product};
   "Cart": undefined;
   "Billing": undefined;
+  "Orders": undefined;
 }
 
 export type MessageStackParamList = {

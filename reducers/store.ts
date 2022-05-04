@@ -9,6 +9,7 @@ import profile from './profileSlice';
 import likes from './likesSlice';
 import chats from './chatSlice';
 import cart from './cartSlice';
+import billing from './billingSlice';
 import categories from './categoriesSlice';
 import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
@@ -19,6 +20,7 @@ import { Profile } from '../types/Profile';
 import { Conversation } from '../types/Conversation';
 import { CategorySliceType } from '../types/Category';
 import { CartItem } from '../types/Product';
+import { Billing } from '../types/Billing';
 
 
 const rootReducer = combineReducers({
@@ -30,7 +32,8 @@ const rootReducer = combineReducers({
     likes, 
     chats,
     categories,
-    cart
+    cart,
+    billing
 })
 
 const persistConfig = {
@@ -61,7 +64,8 @@ export type StoreType = {
     likes: string[],
     chats: Conversation [],
     categories: CategorySliceType,
-    cart: CartItem[] | null
+    cart: CartItem[] | null,
+    billing: Billing | null
 };
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

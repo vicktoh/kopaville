@@ -17,11 +17,9 @@ import {
     ArrowBackIcon,
     useToast,
 } from 'native-base';
-import { LoginForm } from '../components/LoginForm';
 import { useWindowDimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../types';
-import { useThemeColor } from '../components/Themed';
 import { sendRecoverPassword } from '../services/authServices';
 
 const corperTwins = require('../assets/images/corpertwins.png');

@@ -23,16 +23,15 @@ export const MessageBubble: FC<MessageBubbleProps> = ({
             my={2}
         >
             <Flex
-                position="relative"
                 bg={authId === fromId ? 'primary.200' : 'secondary.200'}
                 maxWidth= { windowWidth / 2 }
                 px={5}
-                pt={5}
-                pb={8}
+                pt={3}
+                pb={3}
                 borderRadius="xl"
             >
                 <Text fontSize="sm">{message}</Text>
-                <Text color="primary.500" fontSize="xs" position="absolute" bottom={3} right="3">
+                <Text alignSelf="flex-end" color="primary.500" fontSize={8} >
                     {time}
                 </Text>
             </Flex>

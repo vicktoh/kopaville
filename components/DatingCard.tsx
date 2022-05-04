@@ -12,8 +12,8 @@ const datingCover = require('../assets/images/datingcover1.jpg');
 export const DatingCard : FC<{profile: Profile}> = ({ profile})=>{
     const {width: windowWidth} = useWindowDimensions();
     const dateOfBirth =  profile?.profile?.dateOfBirth
-    const age = dateOfBirth ? differenceInCalendarYears( new Date(),  new Date(parseInt(dateOfBirth.year), parseInt(dateOfBirth.month), parseInt(dateOfBirth.day))) : "";
-    const datingCoverUrl = profile?.datingProfile?.coverUrl;
+    const age = React.useMemo(()=>(dateOfBirth ? differenceInCalendarYears( new Date(),  new Date(parseInt(dateOfBirth.year), parseInt(dateOfBirth.month), parseInt(dateOfBirth.day))) : ""), [profile]);
+    const datingCoverUrl = profile?.datingProfile?.covers?.length ? profile.datingProfile.covers[0]:  profile?.datingProfile?.coverUrl;
     const navigation = useNavigation<NavigationProp<DatingStackParamList>>();
     return (
         <Flex my={2}  flex = {1} position = {'relative'} width = {windowWidth} height = {(windowWidth)* 4/5} borderRadius="2xl">

@@ -23,11 +23,13 @@ const datingCover = require('../assets/images/datingcover1.jpg');
 type DatingCoverProps = {
     imageUri: string;
     index: number;
+    userId: string;
 };
 
 export const DatingCover: FC<DatingCoverProps> = ({
     imageUri,
     index,
+    userId
 }) => {
     const [replaceUri, setReplaceUri] = useState<string>();
     const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -103,6 +105,8 @@ export const DatingCover: FC<DatingCoverProps> = ({
                 alt = "cover image"
             />
             <Flex position="absolute"  direction="row" justifyContent="flex-end" >
+            {
+            auth?.userId === userId  ?
             <Menu
              
                 trigger={(triggerProps) => (
@@ -127,7 +131,7 @@ export const DatingCover: FC<DatingCoverProps> = ({
                         <Text>Replace from camera</Text>
                     </HStack>
                 </Menu.Item>
-            </Menu>
+            </Menu> :  null}
             </Flex>
             
            

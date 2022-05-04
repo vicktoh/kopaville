@@ -135,18 +135,22 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
     const db = firebase.firestore(firebaseApp);
     const newPostRef = db.collection('posts').doc();
     
-    const storage = firebase.storage().ref(`posts/${newPostRef.id}`);
+    
     const imageUrls = [];
     
     if(blobs&& blobs.length){
+        let i = 0;
         for(const blob of blobs){
+            const storage = firebase.storage().ref(`posts/${newPostRef.id}-${i}`);
             const snapshot = await storage.put(blob);
             const downloadUrl = await snapshot.ref.getDownloadURL();
             imageUrls.push(downloadUrl);
+            i++
         }
     }
     let videoUrl = null
     if(videoBlob){
+        const storage = firebase.storage().ref(`posts/${newPostRef.id}`);
         const snapshot = await storage.put(videoBlob);
          videoUrl = await snapshot.ref.getDownloadURL();
 
@@ -184,4 +188,15 @@ export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Com
 export const commentOnPost = (comment: Comment) => {
     const db = firebase.firestore(firebaseApp);
     return db.collection('comments').doc().set(comment);
+}
+
+
+export const removePost = async (postId: string) => {
+    try {
+        const db = firebase.firestore(firebaseApp);
+        await db.doc(`posts/${postId}`).delete(); 
+    } catch (error) {
+        console.log(error);
+    }
+    
 }
