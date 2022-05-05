@@ -7,7 +7,6 @@ export const useLogout = ()=> {
    const dispatch = useDispatch();
 
    async function logoutFlow(){
-      
       await logOut();
       dispatch(setAuth(null));
    }
