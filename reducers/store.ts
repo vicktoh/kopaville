@@ -7,12 +7,20 @@ import posts from './postSlice';
 import followerships from './followershipSlice';
 import profile from './profileSlice';
 import likes from './likesSlice';
+import chats from './chatSlice';
+import cart from './cartSlice';
+import billing from './billingSlice';
+import categories from './categoriesSlice';
 import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
 
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { Profile } from '../types/Profile';
+import { Conversation } from '../types/Conversation';
+import { CategorySliceType } from '../types/Category';
+import { CartItem } from '../types/Product';
+import { Billing } from '../types/Billing';
 
 
 const rootReducer = combineReducers({
@@ -21,7 +29,11 @@ const rootReducer = combineReducers({
     posts,
     followerships,
     profile,
-    likes
+    likes, 
+    chats,
+    categories,
+    cart,
+    billing
 })
 
 const persistConfig = {
@@ -49,7 +61,11 @@ export type StoreType = {
     posts: Post[] | null;
     followerships: Folowership | null;
     profile: Profile | null,
-    likes: string[]
+    likes: string[],
+    chats: Conversation [],
+    categories: CategorySliceType,
+    cart: CartItem[] | null,
+    billing: Billing | null
 };
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

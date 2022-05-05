@@ -13,10 +13,10 @@ import {
     Checkbox,
     ChevronDownIcon,
 } from 'native-base';
-import { Formik, Form } from 'formik';
+import { Formik, Form, Field, FieldInputProps, FieldHelperProps, FieldProps } from 'formik';
 import * as yup from 'yup';
 import { useAppDispatch } from '../hooks/redux';
-import { registerUser } from '../services/authServices';
+import { registerUser, usernameExists } from '../services/authServices';
 import { setLocalData } from '../services/local';
 import { LOCAL_USER_INFO } from '../constants/Storage';
 import { setAuth } from '../reducers/authSlice';
@@ -122,49 +122,58 @@ export const RegisterForm: FC = () => {
                             <FormControl.ErrorMessage>{touched.email && errors.email}</FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
+                        
+                        <Field name = "username" validate = {async (value: string)=>{
+                            const exists = await usernameExists(value);
+                            if(exists) return `username ${value} already exist`;
+                            return null
+                        }}>
+                            {({field, meta,}: FieldProps<FormValues>)=>(
+                               <FormControl
+                               _text={{ fontSize: 'lg' }}
+                               isRequired
+                               mb={3}
+                               isInvalid={!!meta.touched && !!meta.error}
+                           >
+                               <FormControl.Label>username</FormControl.Label>
+                               <Input
+                                   size="lg"
+                                   value={values.username}
+                                   onBlur={handleBlur('username')}
+                                   onChangeText={handleChange('username')}
+                                   variant="filled"
+                                   bg="primary.100"
+                               />
+                               <FormControl.ErrorMessage>{meta.touched && meta.error}</FormControl.ErrorMessage>
+                               <FormControl.HelperText></FormControl.HelperText>
+                           </FormControl>
+                            )}
+                        </Field>
                         <FormControl
-                            _text={{ fontSize: 'lg' }}
-                            isRequired
-                            mb={3}
-                            isInvalid={!!touched.username && !!errors.username}
-                        >
-                            <FormControl.Label>username</FormControl.Label>
-                            <Input
-                                size="lg"
-                                value={values.username}
-                                onBlur={handleBlur('username')}
-                                onChangeText={handleChange('username')}
-                                variant="filled"
-                                bg="primary.100"
-                            />
-                            <FormControl.ErrorMessage>{touched.username && errors.username}</FormControl.ErrorMessage>
-                            <FormControl.HelperText></FormControl.HelperText>
-                        </FormControl>
-                        <FormControl
-                            _text={{ fontSize: 'lg' }}
-                            isRequired
-                            mb={3}
-                            isInvalid={!!touched.username && !!errors.username}
-                        >
-                            <FormControl.Label>gender</FormControl.Label>
-                            <Select
-                                onValueChange={(value) => setFieldValue('gender', value)}
-                                _actionSheetContent={{ bg: 'white' }}
-                                _selectedItem={{ bg: 'primary.100', color: 'gray.700' }}
-                                bg="primary.100"
-                                dropdownIcon={<ChevronDownIcon color="black" />}
-                                accessibilityLabel="Choose account type"
-                                size="lg"
-                                selectedValue={values.gender}
-                                variant="filled"
+                                _text={{ fontSize: 'lg' }}
+                                isRequired
+                                mb={3}
+                                isInvalid={!!touched.gender && !!errors.gender}
                             >
-                                <Select.Item value="male" label="Male" />
-                                <Select.Item value="female" label="Female" />
-                                <Select.Item value="others" label="Others" />
-                            </Select>
-                            <FormControl.ErrorMessage>{touched.gender && errors.gender}</FormControl.ErrorMessage>
-                            <FormControl.HelperText></FormControl.HelperText>
-                        </FormControl>
+                                <FormControl.Label>gender</FormControl.Label>
+                                <Select
+                                    onValueChange={(value) => setFieldValue('gender', value)}
+                                    _actionSheetContent={{ bg: 'white' }}
+                                    _selectedItem={{ bg: 'primary.100', color: 'gray.700' }}
+                                    bg="primary.100"
+                                    dropdownIcon={<ChevronDownIcon color="black" />}
+                                    accessibilityLabel="Choose account type"
+                                    size="lg"
+                                    selectedValue={values.gender}
+                                    variant="filled"
+                                >
+                                    <Select.Item value="male" label="Male" />
+                                    <Select.Item value="female" label="Female" />
+                                    <Select.Item value="others" label="Others" />
+                                </Select>
+                                <FormControl.ErrorMessage>{touched.gender && errors.gender}</FormControl.ErrorMessage>
+                                <FormControl.HelperText></FormControl.HelperText>
+                            </FormControl>
                         <FormControl
                             _text={{ fontSize: 'lg' }}
                             isRequired

@@ -34,6 +34,7 @@ const ProfileSchema = yup.object().shape({
     stateOfOrigin: yup.string().required('Required!'),
     servingState: yup.string().required('Required'),
     lga: yup.string().required('Required!'),
+    servingLGA: yup.string().min(5, 'Must be at least 5'),
     ppa: yup.string().min(6, 'Must be at least 6 characters'),
     bio: yup.string().min(10, 'Must be at least 10 characters').max(200, 'Must be at most 200 characters'),
     dateOfBirth: yup.object().shape({
@@ -58,6 +59,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
         ppa: '',
         bio: '',
         servingState: '',
+        servingLGA: '',
         displayAge: false,
     };
     return (
@@ -133,6 +135,44 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             _text={{ fontSize: 'lg' }}
                             isRequired
                             mb={3}
+                            isInvalid={!!touched.lga && !!errors.lga}
+                        >
+                            <FormControl.Label>L.G.A of Origin</FormControl.Label>
+                            <Input
+                                size="md"
+                                value={values.lga}
+                                onBlur={handleBlur('lga')}
+                                onChangeText={handleChange('lga')}
+                                variant="outline"
+                                borderColor="primary.400"
+                            />
+                            <FormControl.ErrorMessage>{touched.lga && errors.lga}</FormControl.ErrorMessage>
+                            <FormControl.HelperText></FormControl.HelperText>
+                        </FormControl>
+                        <FormControl
+                            _text={{ fontSize: 'lg' }}
+                            isRequired
+                            mb={3}
+                            isInvalid={!!touched.displayAge && !!errors.displayAge}
+                        >
+                            <HStack space={3}>
+                                <Checkbox
+                                    accessibilityLabel="agree to terms"
+                                    value="agreed"
+                                    isChecked={values.displayAge}
+                                    onChange={(checked) => setFieldValue('displayAge', checked)}
+                                />
+                                <FormControl.Label>display age publicly</FormControl.Label>
+                            </HStack>
+                            <FormControl.ErrorMessage>
+                                {touched.displayAge && errors.displayAge}
+                            </FormControl.ErrorMessage>
+                            <FormControl.HelperText></FormControl.HelperText>
+                        </FormControl>
+                        <FormControl
+                            _text={{ fontSize: 'lg' }}
+                            isRequired
+                            mb={3}
                             isInvalid={!!touched.dateOfBirth && !!errors.dateOfBirth}
                         >
                             <FormControl.Label>date of birth (DD - MM - YYYY)</FormControl.Label>
@@ -198,7 +238,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             isInvalid={!!touched.servingState && !!errors.servingState}
                             bg="white"
                         >
-                            <FormControl.Label>serving state</FormControl.Label>
+                            <FormControl.Label>Serving State</FormControl.Label>
                             <Select
                                 onValueChange={(value) => setFieldValue('servingState', value)}
                                 _actionSheetContent={{ bg: 'white' }}
@@ -221,24 +261,23 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                         </FormControl>
                         <FormControl
                             _text={{ fontSize: 'lg' }}
-                            isRequired
                             mb={3}
-                            isInvalid={!!touched.lga && !!errors.lga}
+                            isInvalid={!!touched.servingLGA && !!errors.servingLGA}
                         >
-                            <FormControl.Label>LGA</FormControl.Label>
+                            <FormControl.Label>Serving L.G.A</FormControl.Label>
                             <Input
                                 size="md"
-                                value={values.lga}
-                                onBlur={handleBlur('lga')}
-                                onChangeText={handleChange('lga')}
+                                value={values.servingLGA}
+                                onBlur={handleBlur('servingLGA')}
+                                onChangeText={handleChange('servingLGA')}
                                 variant="outline"
                                 borderColor="primary.400"
                             />
-                            <FormControl.ErrorMessage>{touched.lga && errors.lga}</FormControl.ErrorMessage>
+                            <FormControl.ErrorMessage>{touched.servingLGA && errors.servingLGA}</FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
                         <FormControl _text={{ fontSize: 'lg' }} mb={3} isInvalid={!!touched.ppa && !!errors.ppa}>
-                            <FormControl.Label>place of Primary Assignment</FormControl.Label>
+                            <FormControl.Label>Place of Primary Assignment (P.P.A)</FormControl.Label>
                             <Input
                                 size="md"
                                 value={values.ppa}

@@ -16,6 +16,7 @@ type BussinessFormProps = {
 
 const BussinessSchema = yup.object().shape({
     name: yup.string().required('Required !').min(4, 'Requires at least 4 characters'),
+    description: yup.string().min(4, 'Requires at least 4 characters').max(100, "Allows Max of 100 character"),
     link: yup.string().matches(
         /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
         'Enter correct url!'
@@ -35,7 +36,8 @@ export const BussinessForm: FC<BussinessFormProps> = ({ onClose, business, mode,
         name: business?.name || '',
         link: business?.link || '',
         instagram: business?.instagram || '',
-        twitter: business?.twitter || ''
+        twitter: business?.twitter || '',
+        description: business?.description || ''
     };
     const dispatch = useAppDispatch();
     const { auth, profile } = useAppSelector(({ auth, profile }) => ({ auth, profile }));
@@ -94,6 +96,24 @@ export const BussinessForm: FC<BussinessFormProps> = ({ onClose, business, mode,
                             borderColor="primary.400"
                         />
                         <FormControl.ErrorMessage>{touched.name && errors.name}</FormControl.ErrorMessage>
+                        <FormControl.HelperText></FormControl.HelperText>
+                    </FormControl>
+                    <FormControl
+                        _text={{ fontSize: 'lg' }}
+                        mb={3}
+                        isInvalid={!!touched.description && !!errors.description}
+                    >
+                        <FormControl.Label>Description</FormControl.Label>
+                        <TextArea
+                            placeholder='Business Description'
+                            size="md"
+                            value={values.description}
+                            onBlur={handleBlur('description')}
+                            onChangeText={handleChange('description')}
+                            variant="outline"
+                            borderColor="primary.400"
+                        />
+                        <FormControl.ErrorMessage>{touched.description && errors.description}</FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl

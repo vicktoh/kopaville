@@ -6,8 +6,10 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Business, Job } from './types/Job';
-import { Profile } from './types/Profile';
+import { Recipient } from './types/Conversation';
+import {  Job, Business as JobBusiness } from './types/Job';
+import { Product } from './types/Product';
+import { Profile, Business } from './types/Profile';
 
 declare global {
   namespace ReactNavigation {
@@ -28,32 +30,57 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Home: undefined;
   Jobs: undefined;
-  MarketPlace: undefined;
-  Dating: undefined
+  "Kopa Market": undefined;
+  Dating: undefined;
+  Message: undefined;
 };
 
 export type ProfileStackParamList = {
   Main: undefined;
   Edit: undefined;
 }
+export type CareerStackParamList = {
+  Main: undefined;
+  Bussiness: {
+    mode: 'add' | 'edit';
+    business?: Business;
+    index?: number
+  };
+}
 
 export type JobStackParamList = {
   Main: undefined;
   "Add Job": undefined;
   "Add Business": undefined;
-  "Job Details": {job: Job & Business}
+  "Job Details": {job: Job & JobBusiness}
+}
+
+export type MarketStackParamList = {
+  Market: undefined;
+  "Product Detail": {product: Product};
+  "Cart": undefined;
+  "Billing": undefined;
+  "Orders": undefined;
+}
+
+export type MessageStackParamList = {
+  MessageList: undefined;
+  MessageBubble: {conversationId?: string, recipient: Recipient};
 }
 export type DatingStackParamList = {
   Main: undefined;
   "Profile": {profile: Profile};
+}
+export type UserDatingStackParamList = {
+  "My Dating Profile": undefined;
+  "Edit Dating Profile": {profile: Profile};
 }
 
 export type DrawerParamList = {
   Posts: undefined;
   "Dating Profile": {profile?: Profile};
   "Career Profile": {profile?: Profile};
-  Profile: {profile?: Profile};
-  Bookstore: undefined;
+  "General Profile": {profile?: Profile};
   Historyville: undefined
 }
 
@@ -64,7 +91,7 @@ export type HomeStackParamList = {
   ProfilePreview: { profile?: Profile, userId?:string, fetch?: boolean};
   CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
   DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
-  Comments: { postId: string}
+  Comments: { postId: string, postText: string; postUsername: string}
   
 }
 

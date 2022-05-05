@@ -92,6 +92,12 @@ export const logOut = async() =>{
     await  firebase.auth(firebaseApp).signOut();
 }
 
+export const usernameExists = async (username: string)=>{
+    const snap = await firebase.firestore().doc(`usernames/${username.toLocaleLowerCase()}`).get();
+    if(snap.exists) return true
+    return false
+}
+
 export const sendRecoverPassword = async(email: string)=>{
     const auth = firebase.auth(firebaseApp)
     try {

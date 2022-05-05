@@ -12,20 +12,21 @@ type ProfileSectionProps = {
     profile: Profile;
     userId: string;
     promptAvatarChange?: ()=> void;
+    onOpenPreview : () => void;
 }
 
-export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, promptAvatarChange = ()=> null }) =>{
+export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, promptAvatarChange = ()=> null, onOpenPreview= ()=> null }) =>{
     const { loginInfo, profile:generalProfile, profileUrl, userId: profileId  } = profile || {};
     const { followers = 0, following = 0} = profile?.followerships || {}
     return(
         <Flex direction="column">
             <VStack space={1}>
-            <Pressable onPress={ ()=> userId === profileId ? promptAvatarChange(): null}>
+            <Pressable onPress={ ()=> userId === profileId ? promptAvatarChange(): onOpenPreview}>
             <Avatar source={{uri: profile.profileUrl}}  size="xl" bg="secondary.300" color="primary.500">{getInitialsFromName(loginInfo?.fullname|| "") }</Avatar> 
                 </Pressable>
                 {
                     userId === profileId ? 
-                    (<Text fontSize="xs">Tap Avartar to change</Text>): null
+                    (<Text fontSize="xs">Tap Avatar to change</Text>): null
                 }
                 
                 <Heading fontSize="xl" mt={3}>{loginInfo?.fullname}</Heading>

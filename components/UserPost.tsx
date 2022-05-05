@@ -5,6 +5,7 @@ import {
     HStack,
     Icon,
     IconButton,
+    Menu,
     Text,
     useToast,
 } from 'native-base';
@@ -13,12 +14,12 @@ import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
 import { AVPlaybackStatus, Video, VideoProps } from 'expo-av';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
 import { useDispatch } from 'react-redux';
-import { addPostTolikes, removePostFromLikes } from '../services/postsServices';
+import { addPostTolikes, removePost, removePostFromLikes } from '../services/postsServices';
 import { addLike, removeLike } from '../reducers/likesSlice';
 
 type PostProps = {
@@ -44,11 +45,13 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         mediaType = 'None',
         imageUrl = [],
         videoUrl,
-        text,
+        text = '',
         comments,
         likes,
-        postId,
+        postId = '',
+        creatorId,
     } = post;
+    
     const [videoPlaybackStatus, setPlayBackStatus] =
         useState<AVPlaybackStatus>();
     const navigation =
@@ -56,6 +59,10 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     const videoRef = useRef<Video>(null);
 
     const likePost = async () => {
+        console.log({
+            userId: auth?.userId,
+            postId,
+        });
         try {
             setIsLiking(true);
             await addPostTolikes(auth?.userId || '', postId || '');
@@ -96,12 +103,15 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             setIsLiking(false);
         }
     };
+    const deletePost = () => {
+       removePost(postId);
+    };
     return (
         <Flex width={windowWidth} px={2} mb={5}>
             <Pressable
                 onPress={() =>
                     auth?.userId === post.creatorId
-                        ? navigation.navigate('Profile', {})
+                        ? navigation.navigate('General Profile', {})
                         : navigation.navigate('ProfilePreview', {
                               userId: post.creatorId,
                           })
@@ -127,11 +137,19 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             {videoUrl ? (
                 <Pressable
                     onPress={() => {
+                        if (
+                            videoPlaybackStatus &&
+                            videoPlaybackStatus.isLoaded &&
+                            videoPlaybackStatus.didJustFinish
+                        ) {
+                            videoRef.current?.replayAsync();
+                            return;
+                        }
                         videoPlaybackStatus &&
                         videoPlaybackStatus.isLoaded &&
                         videoPlaybackStatus.isPlaying
-                            ? videoRef.current?.playAsync()
-                            : videoRef.current?.pauseAsync();
+                            ? videoRef.current?.pauseAsync()
+                            : videoRef.current?.playAsync();
                     }}
                 >
                     <Video
@@ -143,7 +161,6 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                         }}
                         source={{ uri: videoUrl }}
                         resizeMode="cover"
-                        shouldPlay={true}
                         onPlaybackStatusUpdate={(status) =>
                             setPlayBackStatus(() => status)
                         }
@@ -151,7 +168,8 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 </Pressable>
             ) : null}
             {text ? <Text my={1}>{text}</Text> : null}
-
+            <Flex  direction="row" justifyContent="space-between">
+            
             <HStack space={3} alignItems="center">
                 <HStack space={1} alignItems="center">
                     <IconButton
@@ -168,22 +186,60 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     />
                     <Text>{likes}</Text>
                 </HStack>
-                <HStack space={1} alignItems="center">
-                    <IconButton
-                        icon={
-                            <Icon
-                                size="sm"
-                                as={AntDesign}
-                                name="message1"
-                                color="primary.400"
-                            />
-                        }
-                    />
-                    <Text fontSize="md" mr={3}>
-                        {comments}
-                    </Text>
-                </HStack>
+                    <HStack space={1} alignItems="center">
+                        <IconButton
+                            icon={
+                                <Icon
+                                    size="sm"
+                                    as={AntDesign}
+                                    name="message1"
+                                    color="primary.400"
+                                />
+                            }
+                            onPress={() =>
+                                navigation.navigate('Comments', {
+                                    postId,
+                                    postText: text,
+                                    postUsername: username,
+                                })
+                            }
+                        />
+                        <Text fontSize="md" mr={3}>
+                            {comments}
+                        </Text>
+                    </HStack>
+                    
             </HStack>
+            {auth?.userId === creatorId ? 
+                        <Menu
+                            trigger={(triggerProps) => (
+                                <IconButton
+                                    icon={
+                                        <Icon
+                                            as={Feather}
+                                            name="more-vertical"
+                                            size="sm"
+                                        />
+                                    }
+                                    {...triggerProps}
+                                />
+                            )}
+                        >
+                            <Menu.Item onPress={deletePost}>
+                                <HStack alignItems="center" space={2}>
+                                    <Icon
+                                        as={Feather}
+                                        name="trash-2"
+                                        color="red.300"
+                                        size="4"
+                                    />
+                                    <Text fontSize="xs">Delete Post</Text>
+                                </HStack>
+                            </Menu.Item>
+                        </Menu>
+                    : null}
+            </Flex>
+
         </Flex>
     );
 };

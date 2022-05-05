@@ -148,7 +148,7 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
                                 onChangeText={handleChange('description')}
                                 variant="outline"
                                 borderColor="primary.400"
-                                placeholder="Desciption in 200 character max"
+                                placeholder="Description in 200 character max"
                             />
 
                             <FormControl.ErrorMessage>

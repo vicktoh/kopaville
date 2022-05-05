@@ -23,6 +23,8 @@ export const HomeStackNavigation = () => {
                     component={HomepageScreen}
                     options={({ navigation, route }) => ({
                         headerTitle: 'Timeline',
+                        headerStyle: { backgroundColor: 'white'},
+                        headerTitleStyle: {color: 'black'},
                         headerLeft: () => (
                             <IconButton
                                 size="sm"
@@ -41,17 +43,18 @@ export const HomeStackNavigation = () => {
                 <HomePageStack.Screen
                     name="Explore Post"
                     component={ExplorePostScreen}
-                    options={{ headerTitle: 'Explore' }}
+                    options={{ headerTitle: 'Explore', headerStyle: {backgroundColor: 'white'}, headerTitleStyle: {color: 'black'}  }}
                 />
                 <HomePageStack.Screen
                     name="Explore Users"
                     component={ExploreUsersScreen}
-                    options={{ headerTitle: 'Find Friends' }}
+                    options={{ headerTitle: 'Find Friends', headerStyle: {backgroundColor: 'white'}, headerTitleStyle: {color: 'black'}  }}
                 />
                 <HomePageStack.Screen
                     name="ProfilePreview"
                     component={ProfileReviewScreen}
-                    options={{ headerTitle: 'Profile' }}
+                    options={{ headerTitle: 'Profile', headerStyle: {backgroundColor: 'white'}, headerTitleStyle: {color: 'black'} }}
+                    
                 />
                 <HomePageStack.Screen
                     name="CareerPreview"

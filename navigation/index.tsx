@@ -17,6 +17,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { System } from '../types/System';
 import { setSystemInfo } from '../reducers/systemSlice';
 import {
+    listenOnChats,
     listenOnFollowers,
     listenonFollowing,
     listenOnlikes,
@@ -27,6 +28,11 @@ import { setPosts } from '../reducers/postSlice';
 import { listenOnProfile } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { setLike } from '../reducers/likesSlice';
+import { setChats } from '../reducers/chatSlice';
+import { listenOnCategories } from '../services/productServices';
+import { setCategories } from '../reducers/categoriesSlice';
+import { Profile } from '../types/Profile';
+import { checkListFromProfile } from '../services/helpers';
 
 export default function Navigation({
     colorScheme,
@@ -105,8 +111,13 @@ export default function Navigation({
     React.useEffect(() => {
         if (auth) {
             try {
-                const unsubscribe = listenOnProfile(auth.userId, (data) => {
+                const unsubscribe = listenOnProfile(auth.userId, (data: Profile) => {
                     dispatch(setProfile(data));
+                    const systemInfo: System = {
+                        dateOnboarded: new Date().getTime(),
+                        checkList: checkListFromProfile(data)
+                    }
+                    dispatch(setSystemInfo(systemInfo))
                 });
 
                 return () => unsubscribe();
@@ -128,6 +139,30 @@ export default function Navigation({
             }
         }
     }, [auth]);
+    React.useEffect(() => {
+        if (auth) {
+            try {
+                const unsubscribe = listenOnChats(auth.userId, (data) => {
+                    dispatch(setChats(data));
+                });
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }, [auth]);
+    React.useEffect(()=> {
+        if(auth){
+            try {
+                const unsubscribe = listenOnCategories((data)=> {
+                    dispatch(setCategories(data));
+                });
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    })
     return (
         <NavigationContainer
             linking={LinkingConfiguration}

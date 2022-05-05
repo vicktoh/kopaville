@@ -1,3 +1,4 @@
+import { Profile } from '../types/Profile';
 import { Checklist } from '../types/System';
 
 type ChecklistKeys = keyof Checklist;
@@ -22,3 +23,12 @@ export const getInitialsFromName = (name: string) => {
     const initial = `${names[0][0]}${names[1] ? names[1][0] : ""}`
     return initial
 };
+
+export const checkListFromProfile = (profile: Profile)=>{
+    const checkList: Checklist = {
+        "Complete Career Profile": !!profile.careerProfile,
+        "Complete Dating Profile": !!profile?.datingProfile,
+        "Complete Profile": !!profile.profile
+    }
+    return checkList;
+}

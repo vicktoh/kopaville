@@ -7,6 +7,7 @@ export interface Business {
     instagram?: string;
     twitter?: string;
     link?: string;
+    description?: string;
 }
 
 export interface Profile {
@@ -28,6 +29,9 @@ export interface Profile {
         };
         displayAge?: boolean;
         servingState: string;
+        servingLGA?: string;
+        bloodGroup?: string;
+        genotype?: string;
         lga?: string;
         ppa?: string;
         stateOfOrigin: string;
@@ -43,10 +47,16 @@ export interface Profile {
 
     };
     datingProfile?:{
+        alias?: string;
         coverUrl?: string;
+        covers?: string[];
         profile?: string;
         interest?: string [];
         status?: string;
+        bloodGroup?: string;
+        genotype?: string;
+        showBloodGroup?: boolean
+
     };
     followerships?: {
         following: number;

@@ -2,6 +2,8 @@ import { firebaseApp } from './firebase';
 import firebase from 'firebase';
 import { Post } from '../types/Post';
 import { Profile } from '../types/Profile';
+import { Comment } from '../types/Comment';
+import { Conversation } from '../types/Conversation';
 
 
 export const listenOnTimeline = (
@@ -28,7 +30,7 @@ export const explorePosts = async ()=>{
     const data: (Post & {id?: string})[] = [];
     snapshot.forEach((snap)=>{
         const post: Post & {id?: string} = snap.data() as Post;
-        post.id = snap.id;
+        post.postId = snap.id;
         data.push(post);
     });
 
@@ -59,6 +61,19 @@ export const listenOnlikes = (userId: string, onSuccessCallback: (data: any)=> v
             likes.push(snap.id);
         });
         onSuccessCallback(likes);
+    })
+}
+
+export const listenOnChats = (userId: string, onSuccessCallback: (data: any)=> void) =>{
+    const db = firebase.firestore(firebaseApp);
+    return db.collection(`users/${userId}/conversations/`).orderBy('dateUpdated',"desc" ).onSnapshot((snapshot)=> {
+        const chats: Conversation[] = [];
+        snapshot.forEach((snap)=>{
+            let chat = snap.data() as (Omit<Conversation,"dateCreated" | "dateUpdated"> & {dateCreated: firebase.firestore.Timestamp, dateUpdated: firebase.firestore.Timestamp});
+           
+            chats.push({...chat, dateCreated: chat.dateCreated.toMillis(), dateUpdated: chat.dateUpdated.toMillis()})
+        });
+        onSuccessCallback(chats);
     })
 }
 
@@ -120,18 +135,22 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
     const db = firebase.firestore(firebaseApp);
     const newPostRef = db.collection('posts').doc();
     
-    const storage = firebase.storage().ref(`posts/${newPostRef.id}`);
+    
     const imageUrls = [];
     
     if(blobs&& blobs.length){
+        let i = 0;
         for(const blob of blobs){
+            const storage = firebase.storage().ref(`posts/${newPostRef.id}-${i}`);
             const snapshot = await storage.put(blob);
             const downloadUrl = await snapshot.ref.getDownloadURL();
             imageUrls.push(downloadUrl);
+            i++
         }
     }
     let videoUrl = null
     if(videoBlob){
+        const storage = firebase.storage().ref(`posts/${newPostRef.id}`);
         const snapshot = await storage.put(videoBlob);
          videoUrl = await snapshot.ref.getDownloadURL();
 
@@ -150,3 +169,34 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
     };
     await newPostRef.set(postData)
 };
+
+export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Comment[]) => void) =>{
+    const db = firebase.firestore(firebaseApp);
+    return db.collection('comments').where('postId', '==', postId).onSnapshot((snapshot) => {
+        const data : Comment[] = [];
+        snapshot.forEach((snap)=>{
+            const comment = snap.data() as Comment;
+            comment.id = snap.id;
+            data.push(comment)
+        })
+
+        onSuccessCallback(data);
+    })
+
+}
+
+export const commentOnPost = (comment: Comment) => {
+    const db = firebase.firestore(firebaseApp);
+    return db.collection('comments').doc().set(comment);
+}
+
+
+export const removePost = async (postId: string) => {
+    try {
+        const db = firebase.firestore(firebaseApp);
+        await db.doc(`posts/${postId}`).delete(); 
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
