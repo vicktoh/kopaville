@@ -125,7 +125,7 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    }, [auth]);
+    }, []);
 
     React.useEffect(() => {
         if (auth) {
@@ -150,8 +150,9 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    }, [auth]);
+    }, []);
     React.useEffect(()=> {
+        console.log('hey i am running');
         if(auth){
             try {
                 const unsubscribe = listenOnCategories((data)=> {
@@ -162,7 +163,7 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    })
+    }, [])
     return (
         <NavigationContainer
             linking={LinkingConfiguration}
