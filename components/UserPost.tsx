@@ -14,12 +14,16 @@ import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
 import { AVPlaybackStatus, Video, VideoProps } from 'expo-av';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
 import { useDispatch } from 'react-redux';
-import { addPostTolikes, removePost, removePostFromLikes } from '../services/postsServices';
+import {
+    addPostTolikes,
+    removePost,
+    removePostFromLikes,
+} from '../services/postsServices';
 import { addLike, removeLike } from '../reducers/likesSlice';
 
 type PostProps = {
@@ -51,7 +55,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         postId = '',
         creatorId,
     } = post;
-    
+
     const [videoPlaybackStatus, setPlayBackStatus] =
         useState<AVPlaybackStatus>();
     const navigation =
@@ -104,7 +108,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         }
     };
     const deletePost = () => {
-       removePost(postId);
+        removePost(postId);
     };
     return (
         <Flex width={windowWidth} px={2} mb={5}>
@@ -168,24 +172,23 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 </Pressable>
             ) : null}
             {text ? <Text my={1}>{text}</Text> : null}
-            <Flex  direction="row" justifyContent="space-between">
-            
-            <HStack space={3} alignItems="center">
-                <HStack space={1} alignItems="center">
-                    <IconButton
-                        icon={
-                            <Icon
-                                size="sm"
-                                as={AntDesign}
-                                name={isPostLiked ? 'heart' : 'hearto'}
-                                color="primary.400"
-                            />
-                        }
-                        onPress={isPostLiked ? unlikePost : likePost}
-                        disabled={isLiking}
-                    />
-                    <Text>{likes}</Text>
-                </HStack>
+            <Flex direction="row" justifyContent="space-between">
+                <HStack space={3} alignItems="center">
+                    <HStack space={1} alignItems="center">
+                        <IconButton
+                            icon={
+                                <Icon
+                                    size="sm"
+                                    as={AntDesign}
+                                    name={isPostLiked ? 'heart' : 'hearto'}
+                                    color="primary.400"
+                                />
+                            }
+                            onPress={isPostLiked ? unlikePost : likePost}
+                            disabled={isLiking}
+                        />
+                        <Text>{likes}</Text>
+                    </HStack>
                     <HStack space={1} alignItems="center">
                         <IconButton
                             icon={
@@ -208,9 +211,27 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                             {comments}
                         </Text>
                     </HStack>
-                    
-            </HStack>
-            {auth?.userId === creatorId ? 
+                </HStack>
+                <HStack>
+                    <IconButton
+                        icon={
+                            <Icon
+                                color="red.500"
+                                as={MaterialIcons}
+                                name="report"
+                            />
+                        }
+                        onPress={() =>
+                            navigation.navigate("Report", {
+                                postId,
+                                postText: text,
+                                postUserId: creatorId,
+                                postUsername: username,
+                            })
+                        }
+                    />
+                </HStack>
+                {/* {auth?.userId === creatorId ? 
                         <Menu
                             trigger={(triggerProps) => (
                                 <IconButton
@@ -237,9 +258,8 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                                 </HStack>
                             </Menu.Item>
                         </Menu>
-                    : null}
+                    : null} */}
             </Flex>
-
         </Flex>
     );
 };

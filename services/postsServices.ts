@@ -200,3 +200,13 @@ export const removePost = async (postId: string) => {
     }
     
 }
+
+
+export const reportPost = async (report: {postId: string, reason: string, reporterId: string, postUserId: string}) =>{
+    try {
+        const db = firebase.firestore(firebaseApp);
+        await db.collection('reports').doc().set(report);
+    } catch (error) {
+        console.log(error);
+    }
+}

@@ -152,7 +152,6 @@ export default function Navigation({
         }
     }, []);
     React.useEffect(()=> {
-        console.log('hey i am running');
         if(auth){
             try {
                 const unsubscribe = listenOnCategories((data)=> {

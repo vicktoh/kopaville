@@ -38,7 +38,6 @@ export default function App() {
                         <StatusBar />
                     </SafeAreaProvider>
                     </PersistGate>
-                    
                 </Provider>
             </NativeBaseProvider>
         );

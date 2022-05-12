@@ -11,6 +11,7 @@ import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { ProfileReviewScreen } from '../screens/ProfileReviewScreen';
 import { CareerReviewScreen } from '../screens/CareerReviewScreen';
 import { DatingReviewScreen } from '../screens/DatingReviewScreen';
+import { ReportPostScreen } from '../screens/ReportPostScreen';
 
 const HomePageStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -73,6 +74,8 @@ export const HomeStackNavigation = () => {
                     component={CommentsScreen}
                     options={{ headerShown: false }}
                 />
+                <HomePageStack.Screen name = "Report" component={ReportPostScreen} />
+
             </HomePageStack.Group>
         </HomePageStack.Navigator>
     );
