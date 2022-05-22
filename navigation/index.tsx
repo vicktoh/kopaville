@@ -125,7 +125,7 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    }, []);
+    }, [auth]);
 
     React.useEffect(() => {
         if (auth) {
@@ -150,7 +150,7 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    }, []);
+    }, [auth]);
     React.useEffect(()=> {
         if(auth){
             try {

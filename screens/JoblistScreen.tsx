@@ -40,7 +40,10 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
             if(typeFilter) filter.type = typeFilter;
             try {
                 setLoading(true);
-                const unsubscribe = await listenOnJobs(setPosts, filter);
+                const unsubscribe = await listenOnJobs((post)=> {
+                    setLoading(false);
+                    setPosts(post)
+                }, filter);
                 return unsubscribe;
 
                 
@@ -49,9 +52,7 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
                 toast.show({title: "Error Fetch Job", description: "Could not fetch post, ensure you have good internet connection and try again", status: "error"});
                 
             }
-            finally{
-                setLoading(false);
-            }
+            
             
         };
 
@@ -134,7 +135,7 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
                 </Flex>
                 {
                     loading? 
-                    (<Flex flex = {1} justifyContent="center" alignItems="center"><ActivityIndicator/> </Flex>):
+                    (<Flex flex = {1} justifyContent="center" alignItems="center"><ActivityIndicator color="green" size={24}/><Text>Please wait</Text> </Flex>):
                     (posts?.length ? (
                         <FlatList data = {posts} renderItem={renderItem} keyExtractor={(item)=> item?.title || item?.name } flex ={1}/>
                     ): <EmtpyJobList/>)

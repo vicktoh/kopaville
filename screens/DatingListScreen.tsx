@@ -14,7 +14,6 @@ import {
     useToast,
 } from 'native-base';
 import { useAppSelector } from '../hooks/redux';
-import { useStore } from 'react-redux';
 import { Profile } from '../types/Profile';
 import { EmptyState } from '../components/EmptyeState';
 import { ActivityIndicator, ListRenderItemInfo } from 'react-native';
@@ -26,7 +25,7 @@ const states = require('../assets/static/states.json');
 type DatingListScreenProps = NativeStackScreenProps<DatingStackParamList, 'Main'>;
 
 export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
-    const { auth, profile } = useAppSelector(({ auth, profile }) => ({ profile, auth }));
+    const { profile } = useAppSelector(({ auth, profile }) => ({ profile, auth }));
     const [datingProfiles, setDatingProfiles] = useState<Profile[]>();
     const [loading, setLoading] = useState<boolean>(false);
     const [showFilter, setShowFilter] = useState<boolean>(false);
@@ -115,7 +114,8 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
 
             {loading ? (
                 <Flex flex={1} justifyContent="center" alignItems="center">
-                    <ActivityIndicator />{' '}
+                    <ActivityIndicator size={24} color="green" />{' '}
+                    <Text>Fetching profiles...</Text>
                 </Flex>
             ) : datingProfiles?.length ? (
                 <FlatList

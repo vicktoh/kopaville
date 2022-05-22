@@ -1,4 +1,18 @@
-import { Button, Flex, Heading, Text, Box, HStack, IconButton, Icon, useDisclose, useToast, Image, CloseIcon, VStack } from 'native-base';
+import {
+    Button,
+    Flex,
+    Heading,
+    Text,
+    Box,
+    HStack,
+    IconButton,
+    Icon,
+    useDisclose,
+    useToast,
+    Image,
+    CloseIcon,
+    VStack,
+} from 'native-base';
 import React, { FC, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { ProfileSection } from './ProfileSection';
@@ -8,11 +22,19 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfileInfo, uploadProfilePicture } from '../services/profileServices';
+import {
+    updateProfileInfo,
+    uploadProfilePicture,
+} from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
-import { Follower, followUser, unfollowUser } from '../services/followershipServices';
+import {
+    Follower,
+    followUser,
+    unfollowUser,
+} from '../services/followershipServices';
 import { setFollowership } from '../reducers/followershipSlice';
 import { differenceInCalendarYears } from 'date-fns';
+import { useOpenLink } from '../hooks/useOpenLink';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -20,37 +42,82 @@ type GeneralProfileProps = {
     onEdit?: () => void;
 };
 
-export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => {
-    const {auth, profile: localProfile, followerships} = useAppSelector(({ auth, profile, followerships }) => ({auth, profile, followerships}));
-    const { profile: generalProfile, careerProfile, datingProfile, userId } = profile;
-    const [isUploadingFromLibrary, setUploadingFromLibrary] = useState<boolean>(false);
+export const GeneralProfile: FC<GeneralProfileProps> = ({
+    profile,
+    onEdit,
+}) => {
+    const {
+        auth,
+        profile: localProfile,
+        followerships,
+    } = useAppSelector(({ auth, profile, followerships }) => ({
+        auth,
+        profile,
+        followerships,
+    }));
+    const {
+        profile: generalProfile,
+        careerProfile,
+        datingProfile,
+        userId,
+    } = profile;
+    const [isUploadingFromLibrary, setUploadingFromLibrary] =
+        useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const { width: windowWidth} = useWindowDimensions();
+    const { width: windowWidth } = useWindowDimensions();
     const { isOpen, onOpen, onClose } = useDisclose();
-    const {isOpen: profilePreveiwOpen, onOpen: onOpenProfilePreview, onClose: oncloseProfilePreview} = useDisclose();
+    const {
+        isOpen: profilePreveiwOpen,
+        onOpen: onOpenProfilePreview,
+        onClose: oncloseProfilePreview,
+    } = useDisclose();
     const dispatch = useAppDispatch();
-    const navigation = useNavigation<NavigationProp<DrawerParamList& HomeStackParamList >>();
-    const dateOfBirth = generalProfile?.dateOfBirth
-    const age = dateOfBirth ? differenceInCalendarYears( new Date(),  new Date(parseInt(dateOfBirth.year), parseInt(dateOfBirth.month), parseInt(dateOfBirth.day))) : "";
+    const navigation =
+        useNavigation<NavigationProp<DrawerParamList & HomeStackParamList>>();
+    const dateOfBirth = generalProfile?.dateOfBirth;
+    const age = useMemo(
+        () =>
+            dateOfBirth
+                ? differenceInCalendarYears(
+                      new Date(),
+                      new Date(
+                          parseInt(dateOfBirth.year),
+                          parseInt(dateOfBirth.month),
+                          parseInt(dateOfBirth.day)
+                      )
+                  )
+                : '',
+        [profile.profile]
+    );
     const toast = useToast();
     const following = useMemo(
-        () => (followerships?.following || []).filter(({ userId }) => userId == profile.userId),
+        () =>
+            (followerships?.following || []).filter(
+                ({ userId }) => userId == profile.userId
+            ),
         [profile]
     );
+    const { openLink } = useOpenLink();
     const pickImageFromGallery = async () => {
-        let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        let permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permission.granted === false) {
             return;
         }
         try {
             setUploadingFromLibrary(true);
-            let pickerResult: any = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, base64: true });
-            const url = await uploadProfilePicture(auth?.userId || '', pickerResult?.uri || '');
-            updateProfileInfo(auth?.userId || "", { profileUrl: url});
-            dispatch(setProfile({...profile, profileUrl: url}));
-            
+            let pickerResult: any = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                base64: true,
+            });
+            const url = await uploadProfilePicture(
+                auth?.userId || '',
+                pickerResult?.uri || ''
+            );
+            updateProfileInfo(auth?.userId || '', { profileUrl: url });
+            dispatch(setProfile({ ...profile, profileUrl: url }));
         } catch (error) {
-            console.log({error})
+            console.log({ error });
         } finally {
             setUploadingFromLibrary(false);
             onClose();
@@ -59,8 +126,17 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
     const follow = async () => {
         try {
             setLoading(true);
-            const { userId = "", profileUrl = "", loginInfo: { username, fullname}} = profile;
-            const follower: Follower = { userId, username, fullname, photoUrl: profileUrl};
+            const {
+                userId = '',
+                profileUrl = '',
+                loginInfo: { username, fullname },
+            } = profile;
+            const follower: Follower = {
+                userId,
+                username,
+                fullname,
+                photoUrl: profileUrl,
+            };
             await followUser(auth?.userId || '', follower);
         } catch (error) {
             let err: any = error;
@@ -68,31 +144,29 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: "error"
+                status: 'error',
             });
         } finally {
             setLoading(false);
         }
     };
     const unfollow = async () => {
-        try{
+        try {
             setLoading(true);
-            await unfollowUser(auth?.userId || "", profile?.userId);
-        }
-        catch (error) {
+            await unfollowUser(auth?.userId || '', profile?.userId);
+        } catch (error) {
             console.log(error);
             let err: any = error;
             toast.show({
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: "error"
+                status: 'error',
             });
         } finally {
             setLoading(false);
         }
-
-    }
+    };
     return (
         <Flex py={3} px={5} position="relative" bg="white">
             <View
@@ -143,6 +217,10 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                     <IconButton
                         variant="ghost"
                         ml={5}
+                        onPress={() =>
+                            generalProfile.instagram &&
+                            openLink(generalProfile.instagram)
+                        }
                         icon={
                             <Icon
                                 as={AntDesign}
@@ -162,6 +240,10 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({ profile, onEdit }) => 
                                 name="twitter"
                                 color="primary.400"
                             />
+                        }
+                        onPress={() =>
+                            generalProfile.instagram &&
+                            openLink(generalProfile.instagram)
                         }
                     />
                 ) : null}

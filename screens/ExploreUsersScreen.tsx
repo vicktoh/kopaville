@@ -32,7 +32,7 @@ export const ExploreUsersScreen : FC = () =>{
             try {
                 setLoading(true);
                 let following = [...(followerships?.following?.map(({userId}) => userId) || []), auth?.userId || ""];
-                const data = await exploreUsers(following, profile?.profile?.servingState);
+                const data = await exploreUsers(following);
                 setUsers(data);
             } catch (error) {
                 const err: any = error;

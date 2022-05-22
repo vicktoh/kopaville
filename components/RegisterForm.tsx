@@ -175,6 +175,9 @@ export const RegisterForm: FC = () => {
                         <Field
                             name="username"
                             validate={async (value: string) => {
+                                if(!value){
+                                    return `username can not be empty`
+                                }
                                 const exists = await usernameExists(value);
                                 if (exists)
                                     return `username ${value} already exist`;

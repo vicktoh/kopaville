@@ -1,15 +1,8 @@
 import React, { FC, useState } from 'react';
 import { ActivityIndicator, useWindowDimensions } from 'react-native';
 import {
-    Button,
     Flex,
-    HStack,
-    Icon,
-    IconButton,
     Image,
-    Menu,
-    Popover,
-    Text,
 } from 'native-base';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -29,7 +22,6 @@ type DatingCoverProps = {
 export const DatingCover: FC<DatingCoverProps> = ({
     imageUri,
     index,
-    userId
 }) => {
     const [replaceUri, setReplaceUri] = useState<string>();
     const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -57,39 +49,39 @@ export const DatingCover: FC<DatingCoverProps> = ({
         });
         setIsUploading(false);
     };
-    const pickImageFromGallery = async () => {
-        const permission =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permission.granted) {
-            return;
-        }
+    // const pickImageFromGallery = async () => {
+    //     const permission =
+    //         await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //     if (!permission.granted) {
+    //         return;
+    //     }
 
-        const pickerResult = await ImagePicker.launchImageLibraryAsync({
-            aspect: [3, 1],
-            quality: 0.2,
-            allowsEditing: true,
-        });
-        if (!pickerResult.cancelled) {
-            setReplaceUri(pickerResult.uri);
-            await _uploadImage(pickerResult.uri)
-        }
-    };
+    //     const pickerResult = await ImagePicker.launchImageLibraryAsync({
+    //         aspect: [3, 1],
+    //         quality: 0.2,
+    //         allowsEditing: true,
+    //     });
+    //     if (!pickerResult.cancelled) {
+    //         setReplaceUri(pickerResult.uri);
+    //         await _uploadImage(pickerResult.uri)
+    //     }
+    // };
 
-    const pickImageFromCamera = async () => {
-        const permission = await ImagePicker.requestCameraPermissionsAsync();
-        if (!permission.granted) {
-            return;
-        }
-        const pickerResult = await ImagePicker.launchCameraAsync({
-            aspect: [3, 1],
-            quality: 0.2,
-            allowsEditing: true,
-        });
-        if (!pickerResult.cancelled) {
-            setReplaceUri(pickerResult.uri);
-            await _uploadImage(pickerResult.uri);
-        }
-    };
+    // const pickImageFromCamera = async () => {
+    //     const permission = await ImagePicker.requestCameraPermissionsAsync();
+    //     if (!permission.granted) {
+    //         return;
+    //     }
+    //     const pickerResult = await ImagePicker.launchCameraAsync({
+    //         aspect: [3, 1],
+    //         quality: 0.2,
+    //         allowsEditing: true,
+    //     });
+    //     if (!pickerResult.cancelled) {
+    //         setReplaceUri(pickerResult.uri);
+    //         await _uploadImage(pickerResult.uri);
+    //     }
+    // };
     return (
         <Flex
             
@@ -105,33 +97,6 @@ export const DatingCover: FC<DatingCoverProps> = ({
                 alt = "cover image"
             />
             <Flex position="absolute"  direction="row" justifyContent="flex-end" >
-            {
-            auth?.userId === userId  ?
-            <Menu
-             
-                trigger={(triggerProps) => (
-                    <IconButton
-                        icon={<Icon color="white" as={Feather} name="more-vertical" />}
-                        {...triggerProps}
-                        bg="rgba(0, 0, 0, 0.5)"
-                        
-                    />
-                )}
-                
-            >
-                <Menu.Item onPress={pickImageFromGallery}>
-                    <HStack alignItems="center" space={2}>
-                        <Icon as={Feather} name="camera" />
-                        <Text>Replace from gallery</Text>
-                    </HStack>
-                </Menu.Item>
-                <Menu.Item onPress={pickImageFromCamera}>
-                    <HStack alignItems="center" space={2}>
-                        <Icon as={Feather} name="image" />
-                        <Text>Replace from camera</Text>
-                    </HStack>
-                </Menu.Item>
-            </Menu> :  null}
             </Flex>
             
            

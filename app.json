@@ -2,7 +2,7 @@
   "expo": {
     "name": "kopaville",
     "slug": "kopaville",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -20,14 +20,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "usesIcloudStorage": true
+      "usesIcloudStorage": true,
+      "bundleIdentifier": "com.vicktoh.kopaville"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 2,
+      "versionCode": 3,
       "package": "com.vicktoh.kopaville"
     },
     "web": {

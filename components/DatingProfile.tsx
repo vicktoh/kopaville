@@ -132,7 +132,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         }
 
         const pickerResult = await ImagePicker.launchImageLibraryAsync({
-            aspect: [3, 1],
+            aspect: [16, 9],
             quality: 0.2,
             allowsEditing: true,
         });
@@ -147,7 +147,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
             return;
         }
         const pickerResult = await ImagePicker.launchCameraAsync({
-            aspect: [3, 1],
+            aspect: [16, 9],
             quality: 0.2,
             allowsEditing: true,
         });

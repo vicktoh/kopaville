@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Avatar, Button, Flex, Heading, HStack, Text, useToast, VStack } from 'native-base';
+import { Avatar, Button, Flex, Heading, HStack, Pressable, Text, useToast, VStack } from 'native-base';
 import React, { FC, useMemo, useState } from 'react';
 import { useAppSelector } from '../hooks/redux';
 import { Follower, followUser } from '../services/followershipServices';
@@ -53,10 +53,13 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
             px={3}
         >
             <HStack space={2} alignItems="center">
+                <Pressable onPress={()=> navigation.navigate("ProfilePreview", { userId: profile.userId})}>
                 <Avatar source={profile?.profileUrl ? { uri: profile.profileUrl } : defaultAvartar} size="md">
                     {' '}
                     AV
-                </Avatar>
+                </Avatar> 
+                </Pressable>
+                
                 <VStack>
                     <Heading fontSize="md">{profile?.loginInfo?.fullname || 'Unknown User'}</Heading>
                     <Text fontSize="sm">{profile?.loginInfo?.username}</Text>
