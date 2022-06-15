@@ -4,34 +4,42 @@ import { Post } from '../types/Post';
 import { Profile } from '../types/Profile';
 import { Comment } from '../types/Comment';
 import { Conversation } from '../types/Conversation';
+import { Report, ReportedUser } from '../types/Report';
 
 
 export const listenOnTimeline = (
     following: Array<string>,
     onsuccessCallback: (data: any) => void,
-    onErrorMessage: (e: string) => void
+    onErrorMessage: (e: string) => void,
+    blockedList: string []
 ) => {
+    
     const db = firebase.firestore(firebaseApp);
     return db.collection('posts').where('creatorId', 'in', following).orderBy('dateCreated', 'desc').limit(50).onSnapshot((querysnapshot)=>{
         const data: any[] = [];
         querysnapshot.forEach((snap) => {
             const dat = snap.data() as Post;
-            dat.postId = snap.id;
-            data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
+            if(!blockedList.includes(dat.creatorId)){
+                dat.postId = snap.id;
+                data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
+            }
+            
         });
         onsuccessCallback(data)
-    }, (error)=> {onErrorMessage(error.message)})
+    }, (error)=> {console.log("errorr");onErrorMessage(error.message)})
 };
 
 
-export const explorePosts = async ()=>{
+export const explorePosts = async (blockedList: string[])=>{
     const db = firebase.firestore(firebaseApp)
     const snapshot =  await  db.collection('posts').orderBy('dateCreated', 'desc').orderBy('likes', 'desc').limit(50).get();
     const data: (Post & {id?: string})[] = [];
     snapshot.forEach((snap)=>{
         const post: Post & {id?: string} = snap.data() as Post;
-        post.postId = snap.id;
-        data.push(post);
+        if(!blockedList.includes(post.creatorId)){
+            post.postId = snap.id;
+            data.push(post)
+        };
     });
 
     return data;
@@ -202,7 +210,7 @@ export const removePost = async (postId: string) => {
 }
 
 
-export const reportPost = async (report: {postId: string, reason: string, reporterId: string, postUserId: string}) =>{
+export const reportPost = async (report: Report) =>{
     try {
         const db = firebase.firestore(firebaseApp);
         await db.collection('reports').doc().set(report);
@@ -210,3 +218,10 @@ export const reportPost = async (report: {postId: string, reason: string, report
         console.log(error);
     }
 }
+
+export const reportUser = async (report: ReportedUser) => {
+    const db = firebase.firestore(firebaseApp);
+    return db.collection("userReports").doc().set(report);
+}
+
+

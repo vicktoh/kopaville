@@ -7,6 +7,7 @@ import { GeneralProfile } from '../components/GeneralProfile';
 import { fetchUserProfile, listenOnProfile } from '../services/profileServices';
 import { HomeStackParamList } from '../types';
 import { Profile } from '../types/Profile';
+import { LoadingScreen } from './LoadingScreen';
 
 type ProfileReviewScreenProps = NativeStackScreenProps<
     HomeStackParamList,
@@ -48,10 +49,7 @@ export const ProfileReviewScreen: FC<ProfileReviewScreenProps> = ({
 
     if (loading) {
         return (
-            <Flex flex={1} justifyContent="center" alignItems="center">
-                <ActivityIndicator size={24} />
-                <Text>Fetcing user...</Text>
-            </Flex>
+            <LoadingScreen label = "Fetching users..." />
         );
     }
     if (userProfile) {

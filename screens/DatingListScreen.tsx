@@ -121,7 +121,7 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
                 <FlatList
                     data={datingProfiles}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item?.userId || item?.userId}
+                    keyExtractor={(item, i) => item?.userId || `dating-card-${i}`}
                     flex={1}
                     contentContainerStyle={{paddingLeft: 5, paddingRight: 5}}
                 />

@@ -12,7 +12,7 @@ type OrderItemProps = {
 export const OrderItem: FC<OrderItemProps> = ({ order, onSelect }) => {
     const date = format(order.date as Date, 'd MMM yyyy');
     return (
-        <Pressable onPress={onSelect}>
+        <Pressable onPress={onSelect} my={2}>
             <Flex
                 borderRadius="lg"
                 borderWidth={1}

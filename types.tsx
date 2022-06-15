@@ -8,6 +8,7 @@ import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/n
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Recipient } from './types/Conversation';
 import {  Job, Business as JobBusiness } from './types/Job';
+import { Post } from './types/Post';
 import { Product } from './types/Product';
 import { Profile, Business } from './types/Profile';
 
@@ -82,6 +83,7 @@ export type DrawerParamList = {
   "Career Profile": {profile?: Profile};
   "General Profile": {profile?: Profile};
   Historyville: undefined
+  Info: undefined
 }
 
 export type HomeStackParamList = {
@@ -92,7 +94,7 @@ export type HomeStackParamList = {
   CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
   DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
   Comments: { postId: string, postText: string; postUsername: string};
-  Report: { postId: string, postText: string; postUsername: string, postUserId: string };
+  Report: { post?: Post, user?: Profile };
 
   
 }

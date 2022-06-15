@@ -67,7 +67,7 @@ export const makeOrder = async(transactionRef: string, order: Order) => {
 
 export const fetchOrders = async (userId: string) => {
    const db = firebase.firestore(firebaseApp);
-   const querySnapshot =  await db.collection(`users/${userId}/orders`).orderBy('date').get();
+   const querySnapshot =  await db.collection(`users/${userId}/orders`).orderBy('date', 'desc').get();
    const data: Order[] = [];
    querySnapshot.forEach((snap)=> {
       const order = snap.data() as Order;

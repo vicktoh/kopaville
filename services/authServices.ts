@@ -1,14 +1,18 @@
 import { LOCAL_SYSTEM_INFO, LOCAL_USER_INFO } from '../constants/Storage';
 import { User } from '../types/User';
-import { firebaseApp } from './firebase';
 import firebase from 'firebase';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { firebaseApp } from './firebase';
 
 import { removeLocalData, setLocalData } from './local';
 import { FormValues } from '../components/RegisterForm';
 import { ErrorDict } from '../constants/Firebase';
-import { async, getUA } from '@firebase/util';
 
 import { persistor } from '../reducers/store';
+import { Block } from '../types/Profile';
+import axios, { AxiosRequestConfig } from 'axios';
+import { BLOCK_USER_PATH } from '../constants/paths';
+import { HttpResponse } from '../types/Report';
 
 export const initializeApp = async (localUser: User | null) => {
     const auth = firebase.auth(firebaseApp);
@@ -88,8 +92,9 @@ export const loginUser = async ({ email, password}: {email: string; password: st
 export const logOut = async() =>{
     await removeLocalData(LOCAL_USER_INFO);
     await removeLocalData(LOCAL_SYSTEM_INFO);
-    await persistor.purge();
     await  firebase.auth(firebaseApp).signOut();
+   
+    
 }
 
 export const usernameExists = async (username: string)=>{
@@ -116,4 +121,51 @@ export const sendRecoverPassword = async(email: string)=>{
             };
         }
     }
+}
+
+
+export const listenOnBlocks= (userId: string, callback: (data: Block)=>void) => {
+    const documentRef = firebase.firestore().doc(`blocks/${userId}`);
+    return documentRef.onSnapshot((snap)=>{
+        const data = snap.data();
+        callback(data as Block);
+    });
+}
+
+export const blockUser = async (data: {blockerId: string; blockeeId: string}, block: Block | null) => {
+    const blockeeRef = firebase.firestore().doc(`blocks/${data.blockeeId}`);
+    const blockerRef = firebase.firestore().doc(`blocks/${data.blockerId}`);
+    
+    await firebase.firestore().runTransaction(async (transaction)=> {
+        const blockee = await transaction.get(blockeeRef);
+        
+        if(blockee.exists){
+            const blockdata = blockee.data();
+            transaction.update(blockeeRef, { blockedBy: [...(blockdata?.blockedBy || []), data.blockerId]});
+        }
+        else{
+            transaction.set(blockeeRef, { blockedBy: [data.blockerId]});
+        }
+
+        transaction.set(blockerRef, { ...block, blocked : [...(block?.blocked || []), data.blockeeId]})
+    })
+}
+export const unBlockUser = async (data: { blockerId:string, blockeeId: string}, newblocked: string []) => {
+    const blockeeRef = firebase.firestore().doc(`blocks/${data.blockeeId}`);
+    const blockerRef = firebase.firestore().doc(`blocks/${data.blockerId}`);
+    
+    
+    await firebase.firestore().runTransaction(async (transaction)=> {
+        const blockee = await transaction.get(blockeeRef);
+        
+        if(blockee.exists){
+            const blockdata = blockee.data() as Block;
+            const newBlockedBy = (blockdata?.blockedBy || []).filter((userid)=> userid !== data.blockerId);
+            transaction.update(blockeeRef, { blockedBy: newBlockedBy});
+        }
+        else{
+            // theres nothing to do for the blockee
+        }
+        transaction.update(blockerRef, { blocked: newblocked})
+    });
 }

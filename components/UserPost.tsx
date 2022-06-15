@@ -63,10 +63,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     const videoRef = useRef<Video>(null);
 
     const likePost = async () => {
-        console.log({
-            userId: auth?.userId,
-            postId,
-        });
+        
         try {
             setIsLiking(true);
             await addPostTolikes(auth?.userId || '', postId || '');
@@ -223,10 +220,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                         }
                         onPress={() =>
                             navigation.navigate("Report", {
-                                postId,
-                                postText: text,
-                                postUserId: creatorId,
-                                postUsername: username,
+                                post
                             })
                         }
                     />

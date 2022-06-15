@@ -19,7 +19,7 @@ export const PostComment: FC<PostcommentProps> = ({ comment }) => {
             <Pressable
                 onPress={() =>
                     auth?.userId === userId
-                        ? navigation.navigate('Profile', {})
+                        ? navigation.navigate('General Profile', {})
                         : navigation.navigate('ProfilePreview', {
                               userId: userId,
                           })

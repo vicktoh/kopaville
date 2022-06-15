@@ -1,5 +1,4 @@
 import firebase from 'firebase';
-import { number } from 'yup';
 import { CartItem } from "./Product";
 
 export type Billing = {
@@ -20,4 +19,11 @@ export type Order = {
    deliveryStatus?: 'shipped' | 'delivered' | 'ending';
    transactionRef : string;
    amount: number;
+   billing?: Billing;
+   paymentDetails?:{
+      transactionRef: string;
+      date: string;
+      amount: number;
+   }
+   status?: 'ongoing' | 'closed'
 }

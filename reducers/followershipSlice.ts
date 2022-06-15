@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 import { Folowership } from "../types/Followership";
 
 const initialState : Folowership | null =  null;
@@ -18,7 +19,10 @@ export const followershipSlice = createSlice({
             return {...(state || {}), following: [...(state?.following || []), action.payload]}
         }
         
-    }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, () => initialState); // THIS LINE
+    },
 });
 
 

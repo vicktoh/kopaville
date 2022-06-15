@@ -64,6 +64,11 @@ export interface Profile {
     }
 }
 
+export type Block = {
+    blocked: string[];
+    blockedBy: string[];
+}
+
 
 
 

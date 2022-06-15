@@ -33,6 +33,8 @@ import { listenOnCategories } from '../services/productServices';
 import { setCategories } from '../reducers/categoriesSlice';
 import { Profile } from '../types/Profile';
 import { checkListFromProfile } from '../services/helpers';
+import { listenOnBlocks } from '../services/authServices';
+import { setBlock } from '../reducers/blockSlice';
 
 export default function Navigation({
     colorScheme,
@@ -43,7 +45,7 @@ export default function Navigation({
     localAuth: User | null;
     localSystemInfo: System | null;
 }) {
-    const { auth, systemInfo, followerships, posts, profile } =
+    const { auth, systemInfo, followerships, block } =
         useAppSelector<StoreType>((store) => store);
     const dispatch = useAppDispatch();
     React.useEffect(() => {
@@ -89,7 +91,7 @@ export default function Navigation({
     }, [auth]);
 
     React.useEffect(() => {
-        if (auth) {
+        if (auth && followerships?.following) {
             try {
                 const unsubscribe = listenOnTimeline(
                     [
@@ -99,14 +101,17 @@ export default function Navigation({
                         auth.userId,
                     ],
                     (data) => dispatch(setPosts(data)),
-                    (e) => console.log(e)
+                    (e) => console.log(e),
+                    block?.blocked || []
+                    
                 );
                 return unsubscribe;
             } catch (error) {
+                setPosts('error');
                 console.log(error);
             }
         }
-    }, [followerships?.following, auth]);
+    }, [followerships?.following, auth, block]);
 
     React.useEffect(() => {
         if (auth) {
@@ -144,6 +149,18 @@ export default function Navigation({
             try {
                 const unsubscribe = listenOnChats(auth.userId, (data) => {
                     dispatch(setChats(data));
+                });
+                return () => unsubscribe();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }, [auth]);
+    React.useEffect(() => {
+        if (auth) {
+            try {
+                const unsubscribe = listenOnBlocks(auth.userId, (data) => {
+                    dispatch(setBlock(data));
                 });
                 return () => unsubscribe();
             } catch (error) {

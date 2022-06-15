@@ -13,6 +13,7 @@ import {
     faGlobeAfrica,
     faHome,
     faHeart,
+    faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import { getInitialsFromName } from '../services/helpers';
 import { Pressable } from 'react-native';
@@ -34,6 +35,8 @@ export const DrawerContent: FC<DrawerContentComponentProps> = (props) => {
                 return <FontAwesomeIcon icon={faHeart} {...values} />;
             case 'Posts':
                 return <FontAwesomeIcon icon={faHome} {...values} />;
+            case 'Info': 
+                return <FontAwesomeIcon icon={faInfo} {...values} />;
             default:
                 return <FontAwesomeIcon icon={faGlobeAfrica} {...values} />;
         }

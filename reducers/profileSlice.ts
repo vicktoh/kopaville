@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 import { Profile } from "../types/Profile";
 
 
@@ -12,7 +13,10 @@ export const profileSlice = createSlice({
         setProfile: (state: any, action: PayloadAction<Partial<Profile>>) => {
             return { ...(state || {}), ...action.payload }
         }
-    }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, () => initialState); // THIS LINE
+    },
 });
 
 

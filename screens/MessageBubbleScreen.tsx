@@ -1,4 +1,4 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
     ArrowBackIcon,
@@ -9,12 +9,17 @@ import {
     Icon,
     IconButton,
     KeyboardAvoidingView,
-    ScrollView,
+    Text,
     TextArea,
     useToast,
 } from 'native-base';
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { ListRenderItemInfo, Platform, FlatList } from 'react-native';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ListRenderItemInfo,
+    Platform,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import { MessageBubble } from '../components/MessageBubble';
 import { useAppSelector } from '../hooks/redux';
 import {
@@ -36,37 +41,48 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
     route,
 }) => {
     const { recipient, conversationId } = route.params;
-    const { auth, profile } = useAppSelector(({ auth, profile }) => ({
-        auth,
-        profile,
-    }));
+    const { auth, profile, block } = useAppSelector(
+        ({ auth, profile, block }) => ({
+            auth,
+            profile,
+            block,
+        })
+    );
     const [conversation, setConversation] = useState<string | undefined>(
         conversationId
     );
     const [message, setMessage] = useState<string>('');
     const [chats, setChats] = useState<Chat[]>();
-    const [loading, setLoading] = useState<boolean>();
+    const [loading, setLoading] = useState<boolean>(true);
     const [sendingChat, setSendingChat] = useState<boolean>();
+    const blockedBy = useMemo(
+        () =>
+            (block?.blockedBy || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
+    );
     const flatListRef = useRef<any>();
     const toast = useToast();
     const { loginInfo, profileUrl } = profile || {};
     useEffect(() => {
         if (conversation) {
             const unsubscribe = listenOnChats(conversation, (data) => {
+                setLoading(false);
                 setChats(data);
                 flatListRef.current?.scrollToEnd({ animating: true });
             });
             return () => unsubscribe();
         }
-    }, [conversation]);
-    useEffect(()=>{
-       if(chats){
-          markAsRead(conversation || "", auth?.userId || "");
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animating: true }); 
-          }, 800);
-       }
-    }, [chats])
+    }, [conversationId]);
+    useEffect(() => {
+        if (chats) {
+            markAsRead(conversation || '', auth?.userId || '');
+            setTimeout(() => {
+                flatListRef.current?.scrollToEnd({ animating: true });
+            }, 800);
+        }
+    }, [chats]);
 
     const sendMessageAndStartConversation = async () => {
         try {
@@ -85,7 +101,7 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
                 (data) => {
                     setConversation(data);
                     setMessage('');
-                 }
+                }
             );
         } catch (error) {
             console.log(error);
@@ -126,6 +142,14 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
     const renderMessageBubble = (item: ListRenderItemInfo<Chat>) => {
         return <MessageBubble chat={item.item} authId={auth?.userId || ''} />;
     };
+    if (loading) {
+        return (
+            <Flex flex={1} justifyContent="center" alignItems="center">
+                <ActivityIndicator size={24} color="green" />{' '}
+                <Text>Fetching conversations...</Text>
+            </Flex>
+        );
+    }
     return (
         <KeyboardAvoidingView
             bg="white"
@@ -145,8 +169,8 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
                     ref={flatListRef}
                     data={chats}
                     renderItem={renderMessageBubble}
-                    keyExtractor={(item) =>
-                        item?.id || `${item.timestamp.toMillis()}`
+                    keyExtractor={(item, i) =>
+                        item?.id || `chat-bubble-${i}`
                     }
                 />
                 <Flex marginTop="auto">
@@ -161,25 +185,29 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
                             borderColor="primary.400"
                         />
                     </FormControl>
-                    <Button
-                        isLoadingText="Creating conversation"
-                        isLoading={sendingChat}
-                        mt={2}
-                        size="lg"
-                        variant="solid"
-                        onPress={() =>
-                            conversation
-                                ? sendMessageOnly(conversation)
-                                : sendMessageAndStartConversation()
-                        }
-                        colorScheme="primary"
-                        mb={5}
-                        leftIcon={
-                            <Icon size="sm" as={FontAwesome} name="send" />
-                        }
-                    >
-                        Send
-                    </Button>
+                    {blockedBy.length ? (
+                        <Icon as={Entypo} name="block" color="red.300" />
+                    ) : (
+                        <Button
+                            isLoadingText="Creating conversation"
+                            isLoading={sendingChat}
+                            mt={2}
+                            size="lg"
+                            variant="solid"
+                            onPress={() =>
+                                conversation
+                                    ? sendMessageOnly(conversation)
+                                    : sendMessageAndStartConversation()
+                            }
+                            colorScheme="primary"
+                            mb={5}
+                            leftIcon={
+                                <Icon size="sm" as={FontAwesome} name="send" />
+                            }
+                        >
+                            Send
+                        </Button>
+                    )}
                 </Flex>
             </Flex>
         </KeyboardAvoidingView>

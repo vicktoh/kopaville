@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import {
     Flex,
@@ -10,27 +10,23 @@ import {
     Text,
     Button,
     useDisclose,
-    KeyboardAvoidingView,
     ArrowBackIcon,
     useToast,
-    Progress,
     HStack,
     Box,
     VStack,
 } from 'native-base';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Modal, Platform, useWindowDimensions } from 'react-native';
 import { useAppSelector } from '../hooks/redux';
 import { Profile } from '../types/Profile';
-import { DatingProfileForm } from './DatingProfileForm';
 import {
     updateProfileInfo,
     uploadFileToFirestore,
 } from '../services/profileServices';
 import { setProfile } from '../reducers/profileSlice';
 import { useDispatch } from 'react-redux';
-import { AppStackParamList, MessageStackParamList } from '../types';
 import { Recipient } from '../types/Conversation';
 import { conversationExists } from '../services/messageServices';
 import { ImagePreview } from './ImagePreview';
@@ -39,10 +35,26 @@ import { DatingCover } from './DatingCover';
 const datingCover = require('../assets/images/datingcover1.jpg');
 
 export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
-    const { auth, chats } = useAppSelector(({ auth, chats }) => ({
+    const { auth, chats, block } = useAppSelector(({ auth, chats, block }) => ({
         auth,
         chats,
+        block,
     }));
+    const blocked = useMemo(
+        () =>
+            (block?.blocked || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
+    );
+    const blockedBy = useMemo(
+        () =>
+            (block?.blockedBy || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
+    );
+    
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
     const [isUploadingFromLibrary, setIsUploadingFromLibrary] =
         useState<boolean>(false);
@@ -156,6 +168,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         }
     };
     const message = () => {
+        if (blocked.length) return;
         if (profile?.userId === auth?.userId) {
             return;
         }
@@ -167,9 +180,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         };
 
         const conversationId = conversationExists(profile?.userId || '', chats);
-        if (conversationId) {
-            console.log('conversation exists as ', conversationId);
-        }
+        
         navigation.navigate('Message', {
             screen: 'MessageBubble',
             params: {
@@ -282,9 +293,13 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                     </Heading>
                     <Flex direction="row" mt={5}>
                         {auth?.userId !== profile?.userId ? (
-                            <Button size="md" mt={3} onPress={() => message()}>
+                            !blockedBy.length ? <Button
+                                size="md"
+                                mt={3}
+                                onPress={() => message()}
+                            >
                                 Message
-                            </Button>
+                            </Button>: <Icon as={Entypo} name="block" color="red.300" />
                         ) : (
                             <>
                                 <Button
@@ -329,15 +344,13 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                             <VStack space={1}>
                                 <Heading fontSize="sm">Blood Group</Heading>
                                 <Text fontSize="md">
-                                    {datingProfile?.bloodGroup ||
-                                        'Unavailable'}
+                                    {datingProfile?.bloodGroup || 'Unavailable'}
                                 </Text>
                             </VStack>
-                            <VStack space={1} ml = {8}>
+                            <VStack space={1} ml={8}>
                                 <Heading fontSize="sm">Genotype🩸</Heading>
                                 <Text fontSize="md">
-                                    {datingProfile?.genotype ||
-                                        'Unavailable'}
+                                    {datingProfile?.genotype || 'Unavailable'}
                                 </Text>
                             </VStack>
                         </Flex>

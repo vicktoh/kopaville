@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 
 
 
@@ -20,7 +21,10 @@ export const likeSlice = createSlice({
             state.push(action.payload);
             return state;
         }
-    }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, () => initialState); // THIS LINE
+    },
 });
 
 

@@ -11,6 +11,7 @@ import { Follower, followUser } from '../services/followershipServices';
 import { exploreUsers } from '../services/postsServices';
 import { HomeStackParamList } from '../types';
 import { Profile } from '../types/Profile';
+import { LoadingScreen } from './LoadingScreen';
 
 
 
@@ -50,6 +51,9 @@ export const ExploreUsersScreen : FC = () =>{
         const {loginInfo: {username, fullname}, userId, profileUrl} = listItem.item;
         const follower: Follower = { username, fullname, userId, photoUrl: profileUrl || ""}
         return (<UserListItem  profile={listItem.item}/>)
+    }
+    if(loading){
+        return <LoadingScreen label='fetching users' />
     }
     return(
         <Flex flex = {1} bg="white" py={5} >

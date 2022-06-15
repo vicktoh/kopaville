@@ -1,4 +1,5 @@
 export const LOCAL_SYSTEM_INFO = 'local_system_info';
+export const ONBORDING_INFO = 'onbording_info';
 export const LOCAL_USER_INFO = 'local_user_info';
 
 export const PAY_STACK_SK_KEY = 'sk_test_f0d239ff4c6dfc6231ed70ef5577905afeee38dd';

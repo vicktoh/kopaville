@@ -4,7 +4,7 @@ import { Center, Flex, Text, Image, Box, Button, Heading } from 'native-base';
 import { FlatList, ListRenderItem } from 'react-native';
 import { User } from '../types/User';
 import { setLocalData } from '../services/local';
-import { LOCAL_SYSTEM_INFO } from '../constants/Storage';
+import { LOCAL_SYSTEM_INFO, ONBORDING_INFO } from '../constants/Storage';
 import { System } from '../types/System';
 const landingImage = require('../assets/images/landing.png');
 const screen1Image = require('../assets/images/corper_group.png');
@@ -162,6 +162,7 @@ export const OnboardingScreen: FC<OnboardingScreenProps> = ({ setIsOnboarded, au
     const onboardUser = async ()=>{
         const newData : System = {...(systemInfo|| {}), dateOnboarded: new Date().getTime()}
         await setLocalData(LOCAL_SYSTEM_INFO, JSON.stringify(newData));
+        await setLocalData(ONBORDING_INFO, JSON.stringify(newData));
         setIsOnboarded(true);
    }
     const renderItem: ListRenderItem<FlatListItem> = ({ item, index, separators }) => {

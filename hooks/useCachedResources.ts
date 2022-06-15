@@ -3,7 +3,7 @@ import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { LOCAL_SYSTEM_INFO } from '../constants/Storage';
+import { LOCAL_SYSTEM_INFO, ONBORDING_INFO } from '../constants/Storage';
 import { getLocalData, getLocalUserData } from '../services/local';
 import { System } from '../types/System';
 import { User } from '../types/User';
@@ -34,11 +34,11 @@ export default function useCachedResources() {
         const user: User = await getLocalUserData();
         user && setAuth(user);
         const info = await getLocalData(LOCAL_SYSTEM_INFO)
+        const onboard = await getLocalData(ONBORDING_INFO);
         if(info) {
           setSystemInfo(info);
-           setIsOnboarded(true);
-
         }
+        setIsOnboarded(!!onboard);
       
       } catch (e) {
         // We might want to provide this error information to an error reporting service

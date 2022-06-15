@@ -17,8 +17,8 @@ import React, { FC, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { ProfileSection } from './ProfileSection';
 import { Profile } from '../types/Profile';
-import { Modal, Pressable, useWindowDimensions, View } from 'react-native';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { Modal, useWindowDimensions, View } from 'react-native';
+import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
@@ -32,9 +32,12 @@ import {
     followUser,
     unfollowUser,
 } from '../services/followershipServices';
-import { setFollowership } from '../reducers/followershipSlice';
 import { differenceInCalendarYears } from 'date-fns';
 import { useOpenLink } from '../hooks/useOpenLink';
+import { BlockedProfile } from './BlockedProfile';
+import { ProfileBlock } from './ProfileBlock';
+import { setBlock } from '../reducers/blockSlice';
+import { setFollowership } from '../reducers/followershipSlice';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -50,10 +53,12 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         auth,
         profile: localProfile,
         followerships,
-    } = useAppSelector(({ auth, profile, followerships }) => ({
+        block,
+    } = useAppSelector(({ auth, profile, followerships, block }) => ({
         auth,
         profile,
         followerships,
+        block,
     }));
     const {
         profile: generalProfile,
@@ -71,6 +76,17 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         onOpen: onOpenProfilePreview,
         onClose: oncloseProfilePreview,
     } = useDisclose();
+    const {
+        isOpen: isProfileOpen,
+        onOpen: onOpenProfilePic,
+        onClose: oncloseProfilePic,
+    } = useDisclose();
+    const {
+        isOpen: reportViewOpen,
+        onOpen: onOpenReportView,
+        onClose: onCloseReportView,
+    } = useDisclose();
+
     const dispatch = useAppDispatch();
     const navigation =
         useNavigation<NavigationProp<DrawerParamList & HomeStackParamList>>();
@@ -93,9 +109,16 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
     const following = useMemo(
         () =>
             (followerships?.following || []).filter(
-                ({ userId }) => userId == profile.userId
+                ({ userId }) => userId === profile.userId
             ),
-        [profile]
+        [followerships]
+    );
+    const blocked = useMemo(
+        () =>
+            (block?.blocked || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
     );
     const { openLink } = useOpenLink();
     const pickImageFromGallery = async () => {
@@ -137,7 +160,11 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 fullname,
                 photoUrl: profileUrl,
             };
+            
             await followUser(auth?.userId || '', follower);
+            const newfollowership = { ...followerships, following: [...(followerships?.following || []), follower]}
+            dispatch(setFollowership(newfollowership));
+            setLoading(false);
         } catch (error) {
             let err: any = error;
             toast.show({
@@ -154,6 +181,9 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         try {
             setLoading(true);
             await unfollowUser(auth?.userId || '', profile?.userId);
+            const newfollowing = (followerships?.following || []).filter(({userId})=> userId !== profile?.userId);
+            dispatch(setFollowership({...followerships, following: newfollowing}));
+            setLoading(false);
         } catch (error) {
             console.log(error);
             let err: any = error;
@@ -167,6 +197,18 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
             setLoading(false);
         }
     };
+    const onBlockSuccess = async (userId:string)=> {
+        const newblocked = [...(block?.blocked || []), userId];
+        dispatch(setBlock({...block, blocked: newblocked}));
+        onCloseReportView();
+        toast.show({
+            title: `You have blocked ${profile.loginInfo.fullname} successfully`,
+            status: 'success',
+        });
+    }
+    if (blocked?.length) {
+        return <BlockedProfile profile={profile} />;
+    }
     return (
         <Flex py={3} px={5} position="relative" bg="white">
             <View
@@ -181,6 +223,16 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     right: -80,
                 }}
             ></View>
+            {auth?.userId !== profile.userId ? (
+                <IconButton
+                    position="absolute"
+                    top={3}
+                    right={5}
+                    icon={<Icon as={Entypo} name="block" color="red.300" />}
+                    onPress={onOpenReportView}
+                    zIndex={5}
+                />
+            ) : null}
             <ProfileSection
                 onOpenPreview={onOpenProfilePreview}
                 profile={profile}
@@ -334,9 +386,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     No Dating Profile Available ❤️
                 </Text>
             )}
-            <Heading fontSize="sm" mt={5} mb={2}>
-                Posts
-            </Heading>
+    
             <Modal visible={isOpen} transparent={true} animationType="slide">
                 <Flex
                     bg="white"
@@ -364,6 +414,33 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     </Button>
                 </Flex>
             </Modal>
+            <Modal
+                visible={reportViewOpen}
+                transparent={true}
+                animationType="slide"
+            >
+                <Flex
+                    bg="white"
+                    marginTop="auto"
+                    shadow="7"
+                    borderRadius="2xl"
+                    pb={10}
+                    direction="column"
+                    p={5}
+                >
+                    <ProfileBlock
+                        onCancel={onCloseReportView}
+                        onBlockSuccess= {onBlockSuccess}
+                        userId = {auth?.userId || ""}
+                        user={profile}
+                        onReport={() =>
+                            navigation.navigate('Report', {
+                                user: profile
+                            })
+                        }
+                    />
+                </Flex>
+            </Modal>
             <Modal visible={profilePreveiwOpen} animationType="fade">
                 <Flex
                     flex={1}
@@ -373,6 +450,10 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     safeArea
                 >
                     <IconButton
+                        position="absolute"
+                        top={5}
+                        right={2}
+                        size="sm"
                         alignSelf="flex-end"
                         icon={<CloseIcon />}
                         onPress={oncloseProfilePreview}
@@ -386,6 +467,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     />
                 </Flex>
             </Modal>
+        
         </Flex>
     );
 };

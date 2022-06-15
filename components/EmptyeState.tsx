@@ -9,6 +9,7 @@ type EmptyStateProps = {
 export const EmptyState: FC<EmptyStateProps> = ({ title, description }) => {
     return (
         <Flex
+            bg="white"
             p={5}
             flex={1}
             justifyContent="center"
@@ -18,9 +19,9 @@ export const EmptyState: FC<EmptyStateProps> = ({ title, description }) => {
             borderColor="primary.300"
             borderRadius="lg"
         >
-            <Heading mb={2}>{title || "There's nothing to show here"}</Heading>
+            <Heading mb={2} textAlign="center">{title || "There's nothing to show here"}</Heading>
             {description ? (
-                <Text lineHeight="xl">
+                <Text lineHeight="xl" textAlign="center">
                     { description || `Watch out on this space for jobs you can apply for in across different locations in Nigeria. You can
                     also post your own buisness or service for people to find you`}
                 </Text>

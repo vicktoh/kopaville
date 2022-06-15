@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 import { System } from "../types/System";
 
 
@@ -12,7 +13,10 @@ export const systemSlice = createSlice({
         setSystemInfo: (state: any, action: PayloadAction<Partial<System> | null>) => {
             return action.payload as any
         }
-    }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, () => initialState); // THIS LINE
+    },
 });
 
 

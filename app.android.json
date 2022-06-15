@@ -2,7 +2,7 @@
    "expo": {
      "name": "kopaville",
      "slug": "kopaville",
-     "version": "1.0.2",
+     "version": "1.0.3",
      "orientation": "portrait",
      "icon": "./assets/images/icon.png",
      "scheme": "myapp",
@@ -20,14 +20,18 @@
      ],
      "ios": {
        "supportsTablet": true,
-       "usesIcloudStorage": true
+       "usesIcloudStorage": true,
+       "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to capture images that can be shared as part of posts or user profiles",
+        "NSPhotoLibraryUsageDescription": "This app accesses the photo library to enable you capture images and videos that can be shared as part of posts or user profiles"
+      }
      },
      "android": {
        "adaptiveIcon": {
          "foregroundImage": "./assets/images/adaptive-icon.png",
          "backgroundColor": "#ffffff"
        },
-       "versionCode": 3,
+       "versionCode": 4,
        "package": "com.vicktoh.kopaville"
      },
      "web": {

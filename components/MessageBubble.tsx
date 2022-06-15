@@ -1,9 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { Flex, Text } from 'native-base';
 import { Chat } from '../types/Conversation';
 import { format } from 'date-fns/esm';
 import { useWindowDimensions } from 'react-native';
+import { intervalToDuration } from 'date-fns';
+import { chatTime } from '../services/helpers';
 
 type MessageBubbleProps = {
     authId: string;
@@ -12,10 +14,11 @@ type MessageBubbleProps = {
 
 export const MessageBubble: FC<MessageBubbleProps> = ({
     authId,
-    chat: { timestamp, message, toId, fromId },
+    chat: { timestamp, message, toId, fromId, id },
 }) => {
-    const time = format(timestamp.toDate(), 'kk: mm');
+    const time = chatTime(timestamp);
     const { width: windowWidth } = useWindowDimensions();
+    const duration = intervalToDuration({ start: timestamp.toDate(), end: new Date()});
     return (
         <Flex
             direction="row"
