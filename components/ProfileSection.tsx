@@ -21,7 +21,7 @@ export const ProfileSection: FC<ProfileSectionProps> = ({profile, userId, prompt
     return(
         <Flex direction="column">
             <VStack space={1}>
-            <Pressable onPress={ ()=> userId === profileId ? promptAvatarChange(): onOpenPreview()}>
+            <Pressable onPress={ ()=> userId === profileId ? promptAvatarChange(): onOpenPreview()} style={{alignSelf: "flex-start"}}>
             <Avatar source={{uri: profile.profileUrl}}  size="xl" bg="secondary.300" color="primary.500">{getInitialsFromName(loginInfo?.fullname|| "") }</Avatar> 
                 </Pressable>
                 {

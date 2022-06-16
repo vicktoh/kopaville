@@ -6,7 +6,8 @@ export interface Job {
     organisation: string;
     criteria: string[];
     link: string;
-    dateAdded?: firebase.firestore.Timestamp
+    dateAdded?: firebase.firestore.Timestamp;
+    verified?: boolean
 
 }
 
@@ -18,6 +19,7 @@ export interface Business {
     twitter?: string;
     link?: string;
     services?: string [];
-    dateAdded?: firebase.firestore.Timestamp
+    dateAdded?: firebase.firestore.Timestamp;
+    verified?: boolean
 
 }

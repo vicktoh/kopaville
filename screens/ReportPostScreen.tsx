@@ -36,7 +36,7 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
     route,
 }) => {
     const { post, user } = route.params;
-    const auth = useAppSelector(({ auth }) => auth);
+    const {auth, profile} = useAppSelector(({ auth, profile }) => ({auth, profile}));
     const [seletedReason, setSelectedReason] = useState<number>();
     const [selectedUserReason, setSelectedUserReason] = useState<number>();
     const [isReporting, setReporting] = useState<boolean>(false);
@@ -47,8 +47,9 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
             post,
             reporter: {
                 displayName: auth?.displayName || '',
-                photoUrl: auth?.photoUrl || '',
-                userName: auth?.username || '',
+                photoUrl: profile?.profileUrl || '',
+                userName: profile?.loginInfo.username || '',
+                userId: auth?.userId || ""
             },
             reason: REPORT_REASONS[seletedReason],
             date: firebase.firestore.Timestamp.now(),
@@ -66,8 +67,9 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                 date: firebase.firestore.Timestamp.now(),
                 reporter: {
                     displayName: auth?.displayName || '',
-                    photoUrl: auth?.photoUrl || '',
-                    userName: auth?.username || '',
+                    photoUrl: profile?.profileUrl || '',
+                    userName: profile?.loginInfo.username || '',
+                    userId: auth?.userId || "",
                 },
                 reason: REPORT_USER_REASONS[selectedUserReason],
             };
@@ -85,7 +87,7 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
             <Flex flex={1} px={5} pt={2} bg="white">
                 <Text
                     fontSize="lg"
-                    my={2}
+                    my={4}
                 >{`Help us Understand the problem and the reason you are reporting @${user.loginInfo.username}`}</Text>
                 <Flex flex={1}>
                     {REPORT_USER_REASONS.map((reason, i) => (

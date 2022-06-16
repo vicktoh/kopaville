@@ -84,10 +84,10 @@ export const InfoScreen: FC<DrawerScreenProps<DrawerParamList>> = ({ navigation 
                     />
                 </Flex>
             </TouchableOpacity>
-            <Flex mt={5}>
+            {/* <Flex mt={5}>
                <Heading fontSize="md">About us</Heading>
                <Text></Text>
-            </Flex>
+            </Flex> */}
         </Flex>
     );
 };

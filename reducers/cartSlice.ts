@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 import { CartItem } from "../types/Product";
 
 import { User } from "../types/User";
@@ -44,6 +45,9 @@ export const cartSlice = createSlice({
            state.splice(action.payload, 1);
            return state;
         }
+    },
+    extraReducers: (builder) => {
+      builder.addCase(PURGE, () => initialState); // THIS LINE
     }
 });
 

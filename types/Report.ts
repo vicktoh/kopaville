@@ -8,6 +8,7 @@ export type Report = {
       displayName: string;
       photoUrl: string;
       userName: string;
+      userId: string
    }
    date: firebase.firestore.Timestamp | number
    reason: string;

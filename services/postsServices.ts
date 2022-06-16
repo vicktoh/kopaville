@@ -142,10 +142,7 @@ type SendPostArgs = {
 export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaType }: SendPostArgs) => {
     const db = firebase.firestore(firebaseApp);
     const newPostRef = db.collection('posts').doc();
-    
-    
     const imageUrls = [];
-    
     if(blobs&& blobs.length){
         let i = 0;
         for(const blob of blobs){

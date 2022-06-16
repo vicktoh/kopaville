@@ -76,11 +76,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         onOpen: onOpenProfilePreview,
         onClose: oncloseProfilePreview,
     } = useDisclose();
-    const {
-        isOpen: isProfileOpen,
-        onOpen: onOpenProfilePic,
-        onClose: oncloseProfilePic,
-    } = useDisclose();
+   
     const {
         isOpen: reportViewOpen,
         onOpen: onOpenReportView,
@@ -223,12 +219,15 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     right: -80,
                 }}
             ></View>
+            {/* {auth?.userId !== profile.userId ? (
+                <BlockPopover onBlockClick={onOpenReportView} onReportClick = {()=> navigation.navigate("Report", { user: profile})} />
+            ) : null} */}
             {auth?.userId !== profile.userId ? (
                 <IconButton
                     position="absolute"
                     top={3}
                     right={5}
-                    icon={<Icon as={Entypo} name="block" color="red.300" />}
+                    icon={<Icon size={6} as={Entypo} name="block" color="red.500" />}
                     onPress={onOpenReportView}
                     zIndex={5}
                 />
@@ -433,10 +432,11 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         onBlockSuccess= {onBlockSuccess}
                         userId = {auth?.userId || ""}
                         user={profile}
-                        onReport={() =>
+                        onReport={() =>{
+                            onCloseReportView();
                             navigation.navigate('Report', {
                                 user: profile
-                            })
+                            })}
                         }
                     />
                 </Flex>
@@ -451,7 +451,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 >
                     <IconButton
                         position="absolute"
-                        top={5}
+                        top={8}
                         right={2}
                         size="sm"
                         alignSelf="flex-end"

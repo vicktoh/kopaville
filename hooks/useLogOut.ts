@@ -7,8 +7,12 @@ export const useLogout = ()=> {
    const dispatch = useDispatch();
 
    async function logoutFlow(){
-      await logOut();
-      setTimeout(async () => {persistor.purge(), dispatch(setAuth(null))}, 200);
+      
+      setTimeout(async () => {
+         persistor.purge(), 
+         await logOut();
+         dispatch(setAuth(null));
+      }, 200);
       
    }
    return logoutFlow;
