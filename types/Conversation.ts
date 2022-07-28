@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import { Business, Job } from './Job';
 
 export type Recipient = {
    fullname: string;
@@ -17,6 +18,11 @@ export type Conversation ={
    members: Recipient[];
    unreadCount?: number;
 }
+export enum ChatType  {
+   'link' = 'link',
+   'message' = 'message',
+   'job'="job"
+}
 
 export type Chat = {
    id?: string;
@@ -26,4 +32,8 @@ export type Chat = {
    message: string;
    timestamp: firebase.firestore.Timestamp;
    fromUsername: string;
+   type?: ChatType
+   title?: string;
+   link?: string;
+   job?:Job & Business;
 }

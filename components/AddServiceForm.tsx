@@ -15,10 +15,12 @@ import {
     useToast,
 } from 'native-base';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import * as ImagePicker from "expo-image-picker";
 import * as yup from 'yup';
 import { Business } from '../types/Job';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { postService } from '../services/jobServices';
+import { ImageBackground, useWindowDimensions } from 'react-native';
 
 const states: string[] = require('../assets/static/states.json');
 states.push('Remote (No location)');
@@ -53,20 +55,35 @@ const ServiceSchema = yup.object().shape({
 });
 
 export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business }) => {
-    // const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({
-    //     auth,
-    //     profile,
-    //     systemInfo,
-    // }));
-    // const toast = useToast();
-    // const dispatch = useAppDispatch();
-    const initialValue: Business & { formError?: string } = business || {
+    const {width: windowWidth } = useWindowDimensions();
+    const { auth } = useAppSelector(({auth})=> ({auth}));
+    const initialValue: Business & { formError?: string, bannerUri?: string; } = business || {
         name: '',
         link: '',
         instagram: '',
         address: '',
         twitter: '',
         services: [],
+        bannerUri: '',
+        creatorId: auth?.userId || ""
+    };
+    const pickImageFromGallery = async (callback: (uri: string) => void) => {
+        let permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permission.granted === false) {
+            return;
+        }
+        try {
+            let pickerResult = await ImagePicker.launchImageLibraryAsync({
+                aspect: [3, 1],
+                quality: 0.2,
+                allowsEditing: true,
+            });
+            if(!pickerResult.cancelled) callback(pickerResult.uri)
+        } catch (error) {
+            console.log({ error });
+        } finally {
+        }
     };
 
     return (
@@ -75,8 +92,9 @@ export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business }) 
                 validationSchema={ServiceSchema}
                 initialValues={initialValue}
                 onSubmit={async (values, { setFieldValue, setSubmitting }) => {
+                    const {bannerUri, formError, ...rest} = values;
                     try {
-                        await postService(values);
+                        await postService(rest, bannerUri);
                         // toast.show({ title: 'Successfully added business', status: 'success' });
                         setSubmitting(false);
                         onCancel();
@@ -95,6 +113,13 @@ export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business }) 
             >
                 {({ values, touched, errors, handleChange, handleBlur, isSubmitting, submitForm, setFieldValue }) => (
                     <Flex direction="column" flex={1} mt={5}>
+                        <Flex width="100%" height={(windowWidth - 50) * 1/3} position="relative">
+                        {values.bannerUrl || values.bannerUri
+                         ? <ImageBackground source={{uri: values.bannerUri || values.bannerUrl}} style={{flex: 1}}>
+                             <Heading mt='auto' ml={2} mb={2} color="white">Add Business/ Service</Heading>
+                         </ImageBackground>: <Heading ml={2} mt="auto" mb={2}>Add Business/ Service</Heading>}
+                         <IconButton size="sm" position="absolute" variant="outline" right={5} top={0} icon={<Icon size={5} as = {Entypo} name="edit"/>} onPress = {()=> pickImageFromGallery((uri)=> setFieldValue('bannerUri', uri))} />
+                         </Flex>
                         {errors?.formError ? (
                             <Alert w="100%" status="error" variant="subtle" mb={5}>
                                 <VStack space={2} flexShrink={1} w="100%">

@@ -22,7 +22,7 @@ export const AddJobScreen: FC<AddJobScreenProps> = ({ route , navigation})=>{
             <Flex>
                 <IconButton onPress={()=> navigation.goBack()} icon = {<Icon as = {AntDesign} name = "arrowleft" />} />
             </Flex>
-            <Heading>Add Job Oppening</Heading>
+            
             <AddJobForm  onCancel={()=> navigation.goBack()} mode="add"/>
             </Flex>
 

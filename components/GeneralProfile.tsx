@@ -17,7 +17,7 @@ import React, { FC, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { ProfileSection } from './ProfileSection';
 import { Profile } from '../types/Profile';
-import { Modal, useWindowDimensions, View } from 'react-native';
+import { Linking, Modal, useWindowDimensions, View } from 'react-native';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
@@ -38,6 +38,7 @@ import { BlockedProfile } from './BlockedProfile';
 import { ProfileBlock } from './ProfileBlock';
 import { setBlock } from '../reducers/blockSlice';
 import { setFollowership } from '../reducers/followershipSlice';
+import { ImagePickCropper } from './GalleryPicker/ImagePickCropper';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -68,15 +69,26 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
     } = profile;
     const [isUploadingFromLibrary, setUploadingFromLibrary] =
         useState<boolean>(false);
+    const [isLoadingFromCamera, setUploadingFromCamera] =
+        useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const { width: windowWidth } = useWindowDimensions();
     const { isOpen, onOpen, onClose } = useDisclose();
+    const [photoSelectMode, setPhotoSelectMode] = useState<
+        'camera' | 'gallery'
+    >('gallery');
+
     const {
         isOpen: profilePreveiwOpen,
         onOpen: onOpenProfilePreview,
         onClose: oncloseProfilePreview,
     } = useDisclose();
-   
+    const {
+        isOpen: photoPickerOpen,
+        onOpen: onOpenPhotoPicker,
+        onClose: onclosePhotoPicker,
+    } = useDisclose();
+
     const {
         isOpen: reportViewOpen,
         onOpen: onOpenReportView,
@@ -117,6 +129,37 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         [block]
     );
     const { openLink } = useOpenLink();
+
+    const pickImageFromCamera = async () => {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+            return;
+        }
+
+        try {
+            setUploadingFromCamera(true);
+            const pickerResult = await ImagePicker.launchCameraAsync({
+                aspect: [1, 1],
+                quality: 0.2,
+                allowsEditing: true,
+            });
+            if (pickerResult.cancelled) {
+                setUploadingFromCamera(false);
+                return;
+            }
+            const url = await uploadProfilePicture(
+                auth?.userId || '',
+                pickerResult?.uri || ''
+            );
+            updateProfileInfo(auth?.userId || '', { profileUrl: url });
+            dispatch(setProfile({ ...profile, profileUrl: url }));
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setUploadingFromCamera(false);
+            onClose();
+        }
+    };
     const pickImageFromGallery = async () => {
         let permission =
             await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -126,8 +169,9 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         try {
             setUploadingFromLibrary(true);
             let pickerResult: any = await ImagePicker.launchImageLibraryAsync({
+                aspect: [1, 1],
+                quality: 0.2,
                 allowsEditing: true,
-                base64: true,
             });
             const url = await uploadProfilePicture(
                 auth?.userId || '',
@@ -142,6 +186,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
             onClose();
         }
     };
+
     const follow = async () => {
         try {
             setLoading(true);
@@ -156,9 +201,12 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 fullname,
                 photoUrl: profileUrl,
             };
-            
+
             await followUser(auth?.userId || '', follower);
-            const newfollowership = { ...followerships, following: [...(followerships?.following || []), follower]}
+            const newfollowership = {
+                ...followerships,
+                following: [...(followerships?.following || []), follower],
+            };
             dispatch(setFollowership(newfollowership));
             setLoading(false);
         } catch (error) {
@@ -177,8 +225,12 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         try {
             setLoading(true);
             await unfollowUser(auth?.userId || '', profile?.userId);
-            const newfollowing = (followerships?.following || []).filter(({userId})=> userId !== profile?.userId);
-            dispatch(setFollowership({...followerships, following: newfollowing}));
+            const newfollowing = (followerships?.following || []).filter(
+                ({ userId }) => userId !== profile?.userId
+            );
+            dispatch(
+                setFollowership({ ...followerships, following: newfollowing })
+            );
             setLoading(false);
         } catch (error) {
             console.log(error);
@@ -193,15 +245,15 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
             setLoading(false);
         }
     };
-    const onBlockSuccess = async (userId:string)=> {
+    const onBlockSuccess = async (userId: string) => {
         const newblocked = [...(block?.blocked || []), userId];
-        dispatch(setBlock({...block, blocked: newblocked}));
+        dispatch(setBlock({ ...block, blocked: newblocked }));
         onCloseReportView();
         toast.show({
             title: `You have blocked ${profile.loginInfo.fullname} successfully`,
             status: 'success',
         });
-    }
+    };
     if (blocked?.length) {
         return <BlockedProfile profile={profile} />;
     }
@@ -227,7 +279,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     position="absolute"
                     top={3}
                     right={5}
-                    icon={<Icon size={6} as={Entypo} name="block" color="red.500" />}
+                    icon={
+                        <Icon
+                            size={6}
+                            as={Entypo}
+                            name="block"
+                            color="red.500"
+                        />
+                    }
                     onPress={onOpenReportView}
                     zIndex={5}
                 />
@@ -298,6 +357,23 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         }
                     />
                 ) : null}
+                {generalProfile?.phoneNumber && generalProfile.displayPhoneNumber ? (
+                    <IconButton
+                        variant="ghost"
+                        ml={3}
+                        icon={
+                            <Icon
+                                as={AntDesign}
+                                name="phone"
+                                color="primary.400"
+                            />
+                        }
+                        onPress={() =>
+                            generalProfile.phoneNumber &&
+                            Linking.openURL(`tel:${generalProfile.phoneNumber}`)
+                        }
+                    />
+                ) : null}
             </HStack>
             {generalProfile?.displayAge && generalProfile?.dateOfBirth ? (
                 <>
@@ -315,6 +391,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     <Text fontSize="md">{generalProfile.lga}</Text>
                 </>
             ) : null}
+            {generalProfile?.corperStatus ? (
+                <>
+                    <Heading fontSize="sm" mt={5} mb={2}>
+                        Service Status
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.corperStatus}</Text>
+                </>
+            ) : null}
 
             <Flex direction="row" mt={5} mb={2}>
                 {generalProfile?.servingState ? (
@@ -330,14 +414,69 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     </VStack>
                 ) : null}
             </Flex>
+            <Flex alignItems="center" direction="row" mt={5} mb={2}>
+
             {generalProfile?.ppa ? (
-                <>
-                    <Heading fontSize="sm" mt={5} mb={2}>
+                <VStack>
+                    <Heading fontSize="sm">
                         Place of Primary Assignment
                     </Heading>
                     <Text fontSize="md">{generalProfile.ppa}</Text>
-                </>
+                </VStack>
             ) : null}
+            {generalProfile?.platoon ? (
+                <VStack>
+                    <Heading fontSize="sm">
+                        Platoon
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.platoon}</Text>
+                </VStack>
+            ) : null}
+            {generalProfile?.camp ? (
+                <VStack>
+                    <Heading fontSize="sm">
+                        Camp Location
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.camp}</Text>
+                </VStack>
+            ) : null}
+            </Flex>
+            
+                {generalProfile?.saedCourse ? (
+                    <VStack>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            SAED Course
+                        </Heading>
+                        <Text fontSize="md">{generalProfile.saedCourse}</Text>
+                    </VStack>
+                ) : null}
+            
+            <Flex direction='row'>
+            {generalProfile?.languages ? (
+                <VStack>
+                    <Heading fontSize="sm" mt={5} mb={2}>
+                        Languages 
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.languages.join(",")}</Text>
+                </VStack>
+            ) : null}
+            {generalProfile?.height ? (
+                <VStack>
+                    <Heading fontSize="sm" mt={5} mb={2}>
+                        Height 
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.height}</Text>
+                </VStack>
+            ) : null}
+            {generalProfile?.shoeSize ? (
+                <VStack>
+                    <Heading fontSize="sm" mt={5} mb={2}>
+                        Shoe Size 
+                    </Heading>
+                    <Text fontSize="md">{generalProfile.shoeSize}</Text>
+                </VStack>
+            ) : null}
+            </Flex>
 
             <Flex direction="row" justifyContent="space-between" mt={5}>
                 <Heading fontSize="sm" mt={5} mb={2}>
@@ -385,7 +524,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     No Dating Profile Available ❤️
                 </Text>
             )}
-    
+
             <Modal visible={isOpen} transparent={true} animationType="slide">
                 <Flex
                     bg="white"
@@ -398,17 +537,25 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 >
                     <Heading mb={5}>Select Avatar</Heading>
                     <Button
+                        disabled={isUploadingFromLibrary || isLoadingFromCamera}
                         isLoading={isUploadingFromLibrary}
-                        isLoadingText="Uploadiing Image"
+                        isLoadingText="Uploading Image"
                         size="lg"
                         onPress={pickImageFromGallery}
                     >
                         Pick From Gallery
                     </Button>
-                    <Button size="lg" my={3}>
+                    <Button
+                        isLoading={isLoadingFromCamera}
+                        isLoadingText="Uploading Image"
+                        onPress={pickImageFromCamera}
+                        disabled={isUploadingFromLibrary || isLoadingFromCamera}
+                        size="lg"
+                        my={3}
+                    >
                         Pick From Camera
                     </Button>
-                    <Button size="lg" variant="outline" onPress={onClose}>
+                    <Button disabled={isUploadingFromLibrary || isLoadingFromCamera} size="lg" variant="outline" onPress={onClose}>
                         Cancel
                     </Button>
                 </Flex>
@@ -429,15 +576,15 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 >
                     <ProfileBlock
                         onCancel={onCloseReportView}
-                        onBlockSuccess= {onBlockSuccess}
-                        userId = {auth?.userId || ""}
+                        onBlockSuccess={onBlockSuccess}
+                        userId={auth?.userId || ''}
                         user={profile}
-                        onReport={() =>{
+                        onReport={() => {
                             onCloseReportView();
                             navigation.navigate('Report', {
-                                user: profile
-                            })}
-                        }
+                                user: profile,
+                            });
+                        }}
                     />
                 </Flex>
             </Modal>
@@ -467,7 +614,9 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     />
                 </Flex>
             </Modal>
-        
+            <Modal visible={photoPickerOpen} animationType="slide">
+                <ImagePickCropper type={photoSelectMode} />
+            </Modal>
         </Flex>
     );
 };

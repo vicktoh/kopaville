@@ -2,6 +2,11 @@ export interface Education {
     institution: string; qualification: string; period: {start: string, end: string}
 }
 
+export enum CorperStatus  {
+    "Ex-Corper" = "Ex-Corper",
+    "Serving Corper" = "Serving Corper",
+    "Prospective Corper" = "Prospective Corper",
+}
 export interface Business {
     name: string;
     instagram?: string;
@@ -10,13 +15,19 @@ export interface Business {
     description?: string;
 }
 
+export enum Gender {
+    "male"="male",
+    "female"="female",
+    "others"="others"
+}
+
 export interface Profile {
     loginInfo : {
         email: string;
         fullname: string;
         type: string;
         username: string;
-        gender?: string;
+        gender?: Gender;
     },
     userId: string;
     profileUrl: string;
@@ -27,6 +38,18 @@ export interface Profile {
             month: string;
             day: string;
         };
+        height?: string;
+        phoneNumber?: string;
+        displayPhoneNumber?: boolean;
+        languages?: string[];
+        shoeSize?: string;
+        kids?: boolean;
+        numberOfKids?: boolean;
+        corperStatus?: CorperStatus,
+        tribe?: string
+        platoon?: string;
+        saedCourse?: string;
+        camp?: string;
         displayAge?: boolean;
         servingState: string;
         servingLGA?: string;
@@ -47,7 +70,13 @@ export interface Profile {
 
     };
     datingProfile?:{
+        currentCity?:string;
         alias?: string;
+        smoking?: boolean;
+        kids?: boolean;
+        noOfKids?: string;
+        pets?: boolean;
+        drinking?: boolean;
         coverUrl?: string;
         covers?: string[];
         profile?: string;
@@ -62,6 +91,7 @@ export interface Profile {
         following: number;
         followers: number;
     }
+    verified?: boolean;
 }
 
 export type Block = {

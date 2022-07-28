@@ -1,7 +1,7 @@
 import { Profile } from '../types/Profile';
 import { Checklist } from '../types/System';
 import firebae from 'firebase';
-import { format, formatDistanceToNow, intervalToDuration } from 'date-fns';
+import { format, formatDistanceToNow, intervalToDuration, secondsInMinute, secondsToMinutes } from 'date-fns';
 type ChecklistKeys = keyof Checklist;
 const checklistKeys: ChecklistKeys[] = ['Complete Dating Profile', 'Complete Profile', 'Complete Career Profile'];
 
@@ -40,4 +40,11 @@ export const chatTime = (chatTimestamp: firebae.firestore.Timestamp) => {
         return format(chatTimestamp.toDate(), "qMMM yy 'at' kk:mm")
     }
     return formatDistanceToNow(chatTimestamp.toDate(), {addSuffix: true})
+}
+
+export const secondsTotime = (seconds: number)=>{
+    console.log({seconds})
+    const minute = (seconds/60).toFixed();
+    const remaining = (seconds%60).toFixed();
+    return `${minute}: ${remaining}`
 }

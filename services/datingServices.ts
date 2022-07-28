@@ -8,7 +8,7 @@ import { firebaseApp } from "./firebase";
 
 export const fetchDatingProfiles = async (gender: string, location?: string) =>{
     const db = firebase.firestore(firebaseApp);
-    let query =  db.collection('users').where('datingProfile.status', '==', 'single');
+    let query =  db.collection('users').where('datingProfile.status', '==', 'single').where('loginInfo.gender', '!=', gender);
     if(location) query = query.where('profile.servingState', '==', location);
     const snapshot =  await  query.get();
 

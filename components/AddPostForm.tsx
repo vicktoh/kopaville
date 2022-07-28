@@ -15,8 +15,9 @@ import {
 } from 'native-base';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import { Video } from 'expo-av';
-import { useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import { sendPost } from '../services/postsServices';
 import { useAppSelector } from '../hooks/redux';
 import { getUploadBlob } from '../services/profileServices';
@@ -26,83 +27,111 @@ type AddPostFormProps = {
 };
 
 export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
-    const {auth, profile} = useAppSelector(({ auth, profile }) => ({auth, profile}));
+    const { auth, profile } = useAppSelector(({ auth, profile }) => ({
+        auth,
+        profile,
+    }));
     const [postText, setPostText] = useState<string>('');
     const [imageUri, setImageUri] = useState<string[]>([]);
     const [blobs, setBlob] = useState<Blob[]>([]);
     const [videoBlob, setVideoBlob] = useState<Blob>();
-    const [pickedVideo, setPickedVideo] = useState<ImagePicker.ImagePickerResult>();
-    const [videoThumbnail, setVideoThumbnail] = useState<string>('');
+    const [pickedVideo, setPickedVideo] =
+        useState<ImagePicker.ImagePickerResult>();
     const [postFormError, setPostFormError] = useState<string>('');
     const [posting, setPosting] = useState<boolean>(false);
     const { width: windowWidth } = useWindowDimensions();
     const toast = useToast();
 
     const pickFromGallery = async () => {
-        const permissin = await ImagePicker.getMediaLibraryPermissionsAsync();
-        if (permissin.granted === false) {
-            toast.show({
-                title: 'Permission Denied',
-                description: 'Please grant access to your camera from your phone settings',
-                status: 'error',
-            });
-            return;
-        }
+        const { granted } = await MediaLibrary.requestPermissionsAsync();
+        if(granted){
+            const library = await MediaLibrary.getAssetsAsync();
+            let uris = [];
+            const currBlobs = [];
+            for(let i = 0; i < library.assets.length; i++){
+                const blob = await getUploadBlob(library.assets[i].uri);
+                currBlobs.push(blob);
+                uris.push(library.assets[i].uri);
 
-        const result = await ImagePicker.launchImageLibraryAsync({ base64: true, aspect: [4, 5], quality: 0.2 });
-        if (result.cancelled) {
-            return;
+            }
+            setBlob([...(blobs || []), ...currBlobs]);
+            setImageUri(uris);
         }
-        
-        const blob = await getUploadBlob(result.uri);
-        setBlob([...(blobs || []), blob]);
-        setImageUri((images) => [...images, result.uri]);
     };
 
     const pickVideoFromGallery = async () => {
-        const permissin = await ImagePicker.getMediaLibraryPermissionsAsync();
-        if (permissin.granted === false) {
-            toast.show({
-                title: 'Permission Denied',
-                description: 'Please grant access to your camera from your phone settings',
-                status: 'error',
-                placement: 'top',
-            });
-            return;
+        let permissin = await ImagePicker.getMediaLibraryPermissionsAsync();
+        if (permissin.granted === false && permissin.canAskAgain) {
+            permissin = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (permissin.granted == false) {
+                toast.show({
+                    title: 'Permission Denied',
+                    description:
+                        'Please grant access to your gallery from your phone settings',
+                    status: 'error',
+                    placement: 'top',
+                });
+                return;
+            }
         }
 
-        const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Videos, videoQuality: 2 });
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+            videoQuality: 2,
+        });
         if (result.cancelled) {
             return;
         }
         try {
-        const blob = await getUploadBlob(result.uri);
-        setPickedVideo(result);
-        setVideoBlob(blob);
+            const blob = await getUploadBlob(result.uri);
+            setPickedVideo(result);
+            setVideoBlob(blob);
         } catch (error) {
             console.log(error);
         }
-        
     };
 
     const pickImageFromCamera = async () => {
-        const permissin = await ImagePicker.getCameraPermissionsAsync();
-        if (permissin.granted === false) {
-            toast.show({
-                title: 'Permission Denied',
-                description: 'Please grant access to your camera from your phone settings',
-                status: 'error',
-                placement: 'top',
-            });
+        var permission = await ImagePicker.getCameraPermissionsAsync();
+        if (permission.granted === false && permission.canAskAgain) {
+            permission = await ImagePicker.requestCameraPermissionsAsync();
 
+            if (permission.granted === false) {
+                toast.show({
+                    title: 'Unable to complete, Camera permission required',
+                    status: 'error',
+                    description: '',
+                });
+            }
             return;
         }
 
-        const result = await ImagePicker.launchCameraAsync({ base64: true, aspect: [4, 5], quality: .2 });
-        if (result.cancelled) {
+        const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: false,
+            quality: 0.1,
+            base64: true,
+            allowsMultipleSelection: false,
+        });
+
+        if (Platform.OS === 'android') {
+            // const androidResults = await ImagePicker.getPendingResultAsync();
+            // console.log(androidResults);
+            // console.log('result', result);
+            console.log(result);
             return;
+            // const blob = await getUploadBlob(result.uri);
+            // setBlob([...(blobs || []), blob]);
+            // setImageUri((images) => [...images, result.uri]);
+        } else {
+            if (result.cancelled) {
+                return;
+            }
+            const blob = await getUploadBlob(result.uri);
+            setBlob([...(blobs || []), blob]);
+            setImageUri((images) => [...images, result.uri]);
         }
-        setImageUri((images) => [...images, result.uri]);
+        // setImageUri((images) => [...images, result.uri]);
     };
 
     const makePost = async () => {
@@ -112,7 +141,11 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
         }
         try {
             setPosting(true);
-            const mediaType = videoBlob ? 'Video' : blobs.length ? 'Image' : 'None';
+            const mediaType = videoBlob
+                ? 'Video'
+                : blobs.length
+                ? 'Image'
+                : 'None';
             await sendPost({
                 ...(postText ? { text: postText } : {}),
                 ...(blobs ? { blobs } : {}),
@@ -120,16 +153,17 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                 mediaType,
                 userId: auth?.userId || '',
                 avartar: {
-                    photoUrl: profile?.profileUrl || "",
-                    username: profile?.loginInfo?.username || ""
-                }
+                    photoUrl: profile?.profileUrl || '',
+                    username: profile?.loginInfo?.username || '',
+                },
             });
             onClose();
         } catch (error) {
             console.log(error);
             toast.show({
                 title: 'Could not add post',
-                description: 'An error occured try again, Check that your internet connection is strong',
+                description:
+                    'An error occured try again, Check that your internet connection is strong',
                 placement: 'top',
                 zIndex: 7,
             });
@@ -161,7 +195,9 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                     placeholder="What's on your mind"
                     onChangeText={(text) => setPostText(text)}
                 />
-                <FormControl.ErrorMessage>{postFormError}</FormControl.ErrorMessage>
+                <FormControl.ErrorMessage>
+                    {postFormError}
+                </FormControl.ErrorMessage>
             </FormControl>
             <HStack space={3} my={3}>
                 {imageUri.length < 4 && !!!pickedVideo ? (
@@ -171,7 +207,9 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                             key={'gallery'}
                             bg="secondary.400"
                             size="xs"
-                            leftIcon={<Icon size="xs" as={Entypo} name="image" />}
+                            leftIcon={
+                                <Icon size="xs" as={Entypo} name="image" />
+                            }
                         >
                             Add Image
                         </Button>
@@ -180,7 +218,9 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                             onPress={pickImageFromCamera}
                             bg="secondary.400"
                             size="xs"
-                            leftIcon={<Icon size="xs" as={Entypo} name="camera" />}
+                            leftIcon={
+                                <Icon size="xs" as={Entypo} name="camera" />
+                            }
                         >
                             Add Image
                         </Button>
@@ -191,7 +231,9 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                         onPress={() => pickVideoFromGallery()}
                         bg="secondary.400"
                         size="xs"
-                        leftIcon={<Icon size="xs" as={Entypo} name="video-camera" />}
+                        leftIcon={
+                            <Icon size="xs" as={Entypo} name="video-camera" />
+                        }
                     >
                         Add Video
                     </Button>
@@ -202,7 +244,10 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                 <HStack space={5}>
                     {imageUri && imageUri.length
                         ? imageUri.map((uri, i) => (
-                              <Flex direction="column" key={`image-preview-${i}`}>
+                              <Flex
+                                  direction="column"
+                                  key={`image-preview-${i}`}
+                              >
                                   <IconButton
                                       onPress={() => removeImagePreview(i)}
                                       alignSelf="flex-end"
@@ -213,25 +258,60 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                                       left="0"
                                       bg="secondary.300"
                                       zIndex={5}
-                                      icon={<Icon size="sm" as={Entypo} name="cross" />}
+                                      icon={
+                                          <Icon
+                                              size="sm"
+                                              as={Entypo}
+                                              name="cross"
+                                          />
+                                      }
                                   />
-                                  <Image width={70} height={(70 * 5) / 4} alt="Image post" source={{ uri }} />
+                                  <Image
+                                      width={70}
+                                      height={(70 * 5) / 4}
+                                      alt="Image post"
+                                      source={{ uri }}
+                                  />
                               </Flex>
                           ))
                         : null}
                     {pickedVideo && !pickedVideo.cancelled ? (
                         <Box>
-                            <Video  style = {{width: 70, height: (70*5)/4}} source={{uri: pickedVideo.uri}} />
-                            <Text fontSize="xs" my={1}>{`Video (${pickedVideo?.duration || 0/100})s`}</Text>
-                            <Button onPress={removeVideo} size="xs" variant="solid" colorScheme="error">remove</Button>
+                            <Video
+                                style={{ width: 70, height: (70 * 5) / 4 }}
+                                source={{ uri: pickedVideo.uri }}
+                            />
+                            <Text fontSize="xs" my={1}>{`Video (${
+                                pickedVideo?.duration || 0 / 100
+                            })s`}</Text>
+                            <Button
+                                onPress={removeVideo}
+                                size="xs"
+                                variant="solid"
+                                colorScheme="error"
+                            >
+                                remove
+                            </Button>
                         </Box>
                     ) : null}
                 </HStack>
             </ScrollView>
-            <Button onPress={onClose} variant="outline" disabled={posting} size="lg" mt={5}>
+            <Button
+                onPress={onClose}
+                variant="outline"
+                disabled={posting}
+                size="lg"
+                mt={5}
+            >
                 Cancel
             </Button>
-            <Button isLoading={posting} isLoadingText="Please Wait" my={3} size="lg" onPress={makePost}>
+            <Button
+                isLoading={posting}
+                isLoadingText="Please Wait"
+                my={3}
+                size="lg"
+                onPress={makePost}
+            >
                 Post
             </Button>
         </Flex>

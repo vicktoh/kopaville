@@ -54,7 +54,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
             ),
         [block]
     );
-    
+
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
     const [isUploadingFromLibrary, setIsUploadingFromLibrary] =
         useState<boolean>(false);
@@ -180,7 +180,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         };
 
         const conversationId = conversationExists(profile?.userId || '', chats);
-        
+
         navigation.navigate('Message', {
             screen: 'MessageBubble',
             params: {
@@ -293,13 +293,21 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                     </Heading>
                     <Flex direction="row" mt={5}>
                         {auth?.userId !== profile?.userId ? (
-                            !blockedBy.length ? <Button
-                                size="md"
-                                mt={3}
-                                onPress={() => message()}
-                            >
-                                Message
-                            </Button>: <Icon as={Entypo} name="block" color="red.300" />
+                            !blockedBy.length ? (
+                                <Button
+                                    size="md"
+                                    mt={3}
+                                    onPress={() => message()}
+                                >
+                                    Message
+                                </Button>
+                            ) : (
+                                <Icon
+                                    as={Entypo}
+                                    name="block"
+                                    color="red.300"
+                                />
+                            )
                         ) : (
                             <>
                                 <Button
@@ -355,6 +363,43 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                             </VStack>
                         </Flex>
                     ) : null}
+                    <HStack mt={5} mb={2} space={3} flexWrap="wrap">
+                        {datingProfile?.smoking ? (
+                            <VStack space={1}>
+                                <Heading fontSize="sm">Smokes🚬 </Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.smoking ? 'yes' : 'no'}
+                                </Text>
+                            </VStack>
+                        ) : null}
+                        {datingProfile?.drinking ? (
+                            <VStack space={1} ml={8}>
+                                <Heading fontSize="sm">Drinks🥃 </Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.drinking ? 'yes' : 'no'}
+                                </Text>
+                            </VStack>
+                        ) : null}
+                    </HStack>
+                    <HStack mt={5} mb={3} space={3} flexWrap="wrap">
+                        {datingProfile?.kids ? (
+                            <VStack space={1}>
+                                <Heading fontSize="sm">Have kids</Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.kids ? 'yes' : 'no'}
+                                </Text>
+                            </VStack>
+                        ) : null}
+                        {datingProfile?.kids && datingProfile.noOfKids ? (
+                            <VStack space={1} ml={8}>
+                                <Heading fontSize="sm">Number of Kids </Heading>
+                                <Text fontSize="md">
+                                    {datingProfile?.noOfKids}
+                                </Text>
+                            </VStack>
+                        ) : null}
+                    </HStack>
+                    
                     <Heading fontSize="sm" mt={5} mb={1}>
                         Interests
                     </Heading>

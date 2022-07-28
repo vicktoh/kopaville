@@ -25,7 +25,8 @@ import {
     removePostFromLikes,
 } from '../services/postsServices';
 import { addLike, removeLike } from '../reducers/likesSlice';
-
+import InviewPort from './InView';
+import { useEffect } from 'react';
 type PostProps = {
     post: Post;
 };
@@ -43,6 +44,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         [likedPosts]
     );
     const [isLiking, setIsLiking] = useState<boolean>();
+    const [isRemoving, setRemoving] = useState<boolean>();
     const dispatch = useDispatch();
     const toast = useToast();
     const {
@@ -63,7 +65,6 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     const videoRef = useRef<Video>(null);
 
     const likePost = async () => {
-        
         try {
             setIsLiking(true);
             await addPostTolikes(auth?.userId || '', postId || '');
@@ -105,7 +106,32 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         }
     };
     const deletePost = () => {
-        removePost(postId);
+        try {
+            setRemoving(true)
+            removePost(postId);
+
+
+        } catch (error) {
+            setRemoving(false);
+            const err: any = error;
+            toast.show({
+                title: 'Could not remove post',
+                description: err?.message || 'Unexpected Error Try again',
+                status: 'error',
+            });
+        }
+    };
+    const isInView = async (isVisible: boolean) => {
+        if (!isVisible) {
+            if (
+                videoPlaybackStatus?.isLoaded &&
+                videoPlaybackStatus.isPlaying
+            ) {
+                console.log("out of view", postId)
+                await videoRef.current?.stopAsync();
+                return;
+            }
+        }
     };
     return (
         <Flex width={windowWidth} px={2} mb={5}>
@@ -136,37 +162,50 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 />
             ) : null}
             {videoUrl ? (
-                <Pressable
-                    onPress={() => {
-                        if (
-                            videoPlaybackStatus &&
-                            videoPlaybackStatus.isLoaded &&
-                            videoPlaybackStatus.didJustFinish
-                        ) {
-                            videoRef.current?.replayAsync();
-                            return;
-                        }
-                        videoPlaybackStatus &&
-                        videoPlaybackStatus.isLoaded &&
-                        videoPlaybackStatus.isPlaying
-                            ? videoRef.current?.pauseAsync()
-                            : videoRef.current?.playAsync();
-                    }}
-                >
-                    <Video
-                        ref={videoRef}
-                        style={{
-                            width: windowWidth - 20,
-                            height: (windowWidth * 5) / 4,
-                            alignSelf: 'center',
-                        }}
-                        source={{ uri: videoUrl }}
-                        resizeMode="cover"
-                        onPlaybackStatusUpdate={(status) =>
-                            setPlayBackStatus(() => status)
-                        }
-                    />
-                </Pressable>
+                // <Pressable
+                //     onPress={async () => {
+                //         if (
+                //             videoPlaybackStatus &&
+                //             videoPlaybackStatus.isLoaded &&
+                //             videoPlaybackStatus.isPlaying
+                //         ) {
+                //             await videoRef.current?.pauseAsync();
+                //             return;
+                //         }
+                //         if (
+                //             videoPlaybackStatus &&
+                //             videoPlaybackStatus.isLoaded &&
+                //             !videoPlaybackStatus.isPlaying
+                //         ) {
+                //             if (
+                //                 videoPlaybackStatus &&
+                //                 videoPlaybackStatus.isLoaded &&
+                //                 videoPlaybackStatus.didJustFinish
+                //             ) {
+                //                 await videoRef.current?.replayAsync();
+                //                 return;
+                //             }
+                //             await videoRef.current?.playAsync();
+                //         }
+                //     }}
+                // >
+                    <InviewPort onChange={isInView}>
+                        <Video
+                            useNativeControls={true}
+                            ref={videoRef}
+                            style={{
+                                width: windowWidth - 20,
+                                height: (windowWidth * 5) / 4,
+                                alignSelf: 'center',
+                            }}
+                            source={{ uri: videoUrl }}
+                            resizeMode="cover"
+                            onPlaybackStatusUpdate={(status) => {
+                                setPlayBackStatus(() => status);
+                            }}
+                        />
+                    </InviewPort>
+                // </Pressable>
             ) : null}
             {text ? <Text my={1}>{text}</Text> : null}
             <Flex direction="row" justifyContent="space-between">
@@ -188,6 +227,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     </HStack>
                     <HStack space={1} alignItems="center">
                         <IconButton
+                            
                             icon={
                                 <Icon
                                     size="sm"
@@ -209,7 +249,22 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                         </Text>
                     </HStack>
                 </HStack>
-                <HStack>
+                <HStack alignItems="center">
+                    {auth?.userId === creatorId ? (
+                        <IconButton
+                            disabled={ isRemoving }
+                            icon={
+                                <Icon
+                                    as={Feather}
+                                    name="trash-2"
+                                    color="red.300"
+                                    size="4"
+                                />
+                            }
+                            onPress={() => deletePost()}
+                        />
+                    ) : null}
+
                     <IconButton
                         icon={
                             <Icon
@@ -219,40 +274,12 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                             />
                         }
                         onPress={() =>
-                            navigation.navigate("Report", {
-                                post
+                            navigation.navigate('Report', {
+                                post,
                             })
                         }
                     />
                 </HStack>
-                {/* {auth?.userId === creatorId ? 
-                        <Menu
-                            trigger={(triggerProps) => (
-                                <IconButton
-                                    icon={
-                                        <Icon
-                                            as={Feather}
-                                            name="more-vertical"
-                                            size="sm"
-                                        />
-                                    }
-                                    {...triggerProps}
-                                />
-                            )}
-                        >
-                            <Menu.Item onPress={deletePost}>
-                                <HStack alignItems="center" space={2}>
-                                    <Icon
-                                        as={Feather}
-                                        name="trash-2"
-                                        color="red.300"
-                                        size="4"
-                                    />
-                                    <Text fontSize="xs">Delete Post</Text>
-                                </HStack>
-                            </Menu.Item>
-                        </Menu>
-                    : null} */}
             </Flex>
         </Flex>
     );

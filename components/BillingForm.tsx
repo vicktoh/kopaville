@@ -51,7 +51,8 @@ export const BillingForm: FC<BillingFormProps> = ({ onSuccess }) => {
         city: '',
         state: '',
         phone: '',
-        postalCode: ''
+        postalCode: '',
+        closestLandmark: ''
     };
 
 
@@ -111,6 +112,26 @@ export const BillingForm: FC<BillingFormProps> = ({ onSuccess }) => {
                             />
 
                             <FormControl.ErrorMessage>{touched.address && errors.address}</FormControl.ErrorMessage>
+                            <FormControl.HelperText></FormControl.HelperText>
+                        </FormControl>
+                        <FormControl
+                            _text={{ fontSize: 'lg' }}
+                            mb={3}
+                            isInvalid={!!touched.closestLandmark && !!errors.closestLandmark}
+                        >
+                            <FormControl.Label>closestLandmark</FormControl.Label>
+                            <Input
+                                size="lg"
+                                value={values.closestLandmark}
+                                onBlur={handleBlur('closestLandmark')}
+                                onChangeText={handleChange('closestLandmark')}
+                                variant="outline"
+                                borderColor="primary.400"
+                                placeholder="Closest landmark"
+                            />
+                            <FormControl.ErrorMessage>
+                                {touched.closestLandmark && errors.closestLandmark}
+                            </FormControl.ErrorMessage>
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
                         <FormControl

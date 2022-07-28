@@ -1,5 +1,7 @@
 import firebase from "firebase";
 export interface Job {
+    id?: string;
+    creatorId: string;
     title: string;
     description: string;
     location: string;
@@ -8,11 +10,12 @@ export interface Job {
     link: string;
     dateAdded?: firebase.firestore.Timestamp;
     verified?: boolean
-
+    bannerUrl?: string;
 }
 
 
 export interface Business {
+    id?: string;
     name: string;
     address: string;
     instagram?: string;
@@ -20,6 +23,8 @@ export interface Business {
     link?: string;
     services?: string [];
     dateAdded?: firebase.firestore.Timestamp;
-    verified?: boolean
+    verified?: boolean;
+    bannerUrl?: string;
+    creatorId: string;
 
 }

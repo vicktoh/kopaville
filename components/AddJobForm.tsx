@@ -20,8 +20,11 @@ import {
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import * as yup from 'yup';
 import { Job } from '../types/Job';
+import * as ImagePicker from 'expo-image-picker';
+
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { postJob } from '../services/jobServices';
+import { ImageBackground, useWindowDimensions } from 'react-native';
 
 const states: string[] = require('../assets/static/states.json');
 states.push("Remote (No location)");
@@ -38,6 +41,7 @@ const JobSchema = yup.object().shape({
     link: yup.string().required('Required!'),
     description: yup.string().required('Required!'),
     criteria: yup.array().min(1, 'Must add at least on criteria').max(5, 'Max of 5 criteria allowed'),
+    bannerUrl: yup.string(),
 });
 
 export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
@@ -46,16 +50,38 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
         profile,
         systemInfo,
     }));
+    const {width: windowWidth} = useWindowDimensions();
     const toast = useToast();
     const dispatch = useAppDispatch();
-    const initialValue: Job & { formError?: string } = job || {
+    const initialValue: Job & { formError?: string, bannerUri?: string} = job || {
         title: '',
         description: '',
         link: '',
         criteria: [],
         location: '',
         organisation: '',
+        creatorId: auth?.userId || ""
     };
+
+    const pickImageFromGallery = async (callback: (uri: string) => void) => {
+        let permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permission.granted === false) {
+            return;
+        }
+        try {
+            let pickerResult = await ImagePicker.launchImageLibraryAsync({
+                aspect: [3, 1],
+                quality: 0.2,
+                allowsEditing: true,
+            });
+            if(!pickerResult.cancelled) callback(pickerResult.uri)
+        } catch (error) {
+            console.log({ error });
+        } finally {
+        }
+    };
+    
 
     return (
         <Flex flex={1}>
@@ -64,8 +90,8 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
                 initialValues={initialValue}
                 onSubmit={async (values, { setFieldValue, setSubmitting }) => {
                     try {
-                       
-                        await postJob(values);
+                        const {bannerUri, formError, ...rest } = values;
+                        await postJob(rest, bannerUri);
                         // toast.show({title: 'Successfully Added post', status: "success"});
                         setSubmitting(false)
                         onCancel();
@@ -79,7 +105,14 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
                 }}
             >
                 {({ values, touched, errors, handleChange, handleBlur, isSubmitting, submitForm, setFieldValue }) => (
-                    <Flex direction="column" flex={1} mt={5}>
+                    <Flex   direction="column" flex={1} mt={5}>
+                        <Flex width="100%" height={(windowWidth - 50) * 1/3} position="relative">
+                        {values.bannerUrl || values.bannerUri
+                         ? <ImageBackground source={{uri: values.bannerUri || values.bannerUrl}} style={{flex: 1}}>
+                             <Heading mt='auto' ml={2} mb={2} color="white">Add Job Oppening</Heading>
+                         </ImageBackground>: <Heading ml={2} mt="auto" mb={2}>Add Job Oppening</Heading>}
+                         <IconButton size="sm" position="absolute" variant="outline" right={5} top={0} icon={<Icon size={5} as = {Entypo} name="edit"/>} onPress = {()=> pickImageFromGallery((uri)=> setFieldValue('bannerUri', uri))} />
+                        </Flex>
                         {errors?.formError ? (
                             <Alert w="100%" status="error" variant="subtle" mb={5}>
                                 <VStack space={2} flexShrink={1} w="100%">

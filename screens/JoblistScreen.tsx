@@ -45,15 +45,11 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
                     setPosts(post)
                 }, filter);
                 return unsubscribe;
-
-                
             } catch (error) {
                 console.log(error)
                 toast.show({title: "Error Fetch Job", description: "Could not fetch post, ensure you have good internet connection and try again", status: "error"});
                 
-            }
-            
-            
+            } 
         };
 
         fetchUserList();
@@ -72,13 +68,13 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
     return (
             <Flex flex={1} safeArea px={5} bg = "white">
                 <Flex py={3}>
-                    <Heading fontSize="lg">JOBS AND BUSSINESSES</Heading>
+                    <Heading fontSize="lg">JOBS AND BUSINESSES</Heading>
                     <Text fontSize="md" mt={1}>
                         Find jobs, business ideas, and connect with others
                     </Text>
                     <Flex direction="row" py={1} justifyContent="space-between">
                         <Button variant="link" size="md" onPress={()=>navigation.navigate("Add Job")}>
-                            Add Jop Opening
+                            Add Job
                         </Button>
                         <Button variant="link" size="md" onPress={()=> navigation.navigate("Add Business")}>
                             Add  Service

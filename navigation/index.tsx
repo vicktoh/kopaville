@@ -57,23 +57,23 @@ export default function Navigation({
         }
     }, [localAuth, localSystemInfo, followerships]);
 
-    React.useEffect(() => {
-        if (auth) {
-            try {
-                const unsubscribe = listenOnFollowers(auth.userId, (data) =>
-                    dispatch(
-                        setFollowership({
-                            ...(followerships || {}),
-                            followers: data,
-                        })
-                    )
-                );
-                return unsubscribe;
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    }, [auth]);
+    // React.useEffect(() => {
+    //     if (auth) {
+    //         try {
+    //             const unsubscribe = listenOnFollowers(auth.userId, (data) =>
+    //                 dispatch(
+    //                     setFollowership({
+    //                         ...(followerships || {}),
+    //                         followers: data,
+    //                     })
+    //                 )
+    //             );
+    //             return unsubscribe;
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+    // }, [auth]);
 
     React.useEffect(() => {
         if (auth) {
@@ -83,6 +83,21 @@ export default function Navigation({
                         setFollowership({ ...followerships, following: data })
                     )
                 );
+                return unsubscribe;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }, [auth]);
+    React.useEffect(() => {
+        if (auth) {
+            try {
+                const unsubscribe = listenOnFollowers(auth.userId, (data) => {
+                    console.log({ data }, "from follower");
+                    dispatch(
+                        setFollowership({ ...followerships, followers: data })
+                    );
+                });
                 return unsubscribe;
             } catch (error) {
                 console.log(error);
@@ -103,7 +118,6 @@ export default function Navigation({
                     (data) => dispatch(setPosts(data)),
                     (e) => console.log(e),
                     block?.blocked || []
-                    
                 );
                 return unsubscribe;
             } catch (error) {
@@ -116,14 +130,17 @@ export default function Navigation({
     React.useEffect(() => {
         if (auth) {
             try {
-                const unsubscribe = listenOnProfile(auth.userId, (data: Profile) => {
-                    dispatch(setProfile(data));
-                    const systemInfo: System = {
-                        dateOnboarded: new Date().getTime(),
-                        checkList: checkListFromProfile(data)
+                const unsubscribe = listenOnProfile(
+                    auth.userId,
+                    (data: Profile) => {
+                        dispatch(setProfile(data));
+                        const systemInfo: System = {
+                            dateOnboarded: new Date().getTime(),
+                            checkList: checkListFromProfile(data),
+                        };
+                        dispatch(setSystemInfo(systemInfo));
                     }
-                    dispatch(setSystemInfo(systemInfo))
-                });
+                );
 
                 return () => unsubscribe();
             } catch (error) {
@@ -168,10 +185,10 @@ export default function Navigation({
             }
         }
     }, [auth]);
-    React.useEffect(()=> {
-        if(auth){
+    React.useEffect(() => {
+        if (auth) {
             try {
-                const unsubscribe = listenOnCategories((data)=> {
+                const unsubscribe = listenOnCategories((data) => {
                     dispatch(setCategories(data));
                 });
                 return () => unsubscribe();
@@ -179,7 +196,7 @@ export default function Navigation({
                 console.log(error);
             }
         }
-    }, [])
+    }, []);
     return (
         <NavigationContainer
             linking={LinkingConfiguration}

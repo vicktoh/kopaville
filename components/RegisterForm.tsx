@@ -33,6 +33,7 @@ import {
 import { setAuth } from '../reducers/authSlice';
 import { User } from '../types/User';
 import { Linking } from 'react-native';
+import { Gender } from '../types/Profile';
 export type FormValues = {
     fullname: string;
     email: string;
@@ -232,9 +233,11 @@ export const RegisterForm: FC = () => {
                                 selectedValue={values.gender}
                                 variant="filled"
                             >
-                                <Select.Item value="male" label="Male" />
-                                <Select.Item value="female" label="Female" />
-                                <Select.Item value="others" label="Others" />
+                                {
+                                    Object.keys(Gender).map(
+                                        (gender, i) => <Select.Item key= {`direction-${i}`} value= {gender} label={gender} />
+                                    )
+                                }
                             </Select>
                             <FormControl.ErrorMessage>
                                 {touched.gender && errors.gender}

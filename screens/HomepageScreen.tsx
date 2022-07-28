@@ -16,15 +16,16 @@ import {
 import { Modal, Platform, View } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { DrawerParamList } from '../types';
+import { DrawerParamList, HomeStackParamList } from '../types';
 import { SetupChecklist } from '../components/SetupChecklist';
 import { useAppSelector } from '../hooks/redux';
 import { countComplette, onboardingCheckListComplete } from '../services/helpers';
 import { UserTimeline } from '../components/UserTimeline';
 import { AddPostForm } from '../components/AddPostForm';
 import { AntDesign } from '@expo/vector-icons';
+import { usernameExists } from '../services/authServices';
 const corperTwins = require('../assets/images/corpertwins.png');
-type HomepageScreenProps = NativeStackScreenProps<DrawerParamList, 'Posts'>;
+type HomepageScreenProps = NativeStackScreenProps<HomeStackParamList, "New Post">;
 export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
     const { width, height } = useWindowDimensions();
     const { auth, systemInfo } = useAppSelector(({ auth, systemInfo }) => ({ auth, systemInfo }));
@@ -32,6 +33,7 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
     const showChecklist = !!!(systemInfo?.checkList && onboardingCheckListComplete(systemInfo.checkList));
     const { onOpen: onOpenPostModal, onClose: onClosePostModal, isOpen: isPostModalOpen } = useDisclose();
     const count = systemInfo?.checkList ? countComplette(systemInfo.checkList) : 0;
+
     return (
         <Flex flex={1} bg="white">
             {showChecklist ? (
@@ -65,7 +67,7 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
                 size="lg"
                 top={height - 0.3 * height}
                 right={5}
-                onPress={onOpenPostModal}
+                onPress={()=> navigation.navigate("New Post")}
                 icon={<Icon as={AntDesign} name="plus" />}
             />
         </Flex>

@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 import { Profile } from '../types/Profile';
-import { Button, Flex, FormControl, Image, Input, Progress, TextArea } from 'native-base';
+import { Button, Flex, FormControl, Image, Input, Progress, Text, TextArea } from 'native-base';
 import { Formik } from 'formik';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from "expo-document-picker";
 import * as yup from 'yup';
 import { updateCareerInfo } from '../services/profileServices';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
@@ -20,7 +21,7 @@ const CarreerProfileSchema = yup.object().shape({
 
 export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, carreerProfile }) => {
     const initialValues: Partial<Profile['careerProfile']> & {
-        cvResult?: ImagePicker.ImagePickerResult;
+        cvResult?: DocumentPicker.DocumentResult;
         uploadProgress: 0;
     } = {
         profile: carreerProfile?.profile || '',
@@ -30,10 +31,10 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
     const dispatch = useAppDispatch();
     const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo }));
 
-    const pickDocument = async (callback: (result: ImagePicker.ImagePickerResult) => void) => {
+    const pickDocument = async (callback: (result: DocumentPicker.DocumentResult) => void) => {
         try {
-            const documentResult = await ImagePicker.launchImageLibraryAsync({});
-            if (documentResult.cancelled) {
+            const documentResult = await DocumentPicker.getDocumentAsync({type: 'application/pdf'});
+            if (documentResult.type === "cancel") {
                 return;
             }
 
@@ -50,7 +51,7 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
             onSubmit={async (values, { setSubmitting, setFieldValue }) => {
                 const profileData = {
                     profile: values.profile || '',
-                    ...(values.cvResult?.cancelled ? {} : { uri: values.cvResult?.uri }),
+                    ...(values.cvResult?.type === 'cancel' ? {} : { uri: values.cvResult?.uri }),
                 };
                 await updateCareerInfo(
                     auth?.userId || '',
@@ -99,9 +100,9 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
                         Select Resume
                     </Button>
                     <Flex>
-                        {values?.cvResult && values.cvResult.cancelled === false && (
+                        {values?.cvResult && values.cvResult.type === 'success' && (
                             <Flex>
-                                <Image size="xs" source={{ uri: values.cvResult.uri }} alt="Resume Preview" />
+                                <Text isTruncated={true} noOfLines={2}>{values.cvResult.name}</Text>
                             </Flex>
                         )}
                     </Flex>
@@ -117,7 +118,7 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
                         Cancel
                     </Button>
                     <Button
-                        isLoadingText="Updating Carreer"
+                        isLoadingText="Updating Career"
                         isLoading={isSubmitting}
                         mt={2}
                         size="lg"

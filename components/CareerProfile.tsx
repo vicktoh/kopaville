@@ -123,7 +123,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
             <Flex flex={1} safeArea bg="white">
                 <Flex direction="row" alignItems="flex-end" py={3}>
                     <IconButton size="md" icon={<ArrowBackIcon />} onPress={() => navigation.goBack()} />
-                    <Heading ml={10} fontSize="lg">
+                    <Heading ml={10}>
                         Career Profile
                     </Heading>
                 </Flex>
@@ -132,7 +132,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                         {getInitialsFromName(loginInfo?.fullname || '')}
                     </Avatar>
                     <VStack>
-                        <Heading>{loginInfo?.fullname || ''}</Heading>
+                        <Heading fontSize="lg">{loginInfo?.fullname || ''}</Heading>
                         {loginInfo?.username ? <Text fontSize="md">{`@${loginInfo?.username}`}</Text> : null}
                     </VStack>
                 </HStack>
@@ -182,7 +182,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                             display="flex"
                             bg="secondary.100"
                             _text={{ color: 'primary.500', fontSize: 'md' }}
-                            onPress={onOpenCVModal}
+                            onPress={()=> openLink(careerProfile.cvUrl || "")}
                         >
                             Resume
                         </Button>

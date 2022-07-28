@@ -13,7 +13,7 @@ export const followershipSlice = createSlice({
             return {...(state || {}), ...action.payload}
         },
         addFollower: (state: any, action: PayloadAction<{userId: string, photoUrl: string, fullname: string; username: string }>) =>{
-            return {...(state || {}), followers: [...(state?.following || []), action.payload]}
+            return {...(state || {}), followers: [...(state?.followers || []), action.payload]}
         },
         addFollowing: (state: any, action: PayloadAction<{userId: string, photoUrl: string, fullname: string; username: string }>) =>{
             return {...(state || {}), following: [...(state?.following || []), action.payload]}

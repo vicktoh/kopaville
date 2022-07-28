@@ -28,10 +28,12 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
             setLoading(true);
             const { userId, profileUrl = "", loginInfo: { username, fullname}} = profile;
             const follower: Follower = { userId, username, fullname, photoUrl: profileUrl};
+            setIsfollowing(true);
             await followUser(auth?.userId || '', follower);
         } catch (error) {
             console.log(error);
             let err: any = error;
+            setIsfollowing(false);
             toast.show({
                 placement: 'top',
                 title: 'error',
@@ -66,7 +68,7 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
                 </VStack>
             </HStack>
             {isfollowing ? (
-                <Button size="sm" variant="outline">
+                <Button disabled={loading} size="sm" variant="outline">
                     Unfollow
                 </Button>
             ) : (

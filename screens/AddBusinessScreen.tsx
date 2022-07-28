@@ -23,7 +23,6 @@ export const AddBusinessScreen: FC<AddBusinessScreenProps> = ({ navigation })=>{
             <Flex>
                 <IconButton onPress={()=> navigation.goBack()} icon = {<Icon as = {AntDesign} name = "arrowleft" />} />
             </Flex>
-            <Heading>Add Business/ Service</Heading>
             <AddServiceForm  onCancel={()=> navigation.goBack()} mode="add"/>
             </Flex>
         </ScrollView>

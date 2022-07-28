@@ -35,7 +35,7 @@ const ONBOARDING_CHECKLIST: CheckListCardProps[] = [
 export const SetupChecklist: FC = () => {
     const {auth, systemInfo} = useAppSelector(({auth, systemInfo }) => ({ auth , systemInfo}));
     const count = systemInfo?.checkList ? countComplete(systemInfo.checkList) : 0; 
-    console.log({systemInfo});
+    // console.log({systemInfo});
     const renderChecklist: ListRenderItem<CheckListCardProps> = ({ item, index, separators }) => {
         if(systemInfo?.checkList && item?.path && systemInfo.checkList[item.key]){
             return null

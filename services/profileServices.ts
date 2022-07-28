@@ -45,6 +45,11 @@ export const updateProfileInfo = async (userId:string, profile: Partial<Profile>
         return { status: 'failed', message: 'unexpected error'}
     }
 }
+export const chekIfVerified = async(userId: string) =>{
+    const db = firebase.firestore(firebaseApp);
+    const verifiedSnap = await db.doc(`verifiedUser/${userId}`).get();
+    return verifiedSnap.exists
+}
 
 export const getUploadBlob = async (uri: string) => {
     // Why are we using XMLHttpRequest? See:

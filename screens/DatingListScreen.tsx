@@ -29,7 +29,7 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
     const [datingProfiles, setDatingProfiles] = useState<Profile[]>();
     const [loading, setLoading] = useState<boolean>(false);
     const [showFilter, setShowFilter] = useState<boolean>(false);
-    const [locationFilter, setLocationFilter] = useState<string>(profile?.profile?.servingState || '');
+    const [locationFilter, setLocationFilter] = useState<string>();
     const [fetchData, setFetchData] = useState<boolean>(false);
     const toast = useToast();
     useEffect(() => {

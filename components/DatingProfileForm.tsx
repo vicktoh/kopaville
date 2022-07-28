@@ -17,7 +17,10 @@ import {
 } from 'native-base';
 import { FieldArray, Formik } from 'formik';
 import * as yup from 'yup';
-import { updateCareerInfo, updateProfileInfo } from '../services/profileServices';
+import {
+    updateCareerInfo,
+    updateProfileInfo,
+} from '../services/profileServices';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setProfile } from '../reducers/profileSlice';
 import { AntDesign } from '@expo/vector-icons';
@@ -29,23 +32,36 @@ type DatingFormProps = {
 };
 
 const DatingSchema = yup.object().shape({
-    profile: yup.string().required('Required !').min(4, 'Requires at least 4 characters'),
+    profile: yup
+        .string()
+        .required('Required !')
+        .min(4, 'Requires at least 4 characters'),
     status: yup.string().required('Required !'),
     alias: yup.string().required('Required !'),
 });
 
-export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datingProfile }) => {
+export const DatingProfileForm: FC<DatingFormProps> = ({
+    onClose,
+    profile: datingProfile,
+}) => {
     const initialValues: Profile['datingProfile'] = {
         profile: datingProfile?.profile || '',
         interest: datingProfile?.interest || [],
         status: datingProfile?.status || '',
         alias: datingProfile?.alias || '',
+        currentCity: datingProfile?.currentCity || '',
         bloodGroup: datingProfile?.bloodGroup || '',
-        genotype: datingProfile?.genotype || "",
-        showBloodGroup: datingProfile?.showBloodGroup || false
+        genotype: datingProfile?.genotype || '',
+        showBloodGroup: datingProfile?.showBloodGroup || false,
+        smoking: datingProfile?.smoking || false,
+        kids: datingProfile?.kids || false,
+        noOfKids: datingProfile?.noOfKids || '',
+        drinking: datingProfile?.drinking || false,
     };
     const dispatch = useAppDispatch();
-    const { auth, profile, systemInfo } = useAppSelector(({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo }));
+    const { auth, profile, systemInfo } = useAppSelector(
+        ({ auth, profile, systemInfo }) => ({ auth, profile, systemInfo })
+    );
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [interest, setInterest] = useState<string>('');
 
@@ -55,18 +71,42 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
             initialValues={initialValues}
             onSubmit={async (values, { setSubmitting, setFieldValue }) => {
                 const newDatingProfile = { ...datingProfile, ...values };
-                await updateProfileInfo(auth?.userId || '', { datingProfile: { ...newDatingProfile } });
-                dispatch(setProfile({ ...profile, datingProfile: { ...newDatingProfile } }));
-                let  { checkList= {} } = systemInfo || {};
-                        if(!checkList?.['Complete Dating Profile'] ){
-                            console.log("blah")
-                            const newChecklist: Checklist = { ...(checkList ||{}), 'Complete Dating Profile' :  true}
-                            dispatch(setSystemInfo({...systemInfo, checkList: {... newChecklist}}));
-                        }
+                await updateProfileInfo(auth?.userId || '', {
+                    datingProfile: { ...newDatingProfile },
+                });
+                dispatch(
+                    setProfile({
+                        ...profile,
+                        datingProfile: { ...newDatingProfile },
+                    })
+                );
+                let { checkList = {} } = systemInfo || {};
+                if (!checkList?.['Complete Dating Profile']) {
+                    console.log('blah');
+                    const newChecklist: Checklist = {
+                        ...(checkList || {}),
+                        'Complete Dating Profile': true,
+                    };
+                    dispatch(
+                        setSystemInfo({
+                            ...systemInfo,
+                            checkList: { ...newChecklist },
+                        })
+                    );
+                }
                 onClose();
             }}
         >
-            {({ touched, errors, handleBlur, values, submitForm, handleChange, setFieldValue, isSubmitting }) => (
+            {({
+                touched,
+                errors,
+                handleBlur,
+                values,
+                submitForm,
+                handleChange,
+                setFieldValue,
+                isSubmitting,
+            }) => (
                 <Flex direction="column" mt={5}>
                     <FormControl
                         _text={{ fontSize: 'lg' }}
@@ -76,17 +116,19 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                     >
                         <FormControl.Label>Dating Alias</FormControl.Label>
                         <Input
-                                placeholder="Eg. Candy"
-                                size="md"
-                                value={values.alias}
-                                onBlur= {handleBlur('alias')}
-                                onChangeText={handleChange('alias')}
-                                variant="outline"
-                                borderColor="primary.400"
-                                flex={5}
-                                mr={2}
-                            />
-                        <FormControl.ErrorMessage>{touched.alias && errors.alias}</FormControl.ErrorMessage>
+                            placeholder="Eg. Candy"
+                            size="md"
+                            value={values.alias}
+                            onBlur={handleBlur('alias')}
+                            onChangeText={handleChange('alias')}
+                            variant="outline"
+                            borderColor="primary.400"
+                            flex={5}
+                            mr={2}
+                        />
+                        <FormControl.ErrorMessage>
+                            {touched.alias && errors.alias}
+                        </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
@@ -105,7 +147,9 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                             variant="outline"
                             borderColor="primary.400"
                         />
-                        <FormControl.ErrorMessage>{touched.profile && errors.profile}</FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage>
+                            {touched.profile && errors.profile}
+                        </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
@@ -114,7 +158,9 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                         isInvalid={!!touched.status && !!errors.status}
                         isRequired
                     >
-                        <FormControl.Label>Relationship Status</FormControl.Label>
+                        <FormControl.Label>
+                            Relationship Status
+                        </FormControl.Label>
                         <Flex direction="row">
                             <Radio.Group
                                 accessibilityLabel="Relationship Status"
@@ -134,10 +180,93 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                             </Radio.Group>
                         </Flex>
 
-                        <FormControl.ErrorMessage>{touched.status && errors.status}</FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage>
+                            {touched.status && errors.status}
+                        </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
-                    
+                    <FormControl
+                        _text={{ fontSize: 'lg' }}
+                        isRequired
+                        mb={3}
+                        isInvalid={!!touched.currentCity && !!errors.currentCity}
+                    >
+                        <FormControl.Label>Current City</FormControl.Label>
+                        <Input
+                            placeholder="Eg. Warri"
+                            size="md"
+                            value={values.currentCity}
+                            onBlur={handleBlur('currentCity')}
+                            onChangeText={handleChange('currentCity')}
+                            variant="outline"
+                            borderColor="primary.400"
+                            flex={5}
+                            mr={2}
+                        />
+                        <FormControl.ErrorMessage>
+                            {touched.currentCity && errors.currentCity}
+                        </FormControl.ErrorMessage>
+                        <FormControl.HelperText></FormControl.HelperText>
+                    </FormControl>
+                    <Flex direction="row">
+                        <HStack space={3}>
+                            <Checkbox
+                                accessibilityLabel="smoking"
+                                value="smoking"
+                                isChecked={values.smoking}
+                                onChange={(checked) =>
+                                    setFieldValue('smoking', checked)
+                                }
+                            />
+                            <FormControl.Label>Smoking?</FormControl.Label>
+                        </HStack>
+                        <HStack space={3}>
+                            <Checkbox
+                                accessibilityLabel="Kids"
+                                value="agreed"
+                                isChecked={values.drinking}
+                                onChange={(checked) =>
+                                    setFieldValue('drinking', checked)
+                                }
+                            />
+                            <FormControl.Label>
+                                Consume Alcohol
+                            </FormControl.Label>
+                        </HStack>
+                    </Flex>
+                        <HStack space={3} mt={5} mb={3}>
+                            <Checkbox
+                                accessibilityLabel="have kids"
+                                value="agreed"
+                                isChecked={values.kids}
+                                onChange={(checked) =>
+                                    setFieldValue('kids', checked)
+                                }
+                            />
+                            <FormControl.Label>Have Kids ?</FormControl.Label>
+                        </HStack>
+                        <FormControl
+                            _text={{ fontSize: 'lg' }}
+                            isInvalid={!!touched.noOfKids && !!errors.noOfKids}
+                        >
+                            <FormControl.Label>
+                                Number of Kids
+                            </FormControl.Label>
+                            <Input
+                                keyboardType="numeric"
+                                size="md"
+                                value={values.noOfKids || ''}
+                                onBlur={handleBlur('noOfKids')}
+                                onChangeText={handleChange('noOfKids')}
+                                variant="outline"
+                                borderColor="primary.400"
+                            />
+                            <FormControl.ErrorMessage>
+                                {touched.noOfKids && errors.noOfKids}
+                            </FormControl.ErrorMessage>
+                            <FormControl.HelperText></FormControl.HelperText>
+                        </FormControl>
+
                     <FormControl
                         _text={{ fontSize: 'lg' }}
                         mb={3}
@@ -145,17 +274,19 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                     >
                         <FormControl.Label>Blood Group</FormControl.Label>
                         <Input
-                                placeholder="O +"
-                                size="md"
-                                value={values.bloodGroup}
-                                onBlur= {handleBlur('bloodGroup')}
-                                onChangeText={handleChange('bloodGroup')}
-                                variant="outline"
-                                borderColor="primary.400"
-                                flex={5}
-                                mr={2}
-                            />
-                        <FormControl.ErrorMessage>{touched.bloodGroup && errors.bloodGroup}</FormControl.ErrorMessage>
+                            placeholder="O +"
+                            size="md"
+                            value={values.bloodGroup}
+                            onBlur={handleBlur('bloodGroup')}
+                            onChangeText={handleChange('bloodGroup')}
+                            variant="outline"
+                            borderColor="primary.400"
+                            flex={5}
+                            mr={2}
+                        />
+                        <FormControl.ErrorMessage>
+                            {touched.bloodGroup && errors.bloodGroup}
+                        </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
@@ -165,39 +296,47 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                     >
                         <FormControl.Label>Genotype</FormControl.Label>
                         <Input
-                                placeholder="AA"
-                                size="md"
-                                value={values.genotype}
-                                onBlur= {handleBlur('genotype')}
-                                onChangeText={handleChange('genotype')}
-                                variant="outline"
-                                borderColor="primary.400"
-                                flex={5}
-                                mr={2}
-                            />
-                        <FormControl.ErrorMessage>{touched.genotype && errors.genotype}</FormControl.ErrorMessage>
+                            placeholder="AA"
+                            size="md"
+                            value={values.genotype}
+                            onBlur={handleBlur('genotype')}
+                            onChangeText={handleChange('genotype')}
+                            variant="outline"
+                            borderColor="primary.400"
+                            flex={5}
+                            mr={2}
+                        />
+                        <FormControl.ErrorMessage>
+                            {touched.genotype && errors.genotype}
+                        </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
-                            _text={{ fontSize: 'lg' }}
-                            mb={3}
-                            isInvalid={!!touched.showBloodGroup && !!errors.showBloodGroup}
-                        >
-                            <HStack space={3}>
-                                <Checkbox
-                                    accessibilityLabel="display genotype and blood group"
-                                    value="Show blood group and genotype publicly?"
-                                    isChecked={values.showBloodGroup}
-                                    onChange={(checked) => setFieldValue('showBloodGroup', checked)}
-                                />
-                                <FormControl.Label>display blood group and genotype publicly?</FormControl.Label>
-                            </HStack>
-                            <FormControl.ErrorMessage>
-                                {touched.showBloodGroup && errors.showBloodGroup}
-                            </FormControl.ErrorMessage>
-                            <FormControl.HelperText></FormControl.HelperText>
-                        </FormControl>
-                        <FormControl _text={{ fontSize: 'lg' }} mb={3}>
+                        _text={{ fontSize: 'lg' }}
+                        mb={3}
+                        isInvalid={
+                            !!touched.showBloodGroup && !!errors.showBloodGroup
+                        }
+                    >
+                        <HStack space={3}>
+                            <Checkbox
+                                accessibilityLabel="display genotype and blood group"
+                                value="Show blood group and genotype publicly?"
+                                isChecked={values.showBloodGroup}
+                                onChange={(checked) =>
+                                    setFieldValue('showBloodGroup', checked)
+                                }
+                            />
+                            <FormControl.Label>
+                                display blood group and genotype publicly?
+                            </FormControl.Label>
+                        </HStack>
+                        <FormControl.ErrorMessage>
+                            {touched.showBloodGroup && errors.showBloodGroup}
+                        </FormControl.ErrorMessage>
+                        <FormControl.HelperText></FormControl.HelperText>
+                    </FormControl>
+                    <FormControl _text={{ fontSize: 'lg' }} mb={3}>
                         <FormControl.Label>Interests</FormControl.Label>
                         <Flex direction="row">
                             <Input
@@ -213,12 +352,13 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                             <Button
                                 onPress={() => {
                                     if (!interest) return;
-                                    const interests = [...(values.interest || [])];
+                                    const interests = [
+                                        ...(values.interest || []),
+                                    ];
                                     interests.push(interest);
                                     setFieldValue('interest', interests);
                                     setInterest('');
                                 }}
-                                
                                 size="md"
                                 flex={2}
                             >
@@ -239,7 +379,13 @@ export const DatingProfileForm: FC<DatingFormProps> = ({ onClose, profile: datin
                                               bg="secondary.200"
                                               _text={{ color: 'primary.500' }}
                                               key={`interest-${i}`}
-                                              leftIcon={<Icon size="xs" as={AntDesign} name="minuscircle" />}
+                                              leftIcon={
+                                                  <Icon
+                                                      size="xs"
+                                                      as={AntDesign}
+                                                      name="minuscircle"
+                                                  />
+                                              }
                                           >
                                               {int}
                                           </Button>

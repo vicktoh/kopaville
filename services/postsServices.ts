@@ -90,9 +90,9 @@ export const exploreUsers = async (following: string[] = [], servingState?: stri
     let  query = db.collection('users').where('userId', 'not-in', following);
     query = query.orderBy('userId', 'desc');
     query = query.orderBy('followerships.followers', 'desc');
-    if(servingState){
-        query = query.where('profile.servingState', '==', servingState);
-    }
+    // if(servingState){
+    //     query = query.where('profile.servingState', '==', servingState);
+    // }
     const snapshot = await query.get();
 
     const data: Profile[] = [];
@@ -197,13 +197,8 @@ export const commentOnPost = (comment: Comment) => {
 
 
 export const removePost = async (postId: string) => {
-    try {
         const db = firebase.firestore(firebaseApp);
         await db.doc(`posts/${postId}`).delete(); 
-    } catch (error) {
-        console.log(error);
-    }
-    
 }
 
 

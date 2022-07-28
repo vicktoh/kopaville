@@ -12,6 +12,7 @@ import { ProfileReviewScreen } from '../screens/ProfileReviewScreen';
 import { CareerReviewScreen } from '../screens/CareerReviewScreen';
 import { DatingReviewScreen } from '../screens/DatingReviewScreen';
 import { ReportPostScreen } from '../screens/ReportPostScreen';
+import { NewPost } from '../screens/NewPost';
 
 const HomePageStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -67,6 +68,7 @@ export const HomeStackNavigation = () => {
                     component={DatingReviewScreen}
                     options={{ headerShown: false }}
                 />
+                <HomePageStack.Screen name="New Post" component={NewPost} options={{headerShown: false}} />
             </HomePageStack.Group>
             <HomePageStack.Group screenOptions={{ presentation: 'modal' }}>
                 <HomePageStack.Screen

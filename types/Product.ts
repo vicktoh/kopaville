@@ -1,11 +1,18 @@
 import firebase from 'firebase';
+export enum ProductGrade {
+   "New" = "New",
+   "Fairly Used" = "Fairly Used",
+   "Used" = "Used"
+}
 
 export type  Product = {
    productId?: string;
    vendorId:string;
    userId: string;
    name: string;
+   variant?: Record<string, []>
    rating?: number;
+   grade?: ProductGrade;
    numberOfRating?: number;
    purchases?: number;
    price: number;

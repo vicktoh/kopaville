@@ -6,6 +6,7 @@ export type Billing = {
    city: string;
    state: string;
    postalCode: string;
+   closestLandmark?: string;
    phone: string;
 }
 
