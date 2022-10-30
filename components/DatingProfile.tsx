@@ -117,7 +117,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
                 covers.push(result.url);
                 setUploadProgress(uploadProgress + 1);
             } else {
-                console.log(result);
+                // console.log(result);
             }
         }
         if (covers.length) {

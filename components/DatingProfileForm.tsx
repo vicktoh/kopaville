@@ -82,7 +82,6 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                 );
                 let { checkList = {} } = systemInfo || {};
                 if (!checkList?.['Complete Dating Profile']) {
-                    console.log('blah');
                     const newChecklist: Checklist = {
                         ...(checkList || {}),
                         'Complete Dating Profile': true,
@@ -150,7 +149,6 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                         <FormControl.ErrorMessage>
                             {touched.profile && errors.profile}
                         </FormControl.ErrorMessage>
-                        <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
                         _text={{ fontSize: 'lg' }}

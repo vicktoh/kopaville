@@ -36,7 +36,6 @@ export const VideoComponent: FC<VideoComponentProps> = ({ id, imageWidth }) => {
         const fetchAssetInfo = async () => {
             if (localUri) return;
             let assetInfo = await MediaLibrary.getAssetInfoAsync(id);
-            console.log({ assetInfo });
             setUri(assetInfo.localUri || assetInfo.uri);
         };
         fetchAssetInfo();
@@ -76,7 +75,6 @@ export const GalleryPicker: FC<GallerPickerProps> = ({
         });
         return assets;
     }, [selectedResources, pageInfo]);
-    console.log(assestTorender);
     const onSelectAlbum = async (album: Album | undefined) => {
         setSelectedAlbum(album);
     };

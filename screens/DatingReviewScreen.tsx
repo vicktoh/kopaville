@@ -24,7 +24,6 @@ export const DatingReviewScreen : FC<DatingReviewProps> = ({navigation, route}) 
             try {
                setLoading(true);
                const user = await fetchUserProfile(userId);
-               console.log(user);
                if(user) setProfile(user as Profile);
             } catch (error) {
                let err: any = error;

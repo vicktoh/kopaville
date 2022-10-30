@@ -357,7 +357,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         }
                     />
                 ) : null}
-                {generalProfile?.phoneNumber && generalProfile.displayPhoneNumber ? (
+                {generalProfile?.phoneNumber &&
+                generalProfile.displayPhoneNumber ? (
                     <IconButton
                         variant="ghost"
                         ml={3}
@@ -414,68 +415,73 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     </VStack>
                 ) : null}
             </Flex>
-            <Flex alignItems="center" direction="row" mt={5} mb={2}>
-
             {generalProfile?.ppa ? (
                 <VStack>
-                    <Heading fontSize="sm">
-                        Place of Primary Assignment
-                    </Heading>
+                    <Heading fontSize="sm">Place of Primary Assignment</Heading>
                     <Text fontSize="md">{generalProfile.ppa}</Text>
                 </VStack>
             ) : null}
-            {generalProfile?.platoon ? (
-                <VStack>
-                    <Heading fontSize="sm">
-                        Platoon
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.platoon}</Text>
-                </VStack>
-            ) : null}
-            {generalProfile?.camp ? (
-                <VStack>
-                    <Heading fontSize="sm">
-                        Camp Location
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.camp}</Text>
-                </VStack>
-            ) : null}
-            </Flex>
-            
-                {generalProfile?.saedCourse ? (
+            <Flex
+                alignItems="center"
+                direction="row"
+                justifyContent="space-between"
+                mt={5}
+                mb={2}
+            >
+                {generalProfile?.platoon ? (
                     <VStack>
-                        <Heading fontSize="sm" mt={5} mb={2}>
-                            SAED Course
-                        </Heading>
-                        <Text fontSize="md">{generalProfile.saedCourse}</Text>
+                        <Heading fontSize="sm">Platoon</Heading>
+                        <Text fontSize="md">{generalProfile.platoon}</Text>
                     </VStack>
                 ) : null}
-            
-            <Flex direction='row'>
-            {generalProfile?.languages ? (
+                {generalProfile?.camp ? (
+                    <VStack>
+                        <Heading fontSize="sm">Camp Location</Heading>
+                        <Text fontSize="md">{generalProfile.camp}</Text>
+                    </VStack>
+                ) : null}
+            </Flex>
+
+            {generalProfile?.saedCourse ? (
                 <VStack>
                     <Heading fontSize="sm" mt={5} mb={2}>
-                        Languages 
+                        SAED Course
                     </Heading>
-                    <Text fontSize="md">{generalProfile.languages.join(",")}</Text>
+                    <Text fontSize="md">{generalProfile.saedCourse}</Text>
                 </VStack>
             ) : null}
-            {generalProfile?.height ? (
-                <VStack>
-                    <Heading fontSize="sm" mt={5} mb={2}>
-                        Height 
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.height}</Text>
-                </VStack>
-            ) : null}
-            {generalProfile?.shoeSize ? (
-                <VStack>
-                    <Heading fontSize="sm" mt={5} mb={2}>
-                        Shoe Size 
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.shoeSize}</Text>
-                </VStack>
-            ) : null}
+
+            <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+            >
+                {generalProfile?.languages?.length ? (
+                    <VStack>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Languages
+                        </Heading>
+                        <Text fontSize="md">
+                            {generalProfile.languages.join(',')}
+                        </Text>
+                    </VStack>
+                ) : null}
+                {generalProfile?.height ? (
+                    <VStack>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Height
+                        </Heading>
+                        <Text fontSize="md">{generalProfile.height}</Text>
+                    </VStack>
+                ) : null}
+                {generalProfile?.shoeSize ? (
+                    <VStack>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Shoe Size
+                        </Heading>
+                        <Text fontSize="md">{generalProfile.shoeSize}</Text>
+                    </VStack>
+                ) : null}
             </Flex>
 
             <Flex direction="row" justifyContent="space-between" mt={5}>
@@ -555,7 +561,12 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     >
                         Pick From Camera
                     </Button>
-                    <Button disabled={isUploadingFromLibrary || isLoadingFromCamera} size="lg" variant="outline" onPress={onClose}>
+                    <Button
+                        disabled={isUploadingFromLibrary || isLoadingFromCamera}
+                        size="lg"
+                        variant="outline"
+                        onPress={onClose}
+                    >
                         Cancel
                     </Button>
                 </Flex>

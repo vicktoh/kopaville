@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { View, Text } from '../components/Themed';
+import { View, Text } from 'react-native';
 
 import Dimensions from '../constants/Layout';
 

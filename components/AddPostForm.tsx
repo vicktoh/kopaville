@@ -118,7 +118,6 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             // const androidResults = await ImagePicker.getPendingResultAsync();
             // console.log(androidResults);
             // console.log('result', result);
-            console.log(result);
             return;
             // const blob = await getUploadBlob(result.uri);
             // setBlob([...(blobs || []), blob]);
@@ -159,7 +158,6 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             });
             onClose();
         } catch (error) {
-            console.log(error);
             toast.show({
                 title: 'Could not add post',
                 description:

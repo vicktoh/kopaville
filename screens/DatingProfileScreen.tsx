@@ -1,4 +1,3 @@
-import { AntDesign } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Flex } from 'native-base';
 import React, {FC}  from 'react';

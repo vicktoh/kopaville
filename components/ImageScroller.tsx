@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, useWindowDimensions } from 'react-native';
-import { Image, Pressable } from 'native-base';
+import { Image } from 'native-base';
 
 
 type ImageScrollerProps = {

@@ -43,7 +43,6 @@ const PostComponent: FC<PostComponentProps> = ({ onRemove, asset }) => {
         const fetchAssetInfo = async () => {
             if (localUri) return;
             let assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
-            console.log({ assetInfo });
             setUri(assetInfo.localUri || assetInfo.uri);
         };
         fetchAssetInfo();

@@ -1,5 +1,4 @@
 import firebase from "firebase";
-import { Profile } from "../types/Profile";
 import { firebaseApp } from "./firebase";
 
 

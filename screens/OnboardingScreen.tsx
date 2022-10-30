@@ -15,7 +15,6 @@ type ScreenItemProps = {
 };
 
 const Landing: FC<ScreenItemProps> = ({ scrollToNext }) => {
-    console.log({ scrollToNext });
     const { width, height } = Device.window;
     return (
         <Flex position="relative" width={width} height={height} bg="white" safeArea>

@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { Modal, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import {
     ScrollView,
     KeyboardAvoidingView,
 } from 'native-base';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { DrawerParamList, ProfileStackParamList } from '../types';
+import { DrawerParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
 
 import { CareerProfile } from '../components/CareerProfile';

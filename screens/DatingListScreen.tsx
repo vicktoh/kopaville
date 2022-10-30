@@ -53,7 +53,7 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
     }, [fetchData]);
 
     const renderItem = (listItem: ListRenderItemInfo<Profile>) => {
-        return <DatingCard profile={listItem.item} />;
+        return <DatingCard profile={listItem.item} key={listItem.item.userId || `dating-card-${listItem.index}`} />;
     };
 
     const clearFilter = () => {
@@ -129,7 +129,7 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
                 <Flex flex={1} p={5}>
                     <EmptyState
                         title="No Dating Profiles Found"
-                        description="No Dating Profiles to show please refresh or Select another location"
+                        description="No Dating Profiles to show. Please refresh or select another location"
                     />
                 </Flex>
             )}

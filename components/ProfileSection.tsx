@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Flex, Heading, HStack, Avatar, VStack, Text, IconButton, Icon } from 'native-base';
-import { useAppSelector } from '../hooks/redux';
 import { Profile } from '../types/Profile';
 import { getInitialsFromName } from '../services/helpers';
 import { Pressable } from 'react-native';
@@ -24,6 +23,7 @@ export const ProfileSection: FC<ProfileSectionProps> = ({
         profile: generalProfile,
         profileUrl,
         userId: profileId,
+        verified
     } = profile || {};
     const { followers = 0, following = 0 } = profile?.followerships || {};
     return (
@@ -54,7 +54,7 @@ export const ProfileSection: FC<ProfileSectionProps> = ({
                 <Heading fontSize="xl" mt={3}>
                     {loginInfo?.fullname}
                 </Heading>
-                <Icon as = {MaterialIcons} name="verified" size={5}/>
+                {verified ? <Icon as = {MaterialIcons} name="verified" size={5}/> : null}
                 </HStack>
                 <Text fontSize="md">{`@${loginInfo?.username}`}</Text>
             </VStack>

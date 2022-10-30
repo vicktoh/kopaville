@@ -63,7 +63,6 @@ export const EditCarreerInfoForm: FC<EditCarreerInfoFormProps> = ({ onClose, car
                         const { checkList = {}} = systemInfo || {};
                         if(!checkList?.['Complete Career Profile']){
                             const newChecklist: Checklist = { ...checkList, 'Complete Career Profile' :  true}
-                            console.log(newChecklist)
                             dispatch(setSystemInfo({...systemInfo, checkList: {... newChecklist}}));
                         }
                     }

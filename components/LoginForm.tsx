@@ -112,7 +112,7 @@ export const LoginForm: FC = () => {
                             <FormControl.HelperText></FormControl.HelperText>
                         </FormControl>
                         <FormControl mt = {2} mb={5}>
-                            <Button onPress={()=> navigation.navigate('Forgot')} alignSelf="flex-start" variant="link" size="md">Forgost password?</Button>
+                            <Button onPress={()=> navigation.navigate('Forgot')} alignSelf="flex-start" variant="link" size="md">Forgot password?</Button>
                         </FormControl>
                         <Button disabled={isSubmitting} isLoading={isSubmitting} isLoadingText='Please Wait...' onPress={handleSubmit as any} size="lg" variant="solid" colorScheme="primary">
                             Login

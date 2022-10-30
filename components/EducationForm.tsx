@@ -14,8 +14,8 @@ type EducationFormProps = {
 };
 
 const EducationSchema = yup.object().shape({
-    institution: yup.string().required('Required !').min(4, 'Requires at least 4 characters'),
-    qualification: yup.string().required('Required !').min(4, 'Requires at least 4 characters'),
+    institution: yup.string().required('Required !'),
+    qualification: yup.string().required('Required !'),
     period: yup.object().shape({
         start: yup.string().required('Required !').max(4, 'Use only year e.g 2014').min(4, 'Use only year eg.2021'),
         end: yup.string().required('Required !').max(4, 'Use only year e.g 2014').min(4, 'Use only year eg.2021'),
@@ -70,7 +70,7 @@ export const EducationForm: FC<EducationFormProps> = ({ onClose, education, mode
                 onClose();
             }}
         >
-            {({ touched, errors, handleBlur, values, submitForm, handleChange, setFieldValue, isSubmitting }) => (
+            {({ touched, errors, handleBlur, values, submitForm, handleChange, isSubmitting }) => (
                 <Flex direction="column" mt={5}>
                     <FormControl
                         _text={{ fontSize: 'lg' }}
@@ -95,7 +95,7 @@ export const EducationForm: FC<EducationFormProps> = ({ onClose, education, mode
                         _text={{ fontSize: 'lg' }}
                         isRequired
                         mb={3}
-                        isInvalid={!!touched.institution && !!errors.institution}
+                        isInvalid={!!touched.qualification && !!errors.qualification}
                     >
                         <FormControl.Label>Qualification</FormControl.Label>
                         <Input
