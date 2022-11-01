@@ -20,7 +20,7 @@ import { Profile } from '../types/Profile';
 import { Linking, Modal, useWindowDimensions, View } from 'react-native';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { DrawerParamList, HomeStackParamList } from '../types';
+import { AppStackParamList, DrawerParamList, HomeStackParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import {
     updateProfileInfo,
@@ -39,6 +39,8 @@ import { ProfileBlock } from './ProfileBlock';
 import { setBlock } from '../reducers/blockSlice';
 import { setFollowership } from '../reducers/followershipSlice';
 import { ImagePickCropper } from './GalleryPicker/ImagePickCropper';
+import { Recipient } from '../types/Conversation';
+import { conversationExists } from '../services/messageServices';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -55,11 +57,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         profile: localProfile,
         followerships,
         block,
-    } = useAppSelector(({ auth, profile, followerships, block }) => ({
+        
+        chats
+    } = useAppSelector(({ auth, profile, followerships, block, chats, }) => ({
         auth,
         profile,
         followerships,
         block,
+        chats
     }));
     const {
         profile: generalProfile,
@@ -97,7 +102,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
 
     const dispatch = useAppDispatch();
     const navigation =
-        useNavigation<NavigationProp<DrawerParamList & HomeStackParamList>>();
+        useNavigation<NavigationProp<DrawerParamList & HomeStackParamList & AppStackParamList>>();
     const dateOfBirth = generalProfile?.dateOfBirth;
     const age = useMemo(
         () =>
@@ -124,6 +129,13 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
     const blocked = useMemo(
         () =>
             (block?.blocked || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
+    );
+    const blockedBy = useMemo(
+        () =>
+            (block?.blockedBy || []).filter(
                 (userId, i) => userId === profile?.userId
             ),
         [block]
@@ -254,6 +266,29 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
             status: 'success',
         });
     };
+    const message = () => {
+        if (blocked.length) return;
+        if (profile?.userId === auth?.userId) {
+            return;
+        }
+        const to: Recipient = {
+            userId: profile?.userId || '',
+            photoUrl: profile?.profileUrl || '',
+            fullname: profile?.loginInfo?.fullname || '',
+            username: profile?.loginInfo?.username || '',
+        };
+
+        const conversationId = conversationExists(profile?.userId || '', chats);
+
+        navigation.navigate('Message', {
+            screen: 'MessageBubble',
+            params: {
+                conversationId: conversationId || undefined,
+                recipient: to,
+            },
+        });
+        // navigation.navigate("MessageBubble", { conversationId : conversationId || undefined, recipient: to});
+    };
     if (blocked?.length) {
         return <BlockedProfile profile={profile} />;
     }
@@ -298,7 +333,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 promptAvatarChange={onOpen}
             />
 
-            <HStack my={3} alignItems="center">
+            <HStack my={3} alignItems="center" space={2}>
                 {auth?.userId === userId ? (
                     <Button
                         variant="outline"
@@ -375,6 +410,16 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         }
                     />
                 ) : null}
+                {
+                    auth?.userId !== profile?.userId && !blockedBy.length ? 
+                            <Button
+                                size="md"
+                                onPress={() => message()}
+                                variant="outline"
+                            >
+                                Message
+                            </Button> : null
+                }
             </HStack>
             {generalProfile?.displayAge && generalProfile?.dateOfBirth ? (
                 <>

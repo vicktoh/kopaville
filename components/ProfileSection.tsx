@@ -50,13 +50,21 @@ export const ProfileSection: FC<ProfileSectionProps> = ({
                     <Text fontSize="xs">Tap Avatar to change</Text>
                 ) : null}
                 <HStack space={3}>
-
-                <Heading fontSize="xl" mt={3}>
-                    {loginInfo?.fullname}
-                </Heading>
-                {verified ? <Icon as = {MaterialIcons} name="verified" size={5}/> : null}
+                    <Heading fontSize="xl" mt={3}>
+                        {loginInfo?.fullname}
+                    </Heading>
+                    {verified ? (
+                        <Icon as={MaterialIcons} name="verified" size={5} />
+                    ) : null}
                 </HStack>
-                <Text fontSize="md">{`@${loginInfo?.username}`}</Text>
+                <Flex direction="row" justifyContent="space-between">
+                    <Text fontSize="md">{`@${loginInfo?.username}`}</Text>
+                    {generalProfile?.servingState ? (
+                        <Text fontSize="md">
+                            {`📍 ${generalProfile.servingState}`}{' '}
+                        </Text>
+                    ) : null}
+                </Flex>
             </VStack>
             <HStack _text={{ fontSize: 'md' }} space={2} mt={3}>
                 <Text fontSize="md" fontWeight="bold">
@@ -67,11 +75,6 @@ export const ProfileSection: FC<ProfileSectionProps> = ({
                     {followers}
                 </Text>
                 <Text fontSize="md">Followers</Text>
-                {generalProfile?.servingState ? (
-                    <Text fontSize="md">
-                        {`📍 ${generalProfile.servingState}`}{' '}
-                    </Text>
-                ) : null}
             </HStack>
         </Flex>
     );

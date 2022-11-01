@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerParamList } from '../types';
 import { DrawerContent } from '../components/DrawerContent';
@@ -6,9 +7,11 @@ import { HomeStackNavigation } from './HomeStackNavigation';
 import { UserDatingNavigation } from './UserDatingNavigation';
 import { CareerNavigation } from './CareerNavigation';
 import { InfoScreen } from '../screens/InfoScreen';
+
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const HomeDrawerNavigation = () => {
+    
     return (
         <Drawer.Navigator
             initialRouteName="Posts"

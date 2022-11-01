@@ -1,9 +1,6 @@
-import React, { FC } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import React, { FC, useMemo } from 'react';
 import App from '../App';
 import { AppStackParamList } from '../types';
-import TabOneScreen from '../screens/TabOneScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faBriefcase,
@@ -18,9 +15,24 @@ import { JobNavigation } from './JobNavigation';
 import { DatingNavigation } from './DatingNavigation';
 import { MessageNavigation } from './MessageNavigation';
 import { MarketNavigation } from './MarketNavigation';
+import { useAppSelector } from '../hooks/redux';
+import { Box, Text } from 'native-base';
 const AppTabNavigator = createBottomTabNavigator<AppStackParamList>();
 
 export const AppNavigationStack = () => {
+    const {chats} = useAppSelector(({chats})=> ({chats}));
+
+    const unreadCount = useMemo(()=>{
+        if(!chats.length) return ''
+        let count = 0;
+        chats.forEach(({unreadCount})=> {
+            if(unreadCount){
+                count += unreadCount;
+            }
+        });
+        if(count > 9) return '9+';
+        return count ?  count.toString() : ''
+    }, [chats])
     return (
         <AppTabNavigator.Navigator
             initialRouteName="Home"
@@ -64,11 +76,29 @@ export const AppNavigationStack = () => {
                     }
                     if (route.name === 'Message') {
                         return (
-                            <FontAwesomeIcon
-                                icon={faEnvelope}
-                                color={color}
-                                size={20}
-                            />
+                            <Box position="relative">
+                                <FontAwesomeIcon
+                                    icon={faEnvelope}
+                                    color={color}
+                                    size={20}
+                                />
+                                {unreadCount ? (
+                                    <Box
+                                        position="absolute"
+                                        left={3}
+                                        bottom={2}
+                                        paddingY={1}
+                                        paddingX={2}
+                                        borderRadius="full"
+                                        backgroundColor="red.500"
+                                        color="white"
+                                    >
+                                        <Text fontSize={10} color="white">
+                                            {unreadCount}
+                                        </Text>
+                                    </Box>
+                                ) : null}
+                            </Box>
                         );
                     }
                 },

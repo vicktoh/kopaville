@@ -53,7 +53,7 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
     );
     const [message, setMessage] = useState<string>('');
     const [chats, setChats] = useState<Chat[]>();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [sendingChat, setSendingChat] = useState<boolean>();
     const blockedBy = useMemo(
         () =>
@@ -67,6 +67,7 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
     const { loginInfo, profileUrl } = profile || {};
     useEffect(() => {
         if (conversation) {
+            setLoading(true);
             const unsubscribe = listenOnChats(conversation, (data) => {
                 setLoading(false);
                 setChats(data);
@@ -74,7 +75,11 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
             });
             return () => unsubscribe();
         }
-    }, [conversationId]);
+        
+    }, [conversation, conversationId]);
+    useEffect(()=>{
+        setConversation(conversationId);
+    }, [conversationId])
     useEffect(() => {
         if (chats) {
             markAsRead(conversation || '', auth?.userId || '');
