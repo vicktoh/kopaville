@@ -41,6 +41,7 @@ import { setFollowership } from '../reducers/followershipSlice';
 import { ImagePickCropper } from './GalleryPicker/ImagePickCropper';
 import { Recipient } from '../types/Conversation';
 import { conversationExists } from '../services/messageServices';
+import { sendNotification } from '../services/notifications';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -220,6 +221,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 following: [...(followerships?.following || []), follower],
             };
             dispatch(setFollowership(newfollowership));
+            const notificationMessage = `${localProfile?.loginInfo.fullname || ""} followed you`;
+            sendNotification(notificationMessage, follower.userId);
             setLoading(false);
         } catch (error) {
             let err: any = error;

@@ -5,7 +5,8 @@ import {
 } from '@react-navigation/native';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
-import Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
+// import { Notifications } from 'expo';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setAuth } from '../reducers/authSlice';
 import { StoreType } from '../reducers/store';

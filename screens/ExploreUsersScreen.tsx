@@ -1,15 +1,11 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ArrowBackIcon, FlatList, Flex, Heading, IconButton, useToast } from 'native-base';
+import { FlatList, Flex, useToast } from 'native-base';
 import React, {FC, useEffect, useState} from 'react';
 import { ActivityIndicator, ListRenderItemInfo } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { EmptyState } from '../components/EmptyeState';
 import { UserListItem } from '../components/UserListItem';
 import { useAppSelector } from '../hooks/redux';
-import { addFollowing } from '../reducers/followershipSlice';
-import { Follower, followUser } from '../services/followershipServices';
+import { Follower } from '../services/followershipServices';
 import { exploreUsers } from '../services/postsServices';
-import { HomeStackParamList } from '../types';
 import { Profile } from '../types/Profile';
 import { LoadingScreen } from './LoadingScreen';
 

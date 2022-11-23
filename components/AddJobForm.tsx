@@ -109,8 +109,8 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job }) => {
                         <Flex width="100%" height={(windowWidth - 50) * 1/3} position="relative">
                         {values.bannerUrl || values.bannerUri
                          ? <ImageBackground source={{uri: values.bannerUri || values.bannerUrl}} style={{flex: 1}}>
-                             <Heading mt='auto' ml={2} mb={2} color="white">Add Job Oppening</Heading>
-                         </ImageBackground>: <Heading ml={2} mt="auto" mb={2}>Add Job Oppening</Heading>}
+                             <Heading mt='auto' ml={2} mb={2} color="white">Add Job Opening</Heading>
+                         </ImageBackground>: <Heading ml={2} mt="auto" mb={2}>Add Job Opening</Heading>}
                          <IconButton size="sm" position="absolute" variant="outline" right={5} top={0} icon={<Icon size={5} as = {Entypo} name="edit"/>} onPress = {()=> pickImageFromGallery((uri)=> setFieldValue('bannerUri', uri))} />
                         </Flex>
                         {errors?.formError ? (

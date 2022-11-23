@@ -23,7 +23,7 @@ export const AppNavigationStack = () => {
     const {chats} = useAppSelector(({chats})=> ({chats}));
 
     const unreadCount = useMemo(()=>{
-        if(!chats.length) return ''
+        if(!chats?.length) return ''
         let count = 0;
         chats.forEach(({unreadCount})=> {
             if(unreadCount){

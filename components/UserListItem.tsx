@@ -3,6 +3,7 @@ import { Avatar, Button, Flex, Heading, HStack, Pressable, Text, useToast, VStac
 import React, { FC, useMemo, useState } from 'react';
 import { useAppSelector } from '../hooks/redux';
 import { Follower, followUser } from '../services/followershipServices';
+import { sendNotification } from '../services/notifications';
 import { HomeStackParamList } from '../types';
 import { Profile } from '../types/Profile';
 
@@ -14,7 +15,7 @@ type UserListItemProps = {
 
 export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
     const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
-    const { followerships, auth } = useAppSelector(({ followerships, auth }) => ({ followerships, auth }));
+    const { followerships, auth, profile: myProfile } = useAppSelector(({ followerships, auth, profile }) => ({ followerships, auth, profile }));
     const following = useMemo(
         () => (followerships?.following || []).filter(({ userId }) => userId == profile.userId),
         []
@@ -30,6 +31,8 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
             const follower: Follower = { userId, username, fullname, photoUrl: profileUrl};
             setIsfollowing(true);
             await followUser(auth?.userId || '', follower);
+            const notificationMessage = `${myProfile?.loginInfo.fullname || ""} followed you`
+            sendNotification(notificationMessage, follower.userId);
         } catch (error) {
             console.log(error);
             let err: any = error;

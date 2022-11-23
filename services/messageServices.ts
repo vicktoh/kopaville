@@ -6,6 +6,7 @@ import { firebaseApp } from './firebase';
 import { Recipient } from '../types/Conversation';
 import { fromUnixTime } from 'date-fns';
 import { Business, Job } from '../types/Job';
+import { sendNotification } from './notifications';
 
 export const startConversationWithMessage = async (
     from: Recipient,
@@ -57,6 +58,8 @@ export const startConversationWithMessage = async (
     batch.set(toRef, { ...newConversation, unreadCount: 0 });
     batch.set(messageRef, newChat);
     await batch.commit();
+    const notificationMessage = `Message from ${from.fullname}`;
+    sendNotification(notificationMessage, to.userId)
     onsuccess(conversationRef.id);
 };
 
@@ -84,6 +87,8 @@ export const sendMessage = async (
         ...(job ? { job } : {}),
     };
     await db.collection(`conversations/${conversationId}/chats`).add(newChat);
+    const notificationMessage = `Message from ${from.fullname}`;
+    sendNotification(notificationMessage, to.userId)
 };
 
 export const markAsRead = async (conversationId: string, userId: string) => {
