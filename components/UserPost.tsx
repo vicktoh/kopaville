@@ -13,7 +13,7 @@ import { Post } from '../types/Post';
 import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
-import { AVPlaybackStatus, Video, VideoProps } from 'expo-av';
+import { AVPlaybackStatus, ResizeMode, Video, VideoProps } from 'expo-av';
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
@@ -75,7 +75,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 title: 'Could not Like Post',
                 description:
                     'Something went wrong. Please ensure you have good internet connection',
-                status: 'error',
+                variant: 'subtle'
             });
         } finally {
             setIsLiking(false);
@@ -97,7 +97,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             let err: any = error;
             toast.show({
                 title: 'Couldnot un-like post',
-                status: 'error',
+                variant: 'subtle',
                 description:
                     'Something went wrong. Please ensure you have good internet connection',
             });
@@ -117,7 +117,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             toast.show({
                 title: 'Could not remove post',
                 description: err?.message || 'Unexpected Error Try again',
-                status: 'error',
+                variant: 'subtle',
             });
         }
     };
@@ -199,7 +199,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                                 alignSelf: 'center',
                             }}
                             source={{ uri: videoUrl }}
-                            resizeMode="cover"
+                            resizeMode={ResizeMode.COVER}
                             onPlaybackStatusUpdate={(status) => {
                                 setPlayBackStatus(() => status);
                             }}

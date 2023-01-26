@@ -49,39 +49,7 @@ export const DatingCover: FC<DatingCoverProps> = ({
         });
         setIsUploading(false);
     };
-    // const pickImageFromGallery = async () => {
-    //     const permission =
-    //         await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //     if (!permission.granted) {
-    //         return;
-    //     }
-
-    //     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-    //         aspect: [3, 1],
-    //         quality: 0.2,
-    //         allowsEditing: true,
-    //     });
-    //     if (!pickerResult.cancelled) {
-    //         setReplaceUri(pickerResult.uri);
-    //         await _uploadImage(pickerResult.uri)
-    //     }
-    // };
-
-    // const pickImageFromCamera = async () => {
-    //     const permission = await ImagePicker.requestCameraPermissionsAsync();
-    //     if (!permission.granted) {
-    //         return;
-    //     }
-    //     const pickerResult = await ImagePicker.launchCameraAsync({
-    //         aspect: [3, 1],
-    //         quality: 0.2,
-    //         allowsEditing: true,
-    //     });
-    //     if (!pickerResult.cancelled) {
-    //         setReplaceUri(pickerResult.uri);
-    //         await _uploadImage(pickerResult.uri);
-    //     }
-    // };
+   
     return (
         <Flex
             

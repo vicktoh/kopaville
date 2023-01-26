@@ -6,5 +6,7 @@ export const PAY_STACK_SK_KEY = 'sk_test_f0d239ff4c6dfc6231ed70ef5577905afeee38d
 export const PAY_STACK_PK_KEY = 'pk_test_84be447cfd8e04c193a48dc7d2d3f0f8810d331d';
 
 export const PRIVACY_POLICY_LINK = 'https://kopaville.com/static/privacy';
-export const TERMS_CONDITION_LINK = 'https://kopaville.com/static/terms'
+export const TERMS_CONDITION_LINK = 'https://kopaville.com/static/terms';
+export const ALGOLIA_APP_ID = "K4IFG2B4PM";
+export const ALGOLIA_API_SEARCH_KEY = "860741bf2d0cf5100fbee3cfb0fbee96";
 

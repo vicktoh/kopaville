@@ -21,3 +21,14 @@ export const unfollowUser = (authId: string, followingId: string) =>{
     return followingDoc.delete();
 }
 
+export const fetchFollowers = async (authId: string, type: "following" | "followers" = "followers") => {
+    const db = firebase.firestore(firebaseApp);
+    const followersCollection = db.collection(`users/${authId}/${type}`);
+    const snapshot = await followersCollection.get();
+    const userIDs : string[] = [];
+    snapshot.forEach((snap)=> {
+        userIDs.push(snap.id);
+    });
+    return userIDs;
+}
+

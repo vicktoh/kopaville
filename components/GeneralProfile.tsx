@@ -230,7 +230,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: 'error',
+                color: "white",
+                backgroundColor: "red.500",
             });
         } finally {
             setLoading(false);
@@ -254,7 +255,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: 'error',
+                backgroundColor: "red.500",
+                color: "white",
             });
         } finally {
             setLoading(false);
@@ -266,7 +268,9 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         onCloseReportView();
         toast.show({
             title: `You have blocked ${profile.loginInfo.fullname} successfully`,
-            status: 'success',
+            variant: "subtle",
+            color: "white",
+            backgroundColor: "primary.300",
         });
     };
     const message = () => {

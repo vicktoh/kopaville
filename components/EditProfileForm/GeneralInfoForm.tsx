@@ -41,6 +41,8 @@ const GeneralInfoForm = () => {
                     variant="outline"
                     borderColor="primary.400"
                     height={20}
+                    autoCompleteType
+                    
                 />
                 <FormControl.ErrorMessage>
                     {touched.bio && errors.bio}
@@ -194,7 +196,7 @@ const GeneralInfoForm = () => {
                     <FormControl.Label>Shoe Size</FormControl.Label>
                     <Input
                         size="md"
-                        type="number"
+                        type="text"
                         value={values.shoeSize}
                         onBlur={handleBlur('shoeSize')}
                         onChangeText={handleChange('shoeSize')}
@@ -214,7 +216,7 @@ const GeneralInfoForm = () => {
                     <FormControl.Label>Height</FormControl.Label>
                     <Input
                         size="md"
-                        type="number"
+                        type="text"
                         value={values.height}
                         onBlur={handleBlur('height')}
                         onChangeText={handleChange('height')}

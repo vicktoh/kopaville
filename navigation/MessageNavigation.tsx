@@ -1,9 +1,6 @@
 import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MessageStackParamList } from '../types';
-
-import { DatingListScreen } from '../screens/DatingListScreen';
-import { DatingProfileScreen } from '../screens/DatingProfileScreen';
 import { MessageListScreen } from '../screens/MessageListScreen';
 import { MessageBubbleScreen } from '../screens/MessageBubbleScreen';
 

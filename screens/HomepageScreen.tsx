@@ -64,6 +64,7 @@ export const HomepageScreen: FC<HomepageScreenProps> = ({ navigation }) => {
                 position="absolute"
                 variant="solid"
                 rounded="full"
+                backgroundColor='primary.500'
                 size="lg"
                 top={height - 0.3 * height}
                 right={5}

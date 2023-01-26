@@ -40,6 +40,7 @@ export const theme = extendTheme({
     },
     colors: {
         primary: {
+            600: "#2A9A4A",
             500: "#2A9A4A",
             400: "#5DB777",
             300: "#9CCDAA",
@@ -47,6 +48,7 @@ export const theme = extendTheme({
             100: "#EEF5F0"
         },
         secondary: {
+            600: "#FBEB85",
             500: "#FBEB85",
             400: "#F5EEBF",
             300: "#FAF6DE",

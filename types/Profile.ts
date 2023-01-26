@@ -7,6 +7,17 @@ export enum CorperStatus  {
     "Serving Corper" = "Serving Corper",
     "Prospective Corper" = "Prospective Corper",
 }
+export enum GenoType {
+    "AA"="AA",
+    "AS"="AS",
+    "SS"="SS",
+    "AC"="AC"
+}
+export enum RelationshipStatus {
+    "single" =  "single",
+    "married" = "married",
+    "it's complicated"="it's complicated"
+}
 export interface Business {
     name: string;
     instagram?: string;
@@ -38,6 +49,7 @@ export interface Profile {
             month: string;
             day: string;
         };
+        dateOfBirthTimestamp?: number;
         height?: string;
         phoneNumber?: string;
         displayPhoneNumber?: boolean;
@@ -54,7 +66,7 @@ export interface Profile {
         servingState: string;
         servingLGA?: string;
         bloodGroup?: string;
-        genotype?: string;
+        genotype?: GenoType;
         lga?: string;
         ppa?: string;
         stateOfOrigin: string;
@@ -81,9 +93,9 @@ export interface Profile {
         covers?: string[];
         profile?: string;
         interest?: string [];
-        status?: string;
+        status?: RelationshipStatus;
         bloodGroup?: string;
-        genotype?: string;
+        genotype?: GenoType;
         showBloodGroup?: boolean
 
     };

@@ -8,7 +8,7 @@ import {
 } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
-import { Video } from 'expo-av';
+import { ResizeMode, Video } from 'expo-av';
 import { PagedInfo, Asset, Album } from 'expo-media-library';
 import { ListRenderItemInfo, useWindowDimensions } from 'react-native';
 import { FC } from 'react';
@@ -43,7 +43,7 @@ export const VideoComponent: FC<VideoComponentProps> = ({ id, imageWidth }) => {
     return (
         <Video
             usePoster={true}
-            resizeMode="cover"
+            resizeMode={ResizeMode.COVER}
             source={{ uri: localUri }}
             style={{ flex: 1, width: imageWidth, height: (4 / 3) * imageWidth }}
         />
@@ -54,6 +54,7 @@ export const GalleryPicker: FC<GallerPickerProps> = ({
     onSelectComplete,
     mediaType = 'photo',
     initialAssets,
+    max
 }) => {
     const [mode, setMode] = useState<'gallery' | 'camera'>('gallery');
     const [pageInfo, setPageInfo] = useState<PagedInfo<Asset>>();
@@ -92,7 +93,7 @@ export const GalleryPicker: FC<GallerPickerProps> = ({
             copySelectedResources.splice(index, 1);
             setSelectedResources(copySelectedResources);
         } else {
-            if (selectedResources.length > 3) return;
+            if (selectedResources.length >= max) return;
             copySelectedResources.push(asset);
             setSelectedResources(copySelectedResources);
         }
@@ -118,7 +119,7 @@ export const GalleryPicker: FC<GallerPickerProps> = ({
                         <Image alt="gallery image" src={item.uri} flex={1} />
                     ) : null}
                     {mediaType === 'video' ? (
-                        <VideoComponent id={item.id} imageWidth={imageWidth} />
+                        <VideoComponent  id={item.id} imageWidth={imageWidth} />
                     ) : null}
                 </Flex>
             </Pressable>
@@ -135,7 +136,6 @@ export const GalleryPicker: FC<GallerPickerProps> = ({
                         title: 'Persmission denied',
                         description:
                             'Media library permission is needed for share photos and videos',
-                        status: 'error',
                     });
                     return;
                 }

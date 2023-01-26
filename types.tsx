@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { DatingFilter } from './components/DatingFilterForm';
 import { Recipient } from './types/Conversation';
 import {  Job, Business as JobBusiness } from './types/Job';
 import { Post } from './types/Post';
@@ -69,9 +70,12 @@ export type MessageStackParamList = {
   MessageBubble: {conversationId?: string, recipient: Recipient};
 }
 export type DatingStackParamList = {
-  Main: undefined;
-  "Profile": {profile: Profile};
-}
+    Main: {filter?: DatingFilter}
+    Search: {
+        filter: DatingFilter;
+    };
+    Profile: { profile: Profile };
+};
 export type UserDatingStackParamList = {
   "My Dating Profile": undefined;
   "Edit Dating Profile": {profile: Profile};
@@ -92,6 +96,7 @@ export type HomeStackParamList = {
   "Explore Users": undefined;
   "New Post": undefined;
   ProfilePreview: { profile?: Profile, userId?:string, fetch?: boolean};
+  Following: { profile?: Profile, userId?:string, fetch?: boolean, tab?: "following" | "followers"};
   CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
   DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
   Comments: { postId: string, postText: string; postUsername: string};

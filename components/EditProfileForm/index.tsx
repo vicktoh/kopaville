@@ -53,15 +53,15 @@ const ProfileSchema = yup.object().shape({
         .max(200, 'Must be at most 200 characters'),
     dateOfBirth: yup.object().shape({
         day: yup
-            .string()
+            .string().required("Required!")
             .max(2, 'Must be at least two characters')
             .min(2, 'Must be at most two characters'),
         month: yup
-            .string()
+            .string().required("Required!")
             .max(2, 'Must be at least two characters')
             .min(2, 'Must be at most two characters'),
         year: yup
-            .string()
+            .string().required("Required!")
             .max(4, 'Must be at least four characters')
             .min(4, 'Must be at most four characters'),
     }),
@@ -133,10 +133,25 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                 onSubmit={async (values, { setFieldValue, setSubmitting }) => {
                     const { step, formError, languageInput, ...rest} = values;
                     const res = await updateProfileInfo(auth?.userId || '', {
-                        profile: rest,
+                        profile: {
+                            ...rest,
+                            dateOfBirthTimestamp: new Date(
+                                `${values.dateOfBirth.year}-${values.dateOfBirth.month}-${values.dateOfBirth.day}`
+                            ).getTime(),
+                        },
                     });
                     if (res.status === 'success') {
-                        dispatch(setProfile({ ...profile, profile: values }));
+                        dispatch(
+                            setProfile({
+                                ...profile,
+                                profile: {
+                                    ...values,
+                                    dateOfBirthTimestamp: new Date(
+                                        `${values.dateOfBirth.year}-${values.dateOfBirth.month}-${values.dateOfBirth.day}`
+                                    ).getTime(),
+                                },
+                            })
+                        );
                         const { checkList = {} } = systemInfo || {};
                         if (!checkList?.['Complete Profile']) {
                             const newChecklist: Checklist = {

@@ -97,7 +97,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         if (result.status === 'failed') {
             toast.show({
                 title: 'Upload Failed',
-                status: 'error',
+                variant: 'solid',
                 description:
                     (result?.message as string) ||
                     'unexpected error, Make sure you have a good internet connection',

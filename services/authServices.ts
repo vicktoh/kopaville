@@ -1,18 +1,13 @@
 import { LOCAL_SYSTEM_INFO, LOCAL_USER_INFO } from '../constants/Storage';
 import { User } from '../types/User';
 import firebase from 'firebase';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { firebaseApp } from './firebase';
 
 import { removeLocalData, setLocalData } from './local';
 import { FormValues } from '../components/RegisterForm';
 import { ErrorDict } from '../constants/Firebase';
 
-import { persistor } from '../reducers/store';
 import { Block } from '../types/Profile';
-import axios, { AxiosRequestConfig } from 'axios';
-import { BLOCK_USER_PATH } from '../constants/paths';
-import { HttpResponse } from '../types/Report';
 
 export const initializeApp = async (localUser: User | null) => {
     const auth = firebase.auth(firebaseApp);

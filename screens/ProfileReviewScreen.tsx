@@ -35,7 +35,7 @@ export const ProfileReviewScreen: FC<ProfileReviewScreenProps> = ({
                     let err: any = error;
                     toast.show({
                         title: 'Error Occured',
-                        status: 'error',
+                        variant: "subtle",
                         placement: 'top',
                         description: err?.message || 'Error occured try again',
                     });

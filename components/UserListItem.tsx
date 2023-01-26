@@ -11,9 +11,10 @@ const defaultAvartar = require('../assets/images/avatar.png');
 
 type UserListItemProps = {
     profile: Profile;
+    showFollow?: boolean;
 };
 
-export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
+export const UserListItem: FC<UserListItemProps> = ({ profile, showFollow = true }) => {
     const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const { followerships, auth, profile: myProfile } = useAppSelector(({ followerships, auth, profile }) => ({ followerships, auth, profile }));
     const following = useMemo(
@@ -22,6 +23,7 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
     );
     const [isfollowing, setIsfollowing] = useState<boolean>(!!following.length);
     const [loading, setLoading] = useState<boolean>(false);
+
     const toast = useToast();
 
     const follow = async () => {
@@ -34,7 +36,6 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
             const notificationMessage = `${myProfile?.loginInfo.fullname || ""} followed you`
             sendNotification(notificationMessage, follower.userId);
         } catch (error) {
-            console.log(error);
             let err: any = error;
             setIsfollowing(false);
             toast.show({
@@ -70,7 +71,7 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
                     <Text fontSize="sm">{profile?.loginInfo?.username}</Text>
                 </VStack>
             </HStack>
-            {isfollowing ? (
+            {showFollow ?  isfollowing  ? (
                 <Button disabled={loading} size="sm" variant="outline">
                     Unfollow
                 </Button>
@@ -78,7 +79,7 @@ export const UserListItem: FC<UserListItemProps> = ({ profile }) => {
                 <Button isLoading={loading} size="sm" variant="solid" onPress={()=> follow()}>
                     Follow
                 </Button>
-            )}
+            ): null}
         </Flex>
     );
 };

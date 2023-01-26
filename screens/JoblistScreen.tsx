@@ -47,7 +47,12 @@ export const JoblistScreen: FC<JoblistScreenProps> = ({ navigation }) => {
                 return unsubscribe;
             } catch (error) {
                 console.log(error)
-                toast.show({title: "Error Fetch Job", description: "Could not fetch post, ensure you have good internet connection and try again", status: "error"});
+                toast.show({
+                    title: 'Error Fetch Job',
+                    description:
+                        'Could not fetch post, ensure you have good internet connection and try again',
+                    variant: "subtle"
+                });
                 
             } 
         };
