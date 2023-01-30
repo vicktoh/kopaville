@@ -39,7 +39,6 @@ export const ExplorePostScreen: FC = () => {
                 console.log(err);
                 toast.show({
                     placement: 'top',
-                    status: 'error',
                     title: 'Error Occured',
                     description:
                         err?.message ||

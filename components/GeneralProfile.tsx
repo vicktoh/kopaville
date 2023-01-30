@@ -340,7 +340,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 promptAvatarChange={onOpen}
             />
 
-            <HStack my={3} alignItems="center" space={2}>
+            <HStack flexShrink={1} my={3} alignItems="center" space={2}>
                 {auth?.userId === userId ? (
                     <Button
                         variant="outline"
@@ -441,7 +441,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     <Heading fontSize="sm" mt={5} mb={2}>
                         L.G.A of Origin
                     </Heading>
-                    <Text fontSize="md">{generalProfile.lga}</Text>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.lga}</Text>
                 </>
             ) : null}
             {generalProfile?.corperStatus ? (
@@ -457,20 +457,20 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 {generalProfile?.servingState ? (
                     <VStack>
                         <Heading fontSize="sm">Serving State</Heading>
-                        <Text fontSize="md">{generalProfile.servingState}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.servingState}</Text>
                     </VStack>
                 ) : null}
                 {generalProfile?.servingLGA ? (
                     <VStack ml={generalProfile?.servingState ? 8 : 0}>
                         <Heading fontSize="sm">Serving L.G.A</Heading>
-                        <Text fontSize="md">{generalProfile.servingLGA}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.servingLGA}</Text>
                     </VStack>
                 ) : null}
             </Flex>
             {generalProfile?.ppa ? (
-                <VStack>
+                <VStack flexShrink={1}>
                     <Heading fontSize="sm">Place of Primary Assignment</Heading>
-                    <Text fontSize="md">{generalProfile.ppa}</Text>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.ppa}</Text>
                 </VStack>
             ) : null}
             <Flex
@@ -481,25 +481,25 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 mb={2}
             >
                 {generalProfile?.platoon ? (
-                    <VStack>
+                    <VStack flexShrink={1}>
                         <Heading fontSize="sm">Platoon</Heading>
-                        <Text fontSize="md">{generalProfile.platoon}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.platoon}</Text>
                     </VStack>
                 ) : null}
                 {generalProfile?.camp ? (
-                    <VStack>
+                    <VStack flexShrink={1}>
                         <Heading fontSize="sm">Camp Location</Heading>
-                        <Text fontSize="md">{generalProfile.camp}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.camp}</Text>
                     </VStack>
                 ) : null}
             </Flex>
 
             {generalProfile?.saedCourse ? (
-                <VStack>
+                <VStack flexShrink={1}>
                     <Heading fontSize="sm" mt={5} mb={2}>
                         SAED Course
                     </Heading>
-                    <Text fontSize="md">{generalProfile.saedCourse}</Text>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.saedCourse}</Text>
                 </VStack>
             ) : null}
 
@@ -509,29 +509,29 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 justifyContent="space-between"
             >
                 {generalProfile?.languages?.length ? (
-                    <VStack>
+                    <VStack flexShrink={1}>
                         <Heading fontSize="sm" mt={5} mb={2}>
                             Languages
                         </Heading>
-                        <Text fontSize="md">
+                        <Text fontSize="md" flexWrap="wrap">
                             {generalProfile.languages.join(',')}
                         </Text>
                     </VStack>
                 ) : null}
                 {generalProfile?.height ? (
-                    <VStack>
+                    <VStack flexShrink={1}>
                         <Heading fontSize="sm" mt={5} mb={2}>
                             Height
                         </Heading>
-                        <Text fontSize="md">{generalProfile.height}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.height}</Text>
                     </VStack>
                 ) : null}
                 {generalProfile?.shoeSize ? (
-                    <VStack>
+                    <VStack flexShrink={1}>
                         <Heading fontSize="sm" mt={5} mb={2}>
                             Shoe Size
                         </Heading>
-                        <Text fontSize="md">{generalProfile.shoeSize}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.shoeSize}</Text>
                     </VStack>
                 ) : null}
             </Flex>

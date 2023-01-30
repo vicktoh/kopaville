@@ -8,7 +8,7 @@ export const sendNotification = (message: string, userId: string) => {
    const notify = functions.httpsCallable('notify');
    try {
       notify({message, userId}).then((value)=> {
-         console.log(value, "notification status")
+         // console.log(value, "notification status")
       })
    } catch (error) {
       console.log({error})

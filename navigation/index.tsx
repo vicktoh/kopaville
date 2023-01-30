@@ -103,7 +103,7 @@ export default function Navigation({
         if (auth) {
             try {
                 const unsubscribe = listenOnFollowers(auth.userId, (data) => {
-                    console.log({ data }, "from follower");
+                    // console.log({ data }, "from follower");
                     dispatch(
                         setFollowership({ ...followerships, followers: data })
                     );

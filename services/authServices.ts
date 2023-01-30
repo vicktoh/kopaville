@@ -1,6 +1,7 @@
 import { LOCAL_SYSTEM_INFO, LOCAL_USER_INFO } from '../constants/Storage';
 import { User } from '../types/User';
 import firebase from 'firebase';
+require("firebase/functions");
 import { firebaseApp } from './firebase';
 
 import { removeLocalData, setLocalData } from './local';
@@ -163,4 +164,11 @@ export const unBlockUser = async (data: { blockerId:string, blockeeId: string}, 
         }
         transaction.update(blockerRef, { blocked: newblocked})
     });
+}
+
+
+export const deleteAccount = async()=> {
+    const functions = firebase.functions(firebaseApp);
+   const deleteUser = functions.httpsCallable('deleteUser');
+   return await deleteUser();
 }

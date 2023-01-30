@@ -2,7 +2,7 @@
   "expo": {
     "name": "Kopaville",
     "slug": "kopaville",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -50,27 +50,38 @@
       "bundleIdentifier": "com.vicktoh.kopaville",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to capture images that can be shared as part of posts or user profiles",
-        "NSPhotoLibraryUsageDescription": "This app accesses the photo library to enable you capture images and videos that can be shared as part of posts or user profiles",
-        "UIBackgroundModes": "remote-notification"
-      }
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
+        "UIBackgroundModes": ["remote-notification"],
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos."
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 13,
+      "versionCode": 14,
       "package": "com.vicktoh.kopaville",
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "CAMERA",
-        "MEDIA_LIBRARY"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.MEDIA_LIBRARY",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
       ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
     "description": "",
-    "githubUrl": "https://github.com/vicktoh/kopaville"
+    "githubUrl": "https://github.com/vicktoh/kopaville",
+    "extra": {
+      "eas": {
+        "projectId": "076ba4c7-15dd-48bd-8d04-00f97361f458"
+      }
+    }
   }
 }

@@ -41,7 +41,6 @@ export const BlockedProfile: FC<BlockedProfileProps> = ({ profile }) => {
             setBlocking(false);
             toast.show({
                 title: `You have blocked ${profile?.loginInfo?.username} successfully`,
-                status: 'success',
             });
             dispatch(setBlock({ ...block, blocked: newBlocked }));
         } catch (error) {
@@ -50,7 +49,6 @@ export const BlockedProfile: FC<BlockedProfileProps> = ({ profile }) => {
             toast.show({
                 title: 'Error Occured',
                 description: err?.message || 'Unknown Error',
-                status: 'error',
             });
         }
     };

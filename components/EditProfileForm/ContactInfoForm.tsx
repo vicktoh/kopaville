@@ -146,7 +146,7 @@ export const ContactInfoForm = () => {
                {
                   values.languages?.length ? 
                   values.languages.map((lan, i)=>(
-                     <HStack space={3}  alignItems="center" mt={3} key = {'language-${i}'} px={5} py={2} bg="secondary.200">
+                     <HStack space={3}  alignItems="center" mt={3} key = {`language-${i}`} px={5} py={2} bg="secondary.200">
                         <Text color="primary.500">{lan}</Text>
                         <IconButton icon= {<Icon size={5} as = {AntDesign} name = "closecircleo" />} onPress={() => removeLanguage(i)} size="sm" />
                      </HStack>

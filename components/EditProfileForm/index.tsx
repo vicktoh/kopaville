@@ -250,7 +250,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                         </Flex>
 
                         {getForm(values.step || 1)}
-                        <Button
+                        {isValid ? <Button
                             isLoading={isSubmitting}
                             onPress={() => submitForm()}
                             size="lg"
@@ -260,7 +260,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             disabled={!isValid}
                         >
                             Save
-                        </Button>
+                        </Button>: null}
                         <Button
                             onPress={() => onCancel()}
                             size="lg"

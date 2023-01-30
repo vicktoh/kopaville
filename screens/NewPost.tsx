@@ -312,7 +312,7 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
                     </FormControl.ErrorMessage>
                 </FormControl>
                 <Flex direction="row" justifyContent="space-around">
-                    {!(videoAsset || videoInfo) ? (
+                    {!videoInfo ? (
                         <>
                             <Button
                                 onPress={
@@ -336,7 +336,7 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
                                 Add Image
                             </Button>
                             <Button
-                                onPress={onOpenCameraModal}
+                                onPress={isAndroid ? onOpenCameraModal : _uploadImagesFromCamera}
                                 key={'camera'}
                                 bg="secondary.400"
                                 _text={{ color: 'black' }}
@@ -356,7 +356,7 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
                     ) : null}
 
                     {(!imageAssets.length || imagesInfo?.length) &&
-                    !(videoAsset || videoInfo) ? (
+                    !(videoInfo) ? (
                         <Button
                             onPress={_pickVideoFromGallery}
                             bg="secondary.400"
@@ -391,7 +391,7 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
                     {videoInfo ? (
                         <PostComponent
                             asset={videoInfo as any}
-                            onRemove={() => setVideoAsset(undefined)}
+                            onRemove={() => setVideoInfo(undefined)}
                             type={isAndroid ? 'android' : 'ios'}
                         />
                     ) : null}

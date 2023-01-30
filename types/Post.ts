@@ -1,6 +1,6 @@
 import firebase from "firebase";
 export interface Post {
-    dateCreated: firebase.firestore.Timestamp;
+    dateCreated: number;
     mediaType: 'Video'| 'Image' | 'None',
     creatorId: string;
     likes: number;
@@ -15,6 +15,10 @@ export interface Post {
         username: string;
     }
 
+}
+
+export interface FirebasePost extends Omit<Post, "dateCreated">{
+    dateCreated: firebase.firestore.Timestamp
 }
 
 

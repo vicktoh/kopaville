@@ -59,27 +59,50 @@ export const UserListItem: FC<UserListItemProps> = ({ profile, showFollow = true
             px={3}
         >
             <HStack space={2} alignItems="center">
-                <Pressable onPress={()=> navigation.navigate("ProfilePreview", { userId: profile.userId})}>
-                <Avatar source={profile?.profileUrl ? { uri: profile.profileUrl } : defaultAvartar} size="md">
-                    {' '}
-                    AV
-                </Avatar> 
+                <Pressable
+                    onPress={() =>
+                        navigation.navigate('ProfilePreview', {
+                            userId: profile.userId,
+                            fetch: true,
+                        })
+                    }
+                >
+                    <Avatar
+                        source={
+                            profile?.profileUrl
+                                ? { uri: profile.profileUrl }
+                                : defaultAvartar
+                        }
+                        size="md"
+                    >
+                        {' '}
+                        AV
+                    </Avatar>
                 </Pressable>
-                
+
                 <VStack>
-                    <Heading fontSize="md">{profile?.loginInfo?.fullname || 'Unknown User'}</Heading>
+                    <Heading fontSize="md">
+                        {profile?.loginInfo?.fullname || 'Unknown User'}
+                    </Heading>
                     <Text fontSize="sm">{profile?.loginInfo?.username}</Text>
                 </VStack>
             </HStack>
-            {showFollow ?  isfollowing  ? (
-                <Button disabled={loading} size="sm" variant="outline">
-                    Unfollow
-                </Button>
-            ) : (
-                <Button isLoading={loading} size="sm" variant="solid" onPress={()=> follow()}>
-                    Follow
-                </Button>
-            ): null}
+            {showFollow ? (
+                isfollowing ? (
+                    <Button disabled={loading} size="sm" variant="outline">
+                        Unfollow
+                    </Button>
+                ) : (
+                    <Button
+                        isLoading={loading}
+                        size="sm"
+                        variant="solid"
+                        onPress={() => follow()}
+                    >
+                        Follow
+                    </Button>
+                )
+            ) : null}
         </Flex>
     );
 };

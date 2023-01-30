@@ -53,11 +53,11 @@ export function useSearchIndex<T>(
       if (!groups) setGroups(categories as any);
     } catch (error) {
       const err: any = error;
-      toast.show({
-        title: `Unable to fetch the ${index}`,
-        description: err?.message || "Unknown Error",
-        variant: "subtle",
-      });
+      // toast.show({
+      //   title: `Unable to fetch the ${index}`,
+      //   description: err?.message || "Unknown Error",
+      //   variant: "subtle",
+      // });
     } finally {
       setLoading(false);
     }

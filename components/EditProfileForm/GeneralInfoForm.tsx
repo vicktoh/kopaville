@@ -11,6 +11,7 @@ import {
     TextArea,
 } from 'native-base';
 import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import { EditFormValuesType } from '.';
 const states: string[] = require('../../assets/static/states.json');
 
@@ -25,6 +26,7 @@ const GeneralInfoForm = () => {
         handleChange,
         handleSubmit,
     } = useFormikContext<EditFormValuesType>();
+    const { width: WINDO_WIDTH } = useWindowDimensions();
     return (
         <>
             <FormControl
@@ -109,9 +111,9 @@ const GeneralInfoForm = () => {
                 isInvalid={!!touched.dateOfBirth && !!errors.dateOfBirth}
             >
                 <FormControl.Label>
-                    date of birth (DD - MM - YYYY)
+                    Date of birth (DD - MM - YYYY)
                 </FormControl.Label>
-                <HStack alignItems="center" space={5}>
+                <HStack alignItems="center" space={2}>
                     <Input
                         size="lg"
                         value={values.dateOfBirth.day}
@@ -119,6 +121,7 @@ const GeneralInfoForm = () => {
                         onChangeText={handleChange('dateOfBirth.day')}
                         variant="outline"
                         borderColor="primary.400"
+                        maxWidth={(WINDO_WIDTH - 80)/3}
                         placeholder="DD"
                     />
                     <Input
@@ -127,6 +130,7 @@ const GeneralInfoForm = () => {
                         onBlur={handleBlur('dateOfBirth.month')}
                         onChangeText={handleChange('dateOfBirth.month')}
                         variant="outline"
+                        maxWidth={(WINDO_WIDTH -80)/3}
                         borderColor="primary.400"
                         placeholder="MM"
                     />
@@ -137,6 +141,7 @@ const GeneralInfoForm = () => {
                         onChangeText={handleChange('dateOfBirth.year')}
                         variant="outline"
                         borderColor="primary.400"
+                        maxWidth={(WINDO_WIDTH - 4)/3}
                         placeholder="YYYY"
                     />
                 </HStack>

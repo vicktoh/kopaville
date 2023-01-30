@@ -1,6 +1,6 @@
 import { firebaseApp } from './firebase';
 import firebase from 'firebase';
-import { Post } from '../types/Post';
+import { FirebasePost, Post } from '../types/Post';
 import { Profile } from '../types/Profile';
 import { Comment } from '../types/Comment';
 import { Conversation } from '../types/Conversation';
@@ -18,7 +18,7 @@ export const listenOnTimeline = (
     return db.collection('posts').where('creatorId', 'in', following).orderBy('dateCreated', 'desc').limit(50).onSnapshot((querysnapshot)=>{
         const data: any[] = [];
         querysnapshot.forEach((snap) => {
-            const dat = snap.data() as Post;
+            const dat = snap.data() as FirebasePost;
             if(!blockedList.includes(dat.creatorId)){
                 dat.postId = snap.id;
                 data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
@@ -35,11 +35,12 @@ export const explorePosts = async (blockedList: string[])=>{
     const snapshot =  await  db.collection('posts').orderBy('dateCreated', 'desc').orderBy('likes', 'desc').limit(50).get();
     const data: (Post & {id?: string})[] = [];
     snapshot.forEach((snap)=>{
-        const post: Post & {id?: string} = snap.data() as Post;
+        const post: FirebasePost & {id?: string} = snap.data() as FirebasePost;
         if(!blockedList.includes(post.creatorId)){
             post.postId = snap.id;
-            data.push(post)
-        };
+            
+{            data.push({...post , dateCreated: post.dateCreated.toMillis()})
+}        };
     });
 
     return data;
@@ -161,7 +162,7 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
 
     }
     
-    const postData: Post = {
+    const postData: FirebasePost = {
         dateCreated: firebase.firestore.Timestamp.now(),
         ...(text ? { text } : {}),
         ...(imageUrls.length ? { imageUrl: imageUrls}: {}),

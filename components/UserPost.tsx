@@ -27,6 +27,7 @@ import {
 import { addLike, removeLike } from '../reducers/likesSlice';
 import InviewPort from './InView';
 import { useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 type PostProps = {
     post: Post;
 };
@@ -127,32 +128,47 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 videoPlaybackStatus?.isLoaded &&
                 videoPlaybackStatus.isPlaying
             ) {
-                console.log("out of view", postId)
+                // console.log("out of view", postId)
                 await videoRef.current?.stopAsync();
                 return;
             }
         }
+        // else{
+        //     if(videoPlaybackStatus?.isLoaded && !videoPlaybackStatus.isPlaying){
+        //         await videoRef.current?.playAsync()
+        //     }
+        // }
     };
     return (
         <Flex width={windowWidth} px={2} mb={5}>
-            <Pressable
-                onPress={() =>
-                    auth?.userId === post.creatorId
-                        ? navigation.navigate('General Profile', {})
-                        : navigation.navigate('ProfilePreview', {
-                              userId: post.creatorId,
-                          })
-                }
+            <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
             >
-                <HStack space={2} alignItems="center" py={1}>
-                    <Avatar size="md" source={{ uri: avatarUrl }}>
-                        {username.slice(0, 2)}
-                    </Avatar>
-                    <Text fontSize="sm" fontWeight="bold">
-                        {username}
-                    </Text>
-                </HStack>
-            </Pressable>
+                <Pressable
+                    onPress={() =>
+                        auth?.userId === post.creatorId
+                            ? navigation.navigate('General Profile', {})
+                            : navigation.navigate('ProfilePreview', {
+                                  userId: post.creatorId,
+                              })
+                    }
+                >
+                    <HStack space={2} alignItems="center" py={1}>
+                        <Avatar size="md" source={{ uri: avatarUrl }}>
+                            {username.slice(0, 2)}
+                        </Avatar>
+                        <Text fontSize="sm" fontWeight="bold">
+                            {username}
+                        </Text>
+                    </HStack>
+                </Pressable>
+                {
+                    post?.dateCreated ? 
+                    <Text fontSize="xs" color="primary.400">{formatDistanceToNow(post.dateCreated as number)}</Text> : null
+                }
+            </Flex>
 
             {imageUrl.length ? (
                 <ImageScroller
@@ -162,51 +178,24 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 />
             ) : null}
             {videoUrl ? (
-                // <Pressable
-                //     onPress={async () => {
-                //         if (
-                //             videoPlaybackStatus &&
-                //             videoPlaybackStatus.isLoaded &&
-                //             videoPlaybackStatus.isPlaying
-                //         ) {
-                //             await videoRef.current?.pauseAsync();
-                //             return;
-                //         }
-                //         if (
-                //             videoPlaybackStatus &&
-                //             videoPlaybackStatus.isLoaded &&
-                //             !videoPlaybackStatus.isPlaying
-                //         ) {
-                //             if (
-                //                 videoPlaybackStatus &&
-                //                 videoPlaybackStatus.isLoaded &&
-                //                 videoPlaybackStatus.didJustFinish
-                //             ) {
-                //                 await videoRef.current?.replayAsync();
-                //                 return;
-                //             }
-                //             await videoRef.current?.playAsync();
-                //         }
-                //     }}
-                // >
-                    <InviewPort onChange={isInView}>
-                        <Video
-                            useNativeControls={true}
-                            ref={videoRef}
-                            style={{
-                                width: windowWidth - 20,
-                                height: (windowWidth * 5) / 4,
-                                alignSelf: 'center',
-                            }}
-                            source={{ uri: videoUrl }}
-                            resizeMode={ResizeMode.COVER}
-                            onPlaybackStatusUpdate={(status) => {
-                                setPlayBackStatus(() => status);
-                            }}
-                        />
-                    </InviewPort>
-                // </Pressable>
-            ) : null}
+                <InviewPort onChange={isInView}>
+                    <Video
+                        useNativeControls={true}
+                        ref={videoRef}
+                        style={{
+                            width: windowWidth - 20,
+                            height: (windowWidth * 5) / 4,
+                            alignSelf: 'center',
+                        }}
+                        source={{ uri: videoUrl }}
+                        resizeMode={ResizeMode.COVER}
+                        onPlaybackStatusUpdate={(status) => {
+                            setPlayBackStatus(() => status);
+                        }}
+                    />
+                </InviewPort>
+            ) : // </Pressable>
+            null}
             {text ? <Text my={1}>{text}</Text> : null}
             <Flex direction="row" justifyContent="space-between">
                 <HStack space={3} alignItems="center">
@@ -227,7 +216,6 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     </HStack>
                     <HStack space={1} alignItems="center">
                         <IconButton
-                            
                             icon={
                                 <Icon
                                     size="sm"
@@ -252,7 +240,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 <HStack alignItems="center">
                     {auth?.userId === creatorId ? (
                         <IconButton
-                            disabled={ isRemoving }
+                            disabled={isRemoving}
                             icon={
                                 <Icon
                                     as={Feather}
