@@ -54,7 +54,6 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
             console.log(error);
             toast.show({
                 title: 'Error Occured',
-                status: 'error',
                 description:
                     'Could not post comment, make sure you have good internet connection',
             });
@@ -87,7 +86,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
         return <PostComment comment = {info.item}  />
     };
     return (
-        <KeyboardAvoidingView flex={1}  bg="white"  behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView flex={1} flexShrink={1}  bg="white"  behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Flex flex={1} p={5} pb={10}>
                 <Flex direction="row" justifyContent="flex-end">
                     <IconButton
@@ -96,7 +95,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                     />
                 </Flex>
                 <Heading fontSize="md">{`Comment on ${postUsername}'s post`}</Heading>
-                <Flex flex={1}>
+                <Flex flex={1} flexShrink={1}>
                     {loading ? (
                         <Flex flex={1} alignItems="center">
                             <ActivityIndicator />
@@ -123,6 +122,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                                 borderColor="primary.400"
                                 borderWidth={1}
                                 placeholder="Your comment goes here"
+                                autoCompleteType="off"
                             />
                             <Button
                                 variant="solid"

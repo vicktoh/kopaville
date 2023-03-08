@@ -14,7 +14,7 @@ import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
 import { AVPlaybackStatus, ResizeMode, Video, VideoProps } from 'expo-av';
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
@@ -46,6 +46,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     );
     const [isLiking, setIsLiking] = useState<boolean>();
     const [isRemoving, setRemoving] = useState<boolean>();
+    const [muted, setMuted] = useState<boolean>(false);
     const dispatch = useDispatch();
     const toast = useToast();
     const {
@@ -139,6 +140,18 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         //     }
         // }
     };
+    const muteVideo = ()=> {
+        if (
+            videoPlaybackStatus?.isLoaded &&
+            videoPlaybackStatus.isPlaying &&
+            videoRef.current
+        ) {
+            // console.log("mute")
+            videoRef.current.setIsMutedAsync(!muted);
+            videoRef.current.playAsync();
+            setMuted(!muted);
+        }
+    }
     return (
         <Flex width={windowWidth} px={2} mb={5}>
             <Flex
@@ -238,6 +251,22 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     </HStack>
                 </HStack>
                 <HStack alignItems="center">
+                    {
+                        videoUrl && videoPlaybackStatus?.isLoaded && videoPlaybackStatus.isPlaying ? 
+                        <IconButton
+                            icon={
+                                <Icon
+                                    as={Octicons}
+                                    name={muted ? "mute":  "unmute"}
+                                    color="primary.400"
+                            
+                                    size="4"
+                                />
+                            }
+                            onPress={muteVideo}
+                        />: 
+                        null
+                    }
                     {auth?.userId === creatorId ? (
                         <IconButton
                             disabled={isRemoving}

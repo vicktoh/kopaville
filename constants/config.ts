@@ -1,1 +1,1 @@
-export const APP_ENV: 'dev' | 'prod' = 'dev';
+export const APP_ENV: 'dev' | 'prod' = 'prod';
