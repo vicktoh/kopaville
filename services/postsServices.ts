@@ -5,6 +5,7 @@ import { Profile } from '../types/Profile';
 import { Comment } from '../types/Comment';
 import { Conversation } from '../types/Conversation';
 import { Report, ReportedUser } from '../types/Report';
+import { randomString } from './helpers';
 
 
 export const listenOnTimeline = (
@@ -44,6 +45,22 @@ export const explorePosts = async (blockedList: string[])=>{
     });
 
     return data;
+}
+
+export const listenOnExplorePost = async (blockedList: string[], callback: (post: Post[], err: string) => void) => {
+    const db = firebase.firestore(firebaseApp);
+    return db.collection('posts').orderBy('dateCreated', 'desc').orderBy('likes', 'desc').limit(100).onSnapshot((snapshot)=>{
+        const data: Post[] = [];
+        snapshot.forEach((snap) => {
+            const dat = snap.data() as FirebasePost ;
+            if(!blockedList.includes(dat.creatorId)){
+                dat.postId = snap.id;
+                data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
+            }
+
+    })
+    callback(data, "")
+    }, (error)=> {console.log("errorr");callback([], error.message)})
 }
 
 export const addPostTolikes = async (userId: string, postId: string) => {
@@ -140,18 +157,24 @@ type SendPostArgs = {
     }
  };
 
+export const removeUploadedPic = async (postId: string, index: number, type: Post['mediaType']) => {
+    const path = type === 'Image' ? `posts/${postId}-${index}` : `posts/${postId}`
+    const storage = firebase.storage().ref(path);
+    await storage.delete();
+}
+
+
 export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaType }: SendPostArgs) => {
     const db = firebase.firestore(firebaseApp);
     const newPostRef = db.collection('posts').doc();
     const imageUrls = [];
     if(blobs&& blobs.length){
-        let i = 0;
         for(const blob of blobs){
-            const storage = firebase.storage().ref(`posts/${newPostRef.id}-${i}`);
+            const storageKey = randomString(5);
+            const storage = firebase.storage().ref(`posts/${newPostRef.id}-${storageKey}`);
             const snapshot = await storage.put(blob);
             const downloadUrl = await snapshot.ref.getDownloadURL();
-            imageUrls.push(downloadUrl);
-            i++
+            imageUrls.push({url: downloadUrl, storageKey });
         }
     }
     let videoUrl = null
@@ -174,6 +197,44 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
         avartar
     };
     await newPostRef.set(postData)
+};
+
+export const editPost = async (
+    { blobs, videoBlob, text, mediaType, avartar }: SendPostArgs,
+    post: Partial<Pick<Post, 'imageUrl' | 'videoUrl' | 'text' | 'postId'>>,
+    removedImages: string [],
+) => {
+    if (!post.postId) return;
+    const imageUrls = [...(post.imageUrl || [])];
+    if (blobs && blobs.length) {
+    
+        for (const blob of blobs) {
+            const storageKey = randomString(5);
+            const storage = firebase.storage().ref(`posts/${post.postId}-${storageKey}`);
+            const snapshot = await storage.put(blob);
+            const downloadUrl = await snapshot.ref.getDownloadURL();
+                imageUrls.push({ url: downloadUrl , storageKey });
+        }
+    }
+    
+    let videoUrl = null;
+    if (videoBlob) {
+        const storage = firebase.storage().ref(`posts/${post.postId}`);
+        const snapshot = await storage.put(videoBlob);
+        videoUrl = await snapshot.ref.getDownloadURL();
+    }
+    const db = firebase.firestore(firebaseApp);
+    const docRef = db.doc(`posts/${post.postId}`);
+    for (const key of removedImages){
+      firebase.storage().ref(`posts/${post.postId}-${key}`).delete()
+    }
+    return docRef.update({
+        ...(text ? { text } : {}),
+        ...(imageUrls.length ? { imageUrl: imageUrls } : {}),
+        ...(videoUrl ? { videoUrl } : {}),
+        mediaType,
+        avartar,
+    });
 };
 
 export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Comment[]) => void) =>{
@@ -216,5 +277,4 @@ export const reportUser = async (report: ReportedUser) => {
     const db = firebase.firestore(firebaseApp);
     return db.collection("userReports").doc().set(report);
 }
-
 

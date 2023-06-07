@@ -18,6 +18,9 @@ export const countComplette = (checklist: Checklist) => {
     });
     return count;
 };
+export function randomString(length: number): string {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
 
 export const getInitialsFromName = (name: string) => {
     const names = name.split(" ");

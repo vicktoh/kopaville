@@ -95,6 +95,8 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                             key={`reason-${i}`}
                             my={2}
                             size="lg"
+                            variant="unstyled"
+                            color="primary.500"
                             bg={
                                 i === selectedUserReason
                                     ? 'primary.200'
@@ -134,6 +136,8 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                             key={`reason-${i}`}
                             my={2}
                             size="lg"
+                            variant="unstyled"
+                            color="primary.500"
                             bg={
                                 i === seletedReason
                                     ? 'primary.200'

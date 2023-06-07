@@ -55,6 +55,7 @@ const EmptyTimeline: FC = () => {
     );
 };
 export const UserTimeline: FC<UserTimelineProps> = () => {
+    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const { posts, followerships, block, auth, systemInfo } = useAppSelector(
         ({ posts, followerships, block, auth, systemInfo }) => ({
             posts,
@@ -68,7 +69,9 @@ export const UserTimeline: FC<UserTimelineProps> = () => {
     const [refresh, setRefresh] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [listener, setListener] = useState<()=>void>();
-    
+    const onOpenOption = (post: Post) => {
+        navigation.navigate("Option", { post, postText: post.text,  userId: auth?.userId || ''});
+    };
     // React.useEffect(() => {
         
     //     if (auth && followerships?.following) {
@@ -97,7 +100,7 @@ export const UserTimeline: FC<UserTimelineProps> = () => {
     //     }
     // }, [followerships?.following, auth, block, refresh]);
     const renderPostItem = (info: ListRenderItemInfo<Post>) => {
-        return <UserPost post={info.item} key={`post-${info.index}`} />;
+        return <UserPost onOpenOption={onOpenOption} post={info.item} key={`post-${info.index}`} />;
     };
 
     // const refreshPost = () => {

@@ -107,7 +107,7 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation, route 
                 <Button
                     size="sm"
                     onPress={onOpenAdvanceSearch}
-                    disabled={!!!datingProfiles?.length}
+                    disabled={loading}
                     variant="link"
                     colorScheme="primary"
                 >

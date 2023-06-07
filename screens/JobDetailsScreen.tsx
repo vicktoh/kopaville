@@ -53,7 +53,6 @@ export const JobDetailsScreen: FC<
             toast.show({
                 title: 'Could not delete Job',
                 description: err?.message || 'unexpected error',
-                status: 'error',
             });
         }
     };
@@ -239,10 +238,20 @@ export const JobDetailsScreen: FC<
                         Remove Post
                     </Button>
                 ) : null}
+                {job.creatorId === auth?.userId ? (
+                    <Button
+                        onPress={()=> navigation.navigate("Edit Job", { job })}
+                        variant="outline"
+                        my={3}
+                        size="lg"
+                    >
+                        Edit Post
+                    </Button>
+                ) : null}
                 <Button my={3} variant="outline" size="lg" onPress={onOpen}>Share</Button>
                 {job?.link ? (
                     <Button
-                        onPress={() => WebBrowser.openBrowserAsync(job.link)}
+                        onPress={() => job.link &&  WebBrowser.openBrowserAsync(job.link)}
                         my={3}
                         variant="solid"
                         size="lg"

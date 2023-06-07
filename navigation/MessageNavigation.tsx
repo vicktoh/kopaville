@@ -9,8 +9,12 @@ const MessageStack = createNativeStackNavigator<MessageStackParamList>();
 export const MessageNavigation = () => {
     return (
         <MessageStack.Navigator initialRouteName="MessageList">
-                <MessageStack.Screen name="MessageList" component={MessageListScreen} options={{ headerTitle: 'Chats' }} />
-                <MessageStack.Screen name="MessageBubble" component={MessageBubbleScreen} options={{ headerShown: false }} />
+                <MessageStack.Screen name="MessageList" component={MessageListScreen} options={{ headerTitle: 'Chats', headerStyle: {
+                    backgroundColor: 'white',
+                }, headerTitleStyle: { color: 'black'} }} />
+                <MessageStack.Screen name="MessageBubble" component={MessageBubbleScreen} options={{ headerShown: false, headerStyle: {
+                    backgroundColor: 'white',
+                }, headerTitleStyle: { color: 'black'} }} />
         </MessageStack.Navigator>
     );
 };

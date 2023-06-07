@@ -3,9 +3,10 @@ import { APP_ENV } from "./config";
 export const LOCAL_SYSTEM_INFO = 'local_system_info';
 export const ONBORDING_INFO = 'onbording_info';
 export const LOCAL_USER_INFO = 'local_user_info';
-
-export const PAY_STACK_SK_KEY = 'sk_test_f0d239ff4c6dfc6231ed70ef5577905afeee38dd';
-export const PAY_STACK_PK_KEY = 'pk_test_84be447cfd8e04c193a48dc7d2d3f0f8810d331d';
+export const PAYSTACK_LIVE_SK_KEY = 'sk_live_5eee3ba11671095257410864ca62e2ca5ac3d22f';
+export const PAYSTACK_LIVE_PK_KEY = 'pk_live_3ad0ca6cd34e46721f29bde8746be4a1bb1754af'
+export const PAY_STACK_SK_KEY = APP_ENV === 'dev' ? 'sk_test_f0d239ff4c6dfc6231ed70ef5577905afeee38dd' : PAYSTACK_LIVE_SK_KEY;
+export const PAY_STACK_PK_KEY = APP_ENV === 'dev' ? 'pk_test_84be447cfd8e04c193a48dc7d2d3f0f8810d331d' : PAYSTACK_LIVE_PK_KEY;
 
 export const PRIVACY_POLICY_LINK = 'https://kopaville.com/static/privacy';
 export const TERMS_CONDITION_LINK = 'https://kopaville.com/static/terms';

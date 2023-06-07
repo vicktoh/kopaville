@@ -30,7 +30,7 @@ export type AuthStackParamList = {
   Forgot: undefined;
 };
 export type AppStackParamList = {
-  Home: undefined;
+  Home: NavigatorScreenParams<HomeStackParamList>;
   Jobs: NavigatorScreenParams<JobStackParamList>;
   "Kopa Market": undefined;
   Dating: undefined;
@@ -53,6 +53,7 @@ export type CareerStackParamList = {
 export type JobStackParamList = {
   Main: undefined;
   "Add Job": undefined;
+  "Edit Job": { job: Job & JobBusiness}
   "Add Business": undefined;
   "Job Details": {job: Job & JobBusiness}
 }
@@ -95,12 +96,15 @@ export type HomeStackParamList = {
   "Explore Post": undefined;
   "Explore Users": undefined;
   "New Post": undefined;
+  "Edit Post": {post: Post};
   ProfilePreview: { profile?: Profile, userId?:string, fetch?: boolean};
   Following: { profile?: Profile, userId?:string, fetch?: boolean, tab?: "following" | "followers"};
   CareerPreview: { profile?: Profile, userId?:string, fetch?: boolean};
   DatingPreview: { profile: Profile, userId?: string, fetch?: boolean};
+  Option: { profile?: Profile, post: Post, postText?: string, userId: string,}
   Comments: { postId: string, postText: string; postUsername: string};
   Report: { post?: Post, user?: Profile };
+  Share: { post?: Post, userId: string  };
 
   
 }

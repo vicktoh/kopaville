@@ -7,6 +7,7 @@ import { Recipient } from '../types/Conversation';
 import { fromUnixTime } from 'date-fns';
 import { Business, Job } from '../types/Job';
 import { sendNotification } from './notifications';
+import { Post } from '../types/Post';
 
 export const startConversationWithMessage = async (
     from: Recipient,
@@ -16,7 +17,8 @@ export const startConversationWithMessage = async (
     type?: ChatType,
     link?: string,
     title?: string,
-    job?: Job & Business
+    job?: Job & Business,
+    post?: Post
 ) => {
     const db = firebase.firestore(firebaseApp);
     const batch = db.batch();
@@ -52,6 +54,7 @@ export const startConversationWithMessage = async (
         ...(link ? { link } : {}),
         ...(title ? { title } : {}),
         ...(job ? { job } : {}),
+        ...(post ? { post } : {}),
     };
     batch.set(conversationRef, newConversation);
     batch.set(fromRef, { ...newConversation, unreadCount: 0 });
@@ -71,7 +74,8 @@ export const sendMessage = async (
     type?: ChatType,
     link?: string,
     title?: string,
-    job?: Job & Business
+    job?: Job & Business,
+    post?: Post
 ) => {
     const db = firebase.firestore(firebaseApp);
     const newChat: Chat = {
@@ -85,6 +89,7 @@ export const sendMessage = async (
         ...(link ? { link } : {}),
         ...(title ? { title } : {}),
         ...(job ? { job } : {}),
+        ...(post ? { post } : {}),
     };
     await db.collection(`conversations/${conversationId}/chats`).add(newChat);
     const notificationMessage = `Message from ${from.fullname}`;

@@ -179,9 +179,9 @@ export const RegisterForm: FC = () => {
                                 if(!value){
                                     return `username can not be empty`
                                 }
-                                var regex = /^[a-zA-Z0-9.\-_$@*!]{3,30}$/;
+                                var regex = /^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/
                                 if(!regex.test(value)){
-                                    return 'username must not contain spaces'
+                                    return 'username must be at least 5 characters and not contain spaces,"@" or "."'
                                 }
                                 const exists = await usernameExists(value);
                                 if (exists)

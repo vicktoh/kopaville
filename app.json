@@ -2,10 +2,10 @@
   "expo": {
     "name": "Kopaville",
     "slug": "kopaville",
-    "version": "1.0.10",
+    "version": "1.0.12",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "kopaville",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -54,14 +54,14 @@
         "UIBackgroundModes": ["remote-notification"],
         "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos."
       },
-      "buildNumber": "3"
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 14,
+      "versionCode": 16,
       "package": "com.vicktoh.kopaville",
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
@@ -70,7 +70,8 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_MEDIA_LOCATION"
+        "android.permission.ACCESS_MEDIA_LOCATION", 
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {

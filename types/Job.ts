@@ -7,7 +7,7 @@ export interface Job {
     location: string;
     organisation: string;
     criteria: string[];
-    link: string;
+    link?: string;
     dateAdded?: firebase.firestore.Timestamp;
     verified?: boolean
     bannerUrl?: string;

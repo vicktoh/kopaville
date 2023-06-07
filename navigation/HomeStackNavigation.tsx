@@ -14,6 +14,9 @@ import { DatingReviewScreen } from '../screens/DatingReviewScreen';
 import { ReportPostScreen } from '../screens/ReportPostScreen';
 import { NewPost } from '../screens/NewPost';
 import { Following } from '../screens/Following';
+import { PostOptionScreen } from '../screens/PostOptionScreen';
+import { SharePostScreen } from '../screens/SharePostScreen';
+import { EditPostScreen } from '../screens/EditPostScreen';
 
 const HomePageStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -43,7 +46,7 @@ export const HomeStackNavigation = () => {
                             />
                         ),
                         headerRight: () => (
-                            <HStack space={3}>
+                            <HStack space={2}>
                                 <IconButton
                                     size="sm"
                                     onPress={() =>
@@ -127,6 +130,7 @@ export const HomeStackNavigation = () => {
                     component={NewPost}
                     options={{ headerShown: false }}
                 />
+                
             </HomePageStack.Group>
             <HomePageStack.Group screenOptions={{ presentation: 'modal' }}>
                 <HomePageStack.Screen
@@ -137,6 +141,19 @@ export const HomeStackNavigation = () => {
                 <HomePageStack.Screen
                     name="Report"
                     component={ReportPostScreen}
+                />
+                <HomePageStack.Screen
+                    name="Option"
+                    component={PostOptionScreen}
+                />
+                <HomePageStack.Screen
+                    name="Share"
+                    component={SharePostScreen}
+                />
+                <HomePageStack.Screen
+                    name="Edit Post"
+                    component={EditPostScreen}
+                    options={{ headerShown: false }}
                 />
             </HomePageStack.Group>
         </HomePageStack.Navigator>

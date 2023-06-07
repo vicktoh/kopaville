@@ -113,7 +113,6 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
             toast.show({
                 title: 'Error',
                 description: 'Could not send chat',
-                status: 'error',
             });
         } finally {
             setSendingChat(false);
@@ -137,7 +136,6 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
             toast.show({
                 title: 'Error',
                 description: 'Could not send chat',
-                status: 'error',
             });
         } finally {
             setMessage('');
@@ -181,6 +179,7 @@ export const MessageBubbleScreen: FC<MessageBubbleScreenProps> = ({
                 <Flex marginTop="auto">
                     <FormControl _text={{ fontSize: 'lg' }} isRequired mb={3}>
                         <TextArea
+                            autoCompleteType=''
                             placeholder="write your message here"
                             height={20}
                             size="md"

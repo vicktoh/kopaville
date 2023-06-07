@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import { Business, Job } from './Job';
+import { Post } from './Post';
 
 export type Recipient = {
    fullname: string;
@@ -21,6 +22,7 @@ export type Conversation ={
 export enum ChatType  {
    'link' = 'link',
    'message' = 'message',
+   'post' = 'post',
    'job'="job"
 }
 
@@ -36,4 +38,5 @@ export type Chat = {
    title?: string;
    link?: string;
    job?:Job & Business;
+   post?: Post;
 }

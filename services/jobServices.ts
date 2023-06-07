@@ -35,6 +35,16 @@ export const postJob = async (jobPost: Partial<Job>, bannerUri?: string) =>{
     
     await newJobRef.set(jobToAdd);
 }
+export const editJob = async (job: Job, bannerUri?: string): Promise<string> => {
+    const db = firebase.firestore(firebaseApp);
+    const jobRef = db.collection('jobs').doc(job.id);
+    if(bannerUri) {
+        const banner = await uploadFileToFirestore(`jobBanners/${jobRef.id}`, bannerUri);
+        job.bannerUrl = banner.url;
+    }
+    await jobRef.update(job);
+    return jobRef.id;
+}
 
 export const postService = async( service: Partial<Business>, bannerUri?: string) =>{
     const db = firebase.firestore(firebaseApp);
@@ -45,6 +55,17 @@ export const postService = async( service: Partial<Business>, bannerUri?: string
     }
     const serviceToAdd: Partial<Job> = { ...service, dateAdded: firebase.firestore.Timestamp.now()}
     await serviceRef.set(serviceToAdd);
+}
+
+export const editService = async (service: Business, bannerUri?: string): Promise<string> => {
+    const db = firebase.firestore(firebaseApp);
+    const serviceRef = db.collection('jobs').doc(service.id);
+    if(bannerUri) { 
+        const banner = await uploadFileToFirestore(`jobBanners/${serviceRef.id}`, bannerUri);
+        service.bannerUrl = banner.url;
+    }
+    await serviceRef.update(service);
+    return serviceRef.id;
 }
 
 export const removeJob = async (jobId: string) => {

@@ -19,7 +19,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as yup from 'yup';
 import { Business } from '../types/Job';
 import { AntDesign, Entypo } from '@expo/vector-icons';
-import { postService } from '../services/jobServices';
+import { editService, postService } from '../services/jobServices';
 import { ImageBackground, useWindowDimensions } from 'react-native';
 
 const states: string[] = require('../assets/static/states.json');
@@ -54,9 +54,10 @@ const ServiceSchema = yup.object().shape({
     services: yup.array().max(5, 'Max of 5 criteria allowed'),
 });
 
-export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business }) => {
+export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business, mode }) => {
     const {width: windowWidth } = useWindowDimensions();
     const { auth } = useAppSelector(({auth})=> ({auth}));
+    const toast = useToast()
     const initialValue: Business & { formError?: string, bannerUri?: string; } = business || {
         name: '',
         link: '',
@@ -94,8 +95,14 @@ export const AddServiceForm: FC<AddServiceFormProps> = ({ onCancel, business }) 
                 onSubmit={async (values, { setFieldValue, setSubmitting }) => {
                     const {bannerUri, formError, ...rest} = values;
                     try {
-                        await postService(rest, bannerUri);
-                        // toast.show({ title: 'Successfully added business', status: 'success' });
+                        if(mode === 'add') {
+                            await postService(rest, bannerUri);
+                            toast.show({ title: 'Successfully added business'});
+                                                    } 
+                        if(mode === 'edit') {
+                            await editService(rest, bannerUri);
+                            toast.show({ title: 'Successfully Edited business'});
+                        }
                         setSubmitting(false);
                         onCancel();
                     } catch (error) {

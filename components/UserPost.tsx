@@ -9,12 +9,12 @@ import {
     Text,
     useToast,
 } from 'native-base';
-import { Post } from '../types/Post';
+import { Post, PostWithId } from '../types/Post';
 import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
 import { AVPlaybackStatus, ResizeMode, Video, VideoProps } from 'expo-av';
-import { AntDesign, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { AntDesign, Entypo, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
@@ -30,9 +30,10 @@ import { useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 type PostProps = {
     post: Post;
+    onOpenOption: (post: PostWithId) => void;
 };
 
-export const UserPost: FC<PostProps> = ({ post }) => {
+export const UserPost: FC<PostProps> = ({ post, onOpenOption }) => {
     const { auth, likes: likedPosts } = useAppSelector(({ auth, likes }) => ({
         auth,
         likes,
@@ -47,6 +48,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     const [isLiking, setIsLiking] = useState<boolean>();
     const [isRemoving, setRemoving] = useState<boolean>();
     const [muted, setMuted] = useState<boolean>(false);
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const dispatch = useDispatch();
     const toast = useToast();
     const {
@@ -153,7 +155,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         }
     }
     return (
-        <Flex width={windowWidth} px={2} mb={5}>
+        <Flex width={windowWidth} px={2} mb={5} position="relative">
             <Flex
                 direction="row"
                 alignItems="center"
@@ -185,7 +187,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
 
             {imageUrl.length ? (
                 <ImageScroller
-                    images={imageUrl}
+                    images={typeof imageUrl === 'string' ? imageUrl : imageUrl.map(({storageKey }) => storageKey)} 
                     onLike={() => 'hello'}
                     postId=""
                 />
@@ -267,35 +269,20 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                         />: 
                         null
                     }
-                    {auth?.userId === creatorId ? (
-                        <IconButton
-                            disabled={isRemoving}
-                            icon={
-                                <Icon
-                                    as={Feather}
-                                    name="trash-2"
-                                    color="red.300"
-                                    size="4"
-                                />
-                            }
-                            onPress={() => deletePost()}
-                        />
-                    ) : null}
 
                     <IconButton
                         icon={
                             <Icon
-                                color="red.500"
-                                as={MaterialIcons}
-                                name="report"
+                                color="primary.500"
+                                as={Entypo}
+                                name="dots-three-vertical"
                             />
                         }
                         onPress={() =>
-                            navigation.navigate('Report', {
-                                post,
-                            })
+                           onOpenOption(post as PostWithId)
                         }
                     />
+                    
                 </HStack>
             </Flex>
         </Flex>
