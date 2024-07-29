@@ -2,8 +2,8 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import * as Device from 'expo-device';
-import firebase from "firebase";
-import {firebaseApp} from "./firebase"
+import {db} from "./firebase"
+import { ref, set } from "firebase/database";
 export async function registerForPushNotificationsAsync(userId: string) {
    let token;
    
@@ -29,8 +29,8 @@ export async function registerForPushNotificationsAsync(userId: string) {
      }
      token = (await Notifications.getExpoPushTokenAsync()).data;
      console.log(token);
-     const database = firebase.database(firebaseApp);
-     await database.ref(`tokens/${userId}`).set(token)
+     const tokensRef = ref(db, `tokens/${userId}`);
+     await set(tokensRef, token)
    } else {
    //   alert('Must use physical device for push notifications');
    }

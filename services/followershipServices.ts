@@ -1,5 +1,5 @@
-import firebase from "firebase";
-import { firebaseApp } from "./firebase";
+import {  firestore } from "./firebase";
+import { collection, deleteDoc, doc, getDocs, setDoc } from "firebase/firestore";
 
 
 export type Follower = {
@@ -10,21 +10,20 @@ export type Follower = {
 }
 
 export const followUser = (authId:string, follower: Follower) =>{
-    const db = firebase.firestore(firebaseApp);
-    const followingCollection = db.collection(`users/${authId}/following`);
-    return followingCollection.doc(follower.userId).set(follower);
+    const followingDoc = doc(firestore, `users/${authId}/following/${follower.userId}`);
+
+    return setDoc(followingDoc, follower)
+  
 }
 
 export const unfollowUser = (authId: string, followingId: string) =>{
-    const db = firebase.firestore(firebaseApp);
-    const followingDoc =  db.doc(`users/${authId}/following/${followingId}`);
-    return followingDoc.delete();
+    const followingDoc =  doc(firestore, `users/${authId}/following/${followingId}`);
+    return deleteDoc(followingDoc);
 }
 
 export const fetchFollowers = async (authId: string, type: "following" | "followers" = "followers") => {
-    const db = firebase.firestore(firebaseApp);
-    const followersCollection = db.collection(`users/${authId}/${type}`);
-    const snapshot = await followersCollection.get();
+    const followersCollection = collection(firestore, `users/${authId}/${type}`);
+    const snapshot = await getDocs(followersCollection);
     const userIDs : string[] = [];
     snapshot.forEach((snap)=> {
         userIDs.push(snap.id);

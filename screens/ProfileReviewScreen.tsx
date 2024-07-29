@@ -21,6 +21,7 @@ export const ProfileReviewScreen: FC<ProfileReviewScreenProps> = ({
     const [loading, setLoading] = useState<boolean>(false);
     const [userProfile, setProfile] = useState<Profile | null>(profile || null);
     const toast = useToast();
+
     useEffect(() => {
         const fetchUser = () => {
             if (userId && !profile) {
@@ -29,7 +30,7 @@ export const ProfileReviewScreen: FC<ProfileReviewScreenProps> = ({
                     return listenOnProfile(userId, (data) => {
                         if (data) setProfile(data as Profile);
                         setLoading(false);
-                    });
+                    }, );
                 } catch (error) {
                     let err: any = error;
                     toast.show({

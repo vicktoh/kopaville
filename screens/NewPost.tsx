@@ -204,6 +204,7 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
           });
           navigation.goBack();
       } catch (error) {
+          console.log(error, "🌹")
           toast.show({
               title: 'Could not add post',
               description:
@@ -223,9 +224,9 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
             aspect: [4, 3],
             quality: 0.2
         });
-        if(pickerResult.cancelled === false){
+        if(pickerResult.canceled === false){
             if(imagesInfo.length >= MAX_POST_PHOTO) throw new Error("Cannot select more thatn 4 pictures");
-            setImagesInfo([...imagesInfo, pickerResult]);
+            setImagesInfo([...imagesInfo, pickerResult.assets[0]]);
         } 
     } catch (error) {
         const err: any = error;
@@ -247,16 +248,16 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
             allowsMultipleSelection: true,
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
         });
-        if(pickerResult.cancelled === false){
-            if(pickerResult.cancelled !== false){
+        if(pickerResult.canceled === false){
+            if(pickerResult.canceled !== false){
                 return;
             }
-            const totalImages = pickerResult.selected.length + (imagesInfo?.length || 0)
+            const totalImages = pickerResult.assets.length + (imagesInfo?.length || 0)
             if(totalImages > MAX_POST_PHOTO){
                 throw new Error("Cannot select more than 4 pictures");
                 return;
             }
-            setImagesInfo([...(imagesInfo || []), ...pickerResult.selected]);
+            setImagesInfo([...(imagesInfo || []), ...pickerResult.assets]);
             
             
         }
@@ -280,8 +281,8 @@ export const NewPost: FC<NewPostScreenProps> = ({ navigation }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         });
 
-        if(pickerResult.cancelled === false){
-            setVideoInfo(pickerResult);
+        if(pickerResult.canceled === false){
+            setVideoInfo(pickerResult.assets[0]);
         }
       } catch (error) {
         

@@ -19,7 +19,7 @@ import { convertFilterToAlgolier, fetchDatingProfiles } from '../services/dating
 import { useSearchIndex } from '../hooks/useSearchIndex';
 import { DatingFilter, DatingFilterForm, DEFAULT_DATING_FILTER } from '../components/DatingFilterForm';
 import { sub } from 'date-fns';
-const PROFILE_PERPPAGE = 10;
+const PROFILE_PERPPAGE = 20;
 const states = require('../assets/static/states.json');
 
 type DatingListScreenProps = NativeStackScreenProps<

@@ -1,6 +1,6 @@
-import firebase from 'firebase';
 import { Business, Job } from './Job';
 import { Post } from './Post';
+import { Timestamp } from 'firebase/firestore';
 
 export type Recipient = {
    fullname: string;
@@ -32,7 +32,7 @@ export type Chat = {
    fromId: string;
    toId: string;
    message: string;
-   timestamp: firebase.firestore.Timestamp;
+   timestamp: Timestamp;
    fromUsername: string;
    type?: ChatType
    title?: string;

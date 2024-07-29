@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react';
-import firebase from 'firebase';
 import { Entypo } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -21,6 +20,7 @@ import { commentOnPost, listenOnComments } from '../services/postsServices';
 import { HomeStackParamList } from '../types';
 import { Comment } from '../types/Comment';
 import { PostComment } from '../components/PostComment';
+import { Timestamp } from 'firebase/firestore';
 
 type CommentScreenProps = NativeStackScreenProps<
     HomeStackParamList,
@@ -71,7 +71,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                 photoUrl: profile?.profileUrl || '',
                 username: profile?.loginInfo?.username || '',
                 fullname: profile?.loginInfo?.fullname || '',
-                date: firebase.firestore.Timestamp.now(),
+                date: Timestamp.now(),
             };
             setCommenting(true);
             await commentOnPost(commentToPost);

@@ -81,7 +81,7 @@ export const AddJobForm: FC<AddJobFormProps> = ({ onCancel, job, mode }) => {
                 quality: 0.2,
                 allowsEditing: true,
             });
-            if (!pickerResult.cancelled) callback(pickerResult.uri);
+            if (!pickerResult.canceled) callback(pickerResult.assets[0].uri);
         } catch (error) {
             console.log({ error });
         } finally {

@@ -1,6 +1,6 @@
+import { Timestamp } from 'firebase/firestore';
 import { Profile } from '../types/Profile';
 import { Checklist } from '../types/System';
-import firebae from 'firebase';
 import { format, formatDistanceToNow, intervalToDuration, secondsInMinute, secondsToMinutes } from 'date-fns';
 type ChecklistKeys = keyof Checklist;
 const checklistKeys: ChecklistKeys[] = ['Complete Dating Profile', 'Complete Profile', 'Complete Career Profile'];
@@ -37,7 +37,7 @@ export const checkListFromProfile = (profile: Profile)=>{
     return checkList;
 }
 
-export const chatTime = (chatTimestamp: firebae.firestore.Timestamp) => {
+export const chatTime = (chatTimestamp: Timestamp) => {
     const interval = intervalToDuration({start: chatTimestamp.toDate(), end: new Date()});
     if(interval.days && interval.days > 3){
         return format(chatTimestamp.toDate(), "qMMM yy 'at' kk:mm")

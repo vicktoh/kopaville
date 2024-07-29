@@ -62,6 +62,7 @@ export const UserPost: FC<PostProps> = ({ post, onOpenOption }) => {
         creatorId,
     } = post;
 
+
     const [videoPlaybackStatus, setPlayBackStatus] =
         useState<AVPlaybackStatus>();
     const navigation =
@@ -187,7 +188,7 @@ export const UserPost: FC<PostProps> = ({ post, onOpenOption }) => {
 
             {imageUrl.length ? (
                 <ImageScroller
-                    images={typeof imageUrl === 'string' ? imageUrl : imageUrl.map(({storageKey }) => storageKey)} 
+                    images={typeof imageUrl === 'string' ? imageUrl : imageUrl.map(({url }) => url)} 
                     onLike={() => 'hello'}
                     postId=""
                 />

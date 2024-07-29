@@ -1,18 +1,20 @@
-import { firebaseApp } from './firebase';
-import firebase from 'firebase';
+import { firebaseApp, firestore, storage } from './firebase';
 import { Profile } from '../types/Profile';
-import { SnapshotViewIOSBase } from 'react-native';
+import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export const listenOnProfile = (
     userId: string,
     onSuccessCallback:(data: any) => void
 ) => {
-    const db = firebase.firestore(firebaseApp);
     // const snapshot =  await db.doc(`users/${userId}`).get();
-    return db.doc(`users/${userId}`).onSnapshot((snapshot)=> {
-        if(snapshot.exists){
+    return onSnapshot(doc(firestore, `users/${userId}`),(snapshot)=> {
+        console.log(userId, "🍏")
+        if(snapshot.exists()){
             onSuccessCallback(snapshot.data())
         }
+    }, (err) => {
+        console.log(err, "🌹")
     })
     
 };
@@ -22,8 +24,8 @@ export const listenOnProfile = (
 
 
 export const fetchUserProfile = async (userId: string) =>{
-    const userSnapshot = await firebase.firestore().doc(`users/${userId}`).get();
-    if(userSnapshot.exists){
+    const userSnapshot = await getDoc(doc(firestore, `users/${userId}`));
+    if(userSnapshot.exists()){
         return userSnapshot.data();
     }
     return null;
@@ -31,10 +33,9 @@ export const fetchUserProfile = async (userId: string) =>{
 
 
 export const updateProfileInfo = async (userId:string, profile: Partial<Profile>)=>{
-    const db = firebase.firestore(firebaseApp);
-    const userRef = db.doc(`users/${userId}`);
+    const userRef = doc(firestore, `users/${userId}`);
     try {
-        await userRef.update(profile);
+        await updateDoc(userRef, profile);
         return { status: 'success'}
     } catch (error) {
         if (error){
@@ -46,9 +47,8 @@ export const updateProfileInfo = async (userId:string, profile: Partial<Profile>
     }
 }
 export const chekIfVerified = async(userId: string) =>{
-    const db = firebase.firestore(firebaseApp);
-    const verifiedSnap = await db.doc(`verifiedUser/${userId}`).get();
-    return verifiedSnap.exists
+    const verifiedSnap = await getDoc(doc(firestore, `verifiedUser/${userId}`));
+    return verifiedSnap.exists()
 }
 
 export const getUploadBlob = async (uri: string) => {
@@ -73,22 +73,20 @@ export const getUploadBlob = async (uri: string) => {
 
 
 export const uploadProfilePicture = async (userId: string, uri: string)=>{
-    const storage = firebase.storage(firebaseApp);
-    const storageRef = storage.ref(`profile_pics/${userId}`);
+    const storageRef = ref(storage, `profile_pics/${userId}`);
     const blob = await getUploadBlob(uri);
-    const snapshot = await storageRef.put(blob);
-    const url = await snapshot.ref.getDownloadURL();
+    const snapshot = await uploadBytes(storageRef, blob);
+    const url = await getDownloadURL(snapshot.ref);
     return url;
 
 }
 
 export const uploadFileToFirestore = async (path: string, uri: string) =>{
-    const storage = firebase.storage(firebaseApp);
-    const storageRef = storage.ref(path);
+    const storageRef = ref(storage, path);
     const blob = await getUploadBlob(uri);
     try {
-    const snapshot = await  storageRef.put(blob);
-        const url = await snapshot.ref.getDownloadURL();
+    const snapshot = await  uploadBytes(storageRef, blob);
+        const url = await getDownloadURL(snapshot.ref);
         return {
             url, status: 'success'};
     } catch (error) {
@@ -105,11 +103,10 @@ export const uploadFileToFirestore = async (path: string, uri: string) =>{
 export const updateCareerInfo = async (userId:string , data: { uri?: string; profile: string}, succesCallback: (data: {profile: string; cvUrl?: string})=> void) =>{
     let cvUrl = null;
     if(data.uri){
-        const storage = firebase.storage(firebaseApp);
-        const storageRef = storage.ref(`resumes/${userId}`);
+        const storageRef = ref(storage, `resumes/${userId}`);
         const blob = await getUploadBlob(data.uri);
-        const snapshot  = await storageRef.put(blob);
-        const url = await snapshot.ref.getDownloadURL();
+        const snapshot  = await uploadBytes(storageRef, blob);
+        const url = await getDownloadURL(snapshot.ref);
         const status =  await updateProfileInfo(userId, { careerProfile: { profile: data.profile, cvUrl: url}})
         succesCallback({ profile: data.profile, cvUrl: url})
     }

@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { combineSlices, configureStore } from '@reduxjs/toolkit';
 import { System } from '../types/System';
 import { User } from '../types/User';
 import auth from './authSlice';
@@ -16,15 +16,16 @@ import { Post } from '../types/Post';
 import { Folowership } from '../types/Followership';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
 
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import {  persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { Block, Profile } from '../types/Profile';
 import { Conversation } from '../types/Conversation';
 import { CategorySliceType } from '../types/Category';
 import { CartItem } from '../types/Product';
 import { Billing } from '../types/Billing';
+import persistStore from 'redux-persist/es/persistStore';
 
 
-const rootReducer = combineReducers({
+const rootReducer = combineSlices({
     auth,
     systemInfo,
     posts,

@@ -44,11 +44,7 @@ export interface Profile {
     profileUrl: string;
     profile?: {
         bio: string;
-        dateOfBirth: {
-            year: string;
-            month: string;
-            day: string;
-        };
+        
         dateOfBirthTimestamp?: number;
         height?: string;
         phoneNumber?: string;

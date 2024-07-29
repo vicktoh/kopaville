@@ -1,16 +1,16 @@
-import { firebaseApp } from './firebase';
-import firebase from 'firebase';
+import { firebaseApp, firestore } from './firebase';
 import { Job, Business } from '../types/Job';
 import { getUploadBlob, uploadFileToFirestore } from './profileServices';
+import { addDoc, collection, deleteDoc, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
 
 
 
 export const listenOnJobs = async ( callback: (data: any)=> void, filter: {location?: string, type?: 'job' | 'service'} ) =>{
-    const db = firebase.firestore(firebaseApp);
-    let query = db.collection('jobs').orderBy('dateAdded', 'desc');
-    if(filter?.location) query =  query.where('location', '==', filter?.location);
-    if(filter?.type)  query = filter.type === "job" ? query.orderBy('title') : query.orderBy('name') ;
-    return query.limit(50).onSnapshot((snapshot) => {
+    const jobsCollection =  collection(firestore, 'jobs')
+    let q = query(jobsCollection, orderBy('dateAdded', 'desc'));
+    if(filter?.location) q =  query(q, where('location', '==', filter?.location));
+    if(filter?.type)  q =  query(q, orderBy(filter.type === "job" ? 'title': 'name'), limit(5));
+    return onSnapshot(q, (snapshot) => {
         const data: any = [];
         snapshot.forEach((snap)=>{
             const job = snap.data();
@@ -25,51 +25,47 @@ export const listenOnJobs = async ( callback: (data: any)=> void, filter: {locat
 
 export const postJob = async (jobPost: Partial<Job>, bannerUri?: string) =>{
     
-    const db = firebase.firestore(firebaseApp);
-    const newJobRef = db.collection('jobs').doc();
+    const newJobRef = doc(collection(firestore,'jobs'));
     if(bannerUri){
         const banner =  await uploadFileToFirestore(`jobBanners/${newJobRef.id}`, bannerUri);
         jobPost.bannerUrl = banner.url;
     }
-    const jobToAdd: Partial<Job> = { ...jobPost, dateAdded: firebase.firestore.Timestamp.now()}
+    const jobToAdd: Partial<Job> = { ...jobPost, dateAdded: Timestamp.now()}
     
-    await newJobRef.set(jobToAdd);
+    await setDoc(newJobRef, jobToAdd);
 }
 export const editJob = async (job: Job, bannerUri?: string): Promise<string> => {
-    const db = firebase.firestore(firebaseApp);
-    const jobRef = db.collection('jobs').doc(job.id);
+    const jobRef = doc(firestore, `jobs/${job.id}`);
+    
     if(bannerUri) {
         const banner = await uploadFileToFirestore(`jobBanners/${jobRef.id}`, bannerUri);
         job.bannerUrl = banner.url;
     }
-    await jobRef.update(job);
+    await updateDoc(jobRef, job as any);
     return jobRef.id;
 }
 
 export const postService = async( service: Partial<Business>, bannerUri?: string) =>{
-    const db = firebase.firestore(firebaseApp);
-    const serviceRef = db.collection('jobs').doc();
+    const serviceRef = doc(collection(firestore,'jobs'));
     if(bannerUri){
         const banner =  await uploadFileToFirestore(`jobBanners/${serviceRef.id}`, bannerUri);
         service.bannerUrl = banner.url;
     }
-    const serviceToAdd: Partial<Job> = { ...service, dateAdded: firebase.firestore.Timestamp.now()}
-    await serviceRef.set(serviceToAdd);
+    const serviceToAdd: Partial<Job> = { ...service, dateAdded: Timestamp.now()}
+    await setDoc(serviceRef, serviceToAdd);
 }
 
 export const editService = async (service: Business, bannerUri?: string): Promise<string> => {
-    const db = firebase.firestore(firebaseApp);
-    const serviceRef = db.collection('jobs').doc(service.id);
+    const serviceRef = doc(firestore, `jobs/${service.id}`);
     if(bannerUri) { 
         const banner = await uploadFileToFirestore(`jobBanners/${serviceRef.id}`, bannerUri);
         service.bannerUrl = banner.url;
     }
-    await serviceRef.update(service);
+    await updateDoc(serviceRef, service as any);
     return serviceRef.id;
 }
 
 export const removeJob = async (jobId: string) => {
-    const db = firebase.firestore(firebaseApp);
-    const serviceRef = db.doc(`jobs/${jobId}`);
-    return serviceRef.delete();
+    const serviceRef = doc(firestore, `jobs/${jobId}`);
+    return deleteDoc(serviceRef);
 }

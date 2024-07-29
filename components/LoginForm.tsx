@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Button,Box, Flex, FormControl, Input, Text, Alert, HStack, VStack } from 'native-base';
 import { Formik, Form, FormikBag, FormikHelpers } from 'formik';
 import { loginUser } from '../services/authServices';
@@ -9,6 +9,8 @@ import { setAuth } from '../reducers/authSlice';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../types';
 import { User } from '../types/User';
+import { auth } from '../services/firebase';
+import { inMemoryPersistence, browserLocalPersistence, setPersistence } from 'firebase/auth';
 
 type FormValues = {
     email: string;
@@ -36,6 +38,10 @@ export const LoginForm: FC = () => {
             setSubmitting(false);
         }
     }
+
+    // useEffect(()=> {
+    //     setPersistence(auth, browserLocalPersistence)
+    // }, [])
     return (
         <Flex direction="column" flex={1}>
             <Formik

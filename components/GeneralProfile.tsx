@@ -20,7 +20,7 @@ import { Profile } from '../types/Profile';
 import { Linking, Modal, useWindowDimensions, View } from 'react-native';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { AppStackParamList, DrawerParamList, HomeStackParamList } from '../types';
+import { AppStackParamList, DrawerParamList, HomeStackParamList, MessageStackParamList, RootTabParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import {
     updateProfileInfo,
@@ -103,18 +103,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
 
     const dispatch = useAppDispatch();
     const navigation =
-        useNavigation<NavigationProp<DrawerParamList & HomeStackParamList & AppStackParamList>>();
-    const dateOfBirth = generalProfile?.dateOfBirth;
+        useNavigation<NavigationProp<AppStackParamList>>();
+    const dateOfBirth = generalProfile?.dateOfBirthTimestamp;
     const age = useMemo(
         () =>
             dateOfBirth
                 ? differenceInCalendarYears(
                       new Date(),
-                      new Date(
-                          parseInt(dateOfBirth.year),
-                          parseInt(dateOfBirth.month),
-                          parseInt(dateOfBirth.day)
-                      )
+                      dateOfBirth
                   )
                 : '',
         [profile.profile]
@@ -156,13 +152,13 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 quality: 0.2,
                 allowsEditing: true,
             });
-            if (pickerResult.cancelled) {
+            if (pickerResult.canceled) {
                 setUploadingFromCamera(false);
                 return;
             }
             const url = await uploadProfilePicture(
                 auth?.userId || '',
-                pickerResult?.uri || ''
+                pickerResult.assets[0].uri || ''
             );
             updateProfileInfo(auth?.userId || '', { profileUrl: url });
             dispatch(setProfile({ ...profile, profileUrl: url }));
@@ -181,14 +177,17 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         }
         try {
             setUploadingFromLibrary(true);
-            let pickerResult: any = await ImagePicker.launchImageLibraryAsync({
+            let pickerResult = await ImagePicker.launchImageLibraryAsync({
                 aspect: [1, 1],
                 quality: 0.2,
                 allowsEditing: true,
             });
+            if(pickerResult.canceled){
+                return;
+            }
             const url = await uploadProfilePicture(
                 auth?.userId || '',
-                pickerResult?.uri || ''
+                pickerResult.assets[0].uri || ''
             );
             updateProfileInfo(auth?.userId || '', { profileUrl: url });
             dispatch(setProfile({ ...profile, profileUrl: url }));
@@ -294,7 +293,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 recipient: to,
             },
         });
-        // navigation.navigate("MessageBubble", { conversationId : conversationId || undefined, recipient: to});
+        // navigation.navigate("");
     };
     if (blocked?.length) {
         return <BlockedProfile profile={profile} />;
@@ -428,7 +427,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                             </Button> : null
                 }
             </HStack>
-            {generalProfile?.displayAge && generalProfile?.dateOfBirth ? (
+            {generalProfile?.displayAge && generalProfile?.dateOfBirthTimestamp ? (
                 <>
                     <Heading fontSize="sm" mt={5} mb={2}>
                         Age

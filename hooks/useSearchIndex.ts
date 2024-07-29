@@ -24,14 +24,15 @@ export function useSearchIndex<T>(
   }>();
   const [data, setData] = useState<T[]>();
   const toast = useToast();
-  // console.log("facet", facets);
+  console.log("facet", facets);
+  console.log("filters", filters);
   const search = useCallback(async () => {
     try {
       setLoading(true);
       const usersIndex = algoliaIndex(index);
       const response = await usersIndex.search(query, {
         page,
-        hitsPerPage: perpage || 10,
+        hitsPerPage: perpage || 30,
         ...(filters ? { filters } : null),
         facetFilters: facets,
         facets: ["*"],

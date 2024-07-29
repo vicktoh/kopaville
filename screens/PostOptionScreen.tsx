@@ -1,10 +1,11 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { FC, ReactElement, ReactNode, useState } from 'react'
 import { HomeStackParamList } from '../types'
-import { Avatar, Button, Flex, HStack, Heading, Icon, IconButton, Image, Text, VStack, View, useToast } from 'native-base';
+import { Avatar, Button, Flex, HStack, Heading, Icon, IconButton, Text, VStack, View, useToast } from 'native-base';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { removePost } from '../services/postsServices';
+import { Image } from 'expo-image';
 type PostOptionScreenProps = NativeStackScreenProps<HomeStackParamList, "Option">;
 const options: { label: string, to?: keyof Pick<HomeStackParamList, "Report"  | "Share">, icon: ReactElement}[] = [
    {
@@ -82,9 +83,9 @@ export const PostOptionScreen: FC<PostOptionScreenProps> = ({ navigation, route 
                            mt={1}
                        >
                            <Image
-                               flex={1}
+                               style ={{flex:1}}
                                alt="Post image"
-                               source={{ uri: post.imageUrl[0] }}
+                               source={post.imageUrl && post.imageUrl[0].url}
                            />
                        </Flex>
                    )}

@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import { Timestamp } from 'firebase/firestore';
 export enum ProductGrade {
    "New" = "New",
    "Fairly Used" = "Fairly Used",
@@ -23,7 +23,7 @@ export type  Product = {
    category: string;
    vendorName: string;
    images: string[];
-   dateAdded: firebase.firestore.Timestamp;
+   dateAdded: Timestamp;
 }
 
 export type ProductFormValue = {

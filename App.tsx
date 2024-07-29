@@ -9,20 +9,23 @@ import { theme } from './theme';
 import { NativeBaseProvider } from 'native-base';
 import { AppLoading } from './screens/AppLoading';
 import { Provider } from 'react-redux';
-import { store, persistor } from './reducers/store';
+import { persistor, store } from './reducers/store';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import {LogBox} from 'react-native';
 import { initializeApp } from './services/authServices';
-import { PersistGate } from 'redux-persist/integration/react'
+import { PersistGate } from 'redux-persist/integration/react';
 
 LogBox.ignoreLogs(['NativeBase:']);
+LogBox.ignoreLogs(['Selector']);
+
 export default function App() {
     const { isLoadingComplete, auth, systemInfo, isOnBoarded, setIsOnboarded } = useCachedResources();
     const colorScheme = useColorScheme();
+
     if(auth){
       store.dispatch({ type: 'auth', payload: auth})
     }
-    if(!isLoadingComplete && !auth){
+    if(!isLoadingComplete){
         initializeApp(auth);
     }
     if (!isLoadingComplete) {

@@ -189,7 +189,7 @@ export default function Navigation({
                 const unsubscribe = listenOnBlocks(auth.userId, (data) => {
                     dispatch(setBlock(data));
                 });
-                return () => unsubscribe();
+                // return () => unsubscribe();
             } catch (error) {
                 console.log(error);
             }

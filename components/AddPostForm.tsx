@@ -46,8 +46,8 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
         const { granted } = await MediaLibrary.requestPermissionsAsync();
         if(granted){
             const library = await MediaLibrary.getAssetsAsync();
-            let uris = [];
-            const currBlobs = [];
+            let uris:string[] = [];
+            const currBlobs: any[] = [];
             for(let i = 0; i < library.assets.length; i++){
                 const blob = await getUploadBlob(library.assets[i].uri);
                 currBlobs.push(blob);
@@ -68,7 +68,6 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                     title: 'Permission Denied',
                     description:
                         'Please grant access to your gallery from your phone settings',
-                    status: 'error',
                     placement: 'top',
                 });
                 return;
@@ -79,11 +78,11 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
             videoQuality: 2,
         });
-        if (result.cancelled) {
+        if (result.canceled) {
             return;
         }
         try {
-            const blob = await getUploadBlob(result.uri);
+            const blob = await getUploadBlob(result.assets[0].uri);
             setPickedVideo(result);
             setVideoBlob(blob);
         } catch (error) {
@@ -99,7 +98,6 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             if (permission.granted === false) {
                 toast.show({
                     title: 'Unable to complete, Camera permission required',
-                    status: 'error',
                     description: '',
                 });
             }
@@ -123,12 +121,12 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
             // setBlob([...(blobs || []), blob]);
             // setImageUri((images) => [...images, result.uri]);
         } else {
-            if (result.cancelled) {
+            if (result.canceled) {
                 return;
             }
-            const blob = await getUploadBlob(result.uri);
+            const blob = await getUploadBlob(result.assets[0].uri);
             setBlob([...(blobs || []), blob]);
-            setImageUri((images) => [...images, result.uri]);
+            setImageUri((images) => [...images, result.assets[0].uri]);
         }
         // setImageUri((images) => [...images, result.uri]);
     };
@@ -190,6 +188,7 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                     borderColor="primary.400"
                     value={postText}
                     height={20}
+                    autoCompleteType=""
                     placeholder="What's on your mind"
                     onChangeText={(text) => setPostText(text)}
                 />
@@ -273,14 +272,14 @@ export const AddPostForm: FC<AddPostFormProps> = ({ onClose }) => {
                               </Flex>
                           ))
                         : null}
-                    {pickedVideo && !pickedVideo.cancelled ? (
+                    {pickedVideo && !pickedVideo.canceled ? (
                         <Box>
                             <Video
                                 style={{ width: 70, height: (70 * 5) / 4 }}
-                                source={{ uri: pickedVideo.uri }}
+                                source={{ uri: pickedVideo.assets[0].uri }}
                             />
                             <Text fontSize="xs" my={1}>{`Video (${
-                                pickedVideo?.duration || 0 / 100
+                                pickedVideo.assets[0]?.duration || 0 / 100
                             })s`}</Text>
                             <Button
                                 onPress={removeVideo}

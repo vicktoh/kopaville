@@ -1,41 +1,42 @@
 import { LOCAL_SYSTEM_INFO, LOCAL_USER_INFO } from '../constants/Storage';
 import { User } from '../types/User';
-import firebase from 'firebase';
-require("firebase/functions");
-import { firebaseApp } from './firebase';
+import { auth, firestore, functions } from './firebase';
+import { createUserWithEmailAndPassword, onAuthStateChanged, reauthenticateWithCredential, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 
 import { removeLocalData, setLocalData } from './local';
 import { FormValues } from '../components/RegisterForm';
 import { ErrorDict } from '../constants/Firebase';
 
 import { Block } from '../types/Profile';
+import { doc, getDoc, runTransaction, setDoc } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
 
 export const initializeApp = async (localUser: User | null) => {
-    const auth = firebase.auth(firebaseApp);
-
-
-    auth.onAuthStateChanged(async (user)=>{
+    // const auth = firebase.auth(firebaseApp);
+     onAuthStateChanged(auth, async(user) =>{
         if(user && !localUser){
 
         }
         if(!user && localUser){
             try {
-                const response = await auth.signInWithEmailAndPassword(localUser.email, localUser.password);
+                
+                const response = await signInWithEmailAndPassword(auth, localUser.email, localUser.password);
             } catch (error) {
                 console.log(error);
             }
         }
-    })
+     })
+
+    
 };
 
 export const registerUser = async (registration: FormValues) => {
     const { email, password, fullname, type, username, gender } = registration;
-    const auth = firebase.auth(firebaseApp);
     try {
-        const credentials = await auth.createUserWithEmailAndPassword(email, password);
+        const credentials = await createUserWithEmailAndPassword(auth, email, password);
         
-        const res = await auth.currentUser?.updateProfile({ displayName: fullname });
-        await firebase.firestore(firebaseApp).doc(`users/${auth?.currentUser?.uid}`).set({
+        const res = await updateProfile(credentials.user, { displayName: fullname });
+        await setDoc(doc(firestore,`users/${auth?.currentUser?.uid}`),{
             loginInfo: {
                 fullname,
                 username,
@@ -68,14 +69,14 @@ export const registerUser = async (registration: FormValues) => {
 
 
 export const loginUser = async ({ email, password}: {email: string; password: string}) =>{
-    const auth = firebase.auth(firebaseApp);
     try {
-        const credentials = await  auth.signInWithEmailAndPassword(email, password);
+        const credentials = await  signInWithEmailAndPassword(auth, email, password);
         const { uid, refreshToken, displayName, phoneNumber } = credentials.user || {};
         return { user: { userId: uid, refreshToken, displayName, phoneNumber, email, password }, status: 'success' };
     } catch (error) {
         const err: any = error;
         if (err) {
+            console.log(err,)
             return {
                 status: 'failed',
                 message: ErrorDict[err?.code] || "Unexpected error try again",
@@ -88,21 +89,20 @@ export const loginUser = async ({ email, password}: {email: string; password: st
 export const logOut = async() =>{
     await removeLocalData(LOCAL_USER_INFO);
     await removeLocalData(LOCAL_SYSTEM_INFO);
-    await  firebase.auth(firebaseApp).signOut();
+    await  signOut(auth)
    
     
 }
 
 export const usernameExists = async (username: string)=>{
-    const snap = await firebase.firestore().doc(`usernames/${username.toLocaleLowerCase()}`).get();
-    if(snap.exists) return true
+    const snap = await getDoc(doc(firestore,`usernames/${username.toLocaleLowerCase()}`));
+    if(snap.exists()) return true
     return false
 }
 
 export const sendRecoverPassword = async(email: string)=>{
-    const auth = firebase.auth(firebaseApp)
     try {
-    await auth.sendPasswordResetEmail(email);
+    await sendPasswordResetEmail(auth, email);
     return {
         status: 'success',
         message: 'Email has been sent to you'
@@ -120,22 +120,22 @@ export const sendRecoverPassword = async(email: string)=>{
 }
 
 
-export const listenOnBlocks= (userId: string, callback: (data: Block)=>void) => {
-    const documentRef = firebase.firestore().doc(`blocks/${userId}`);
-    return documentRef.onSnapshot((snap)=>{
-        const data = snap.data();
-        callback(data as Block);
-    });
+export const listenOnBlocks= async (userId: string, callback: (data: Block)=>void) => {
+    const documentRef = doc(firestore,`blocks/${userId}`);
+    const documennt = await getDoc(documentRef)
+    const data = documennt.data() as Block;
+    callback(data as Block);
+    
 }
 
 export const blockUser = async (data: {blockerId: string; blockeeId: string}, block: Block | null) => {
-    const blockeeRef = firebase.firestore().doc(`blocks/${data.blockeeId}`);
-    const blockerRef = firebase.firestore().doc(`blocks/${data.blockerId}`);
+    const blockeeRef = doc(firestore,`blocks/${data.blockeeId}`);
+    const blockerRef = doc(firestore, `blocks/${data.blockerId}`);
     
-    await firebase.firestore().runTransaction(async (transaction)=> {
+    await runTransaction(firestore, async (transaction)=> {
         const blockee = await transaction.get(blockeeRef);
         
-        if(blockee.exists){
+        if(blockee.exists()){
             const blockdata = blockee.data();
             transaction.update(blockeeRef, { blockedBy: [...(blockdata?.blockedBy || []), data.blockerId]});
         }
@@ -147,14 +147,14 @@ export const blockUser = async (data: {blockerId: string; blockeeId: string}, bl
     })
 }
 export const unBlockUser = async (data: { blockerId:string, blockeeId: string}, newblocked: string []) => {
-    const blockeeRef = firebase.firestore().doc(`blocks/${data.blockeeId}`);
-    const blockerRef = firebase.firestore().doc(`blocks/${data.blockerId}`);
+    const blockeeRef = doc(firestore, `blocks/${data.blockeeId}`);
+    const blockerRef = doc(firestore, `blocks/${data.blockerId}`);
     
     
-    await firebase.firestore().runTransaction(async (transaction)=> {
+    await runTransaction(firestore, async (transaction)=> {
         const blockee = await transaction.get(blockeeRef);
         
-        if(blockee.exists){
+        if(blockee.exists()){
             const blockdata = blockee.data() as Block;
             const newBlockedBy = (blockdata?.blockedBy || []).filter((userid)=> userid !== data.blockerId);
             transaction.update(blockeeRef, { blockedBy: newBlockedBy});
@@ -168,7 +168,7 @@ export const unBlockUser = async (data: { blockerId:string, blockeeId: string}, 
 
 
 export const deleteAccount = async()=> {
-    const functions = firebase.functions(firebaseApp);
-   const deleteUser = functions.httpsCallable('deleteUser');
+
+   const deleteUser = httpsCallable(functions, 'deleteUser');
    return await deleteUser();
 }
