@@ -1,6 +1,6 @@
-import firebase from 'firebase';
 import { Post } from "./Post"
 import { Profile } from './Profile';
+import { Timestamp } from 'firebase/firestore';
 
 export type Report = {
    post: Post,
@@ -10,7 +10,7 @@ export type Report = {
       userName: string;
       userId: string
    }
-   date: firebase.firestore.Timestamp | number
+   date: Timestamp | number
    reason: string;
    description?: string;
 }
@@ -18,7 +18,7 @@ export type Report = {
 export type ReportedUser = {
    user: Profile,
    reporter: Report["reporter"],
-   date: firebase.firestore.Timestamp | number;
+   date: Timestamp | number;
    description?: string;
    reason: string;
 }

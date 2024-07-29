@@ -1,6 +1,6 @@
+import { Timestamp } from 'firebase/firestore';
 import { Profile } from '../types/Profile';
 import { Checklist } from '../types/System';
-import firebae from 'firebase';
 import { format, formatDistanceToNow, intervalToDuration, secondsInMinute, secondsToMinutes } from 'date-fns';
 type ChecklistKeys = keyof Checklist;
 const checklistKeys: ChecklistKeys[] = ['Complete Dating Profile', 'Complete Profile', 'Complete Career Profile'];
@@ -18,6 +18,9 @@ export const countComplette = (checklist: Checklist) => {
     });
     return count;
 };
+export function randomString(length: number): string {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
 
 export const getInitialsFromName = (name: string) => {
     const names = name.split(" ");
@@ -34,7 +37,7 @@ export const checkListFromProfile = (profile: Profile)=>{
     return checkList;
 }
 
-export const chatTime = (chatTimestamp: firebae.firestore.Timestamp) => {
+export const chatTime = (chatTimestamp: Timestamp) => {
     const interval = intervalToDuration({start: chatTimestamp.toDate(), end: new Date()});
     if(interval.days && interval.days > 3){
         return format(chatTimestamp.toDate(), "qMMM yy 'at' kk:mm")

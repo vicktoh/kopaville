@@ -1,10 +1,12 @@
-import { firebaseApp } from './firebase';
-import firebase from 'firebase';
-import { Post } from '../types/Post';
+import { firebaseApp, firestore,  storage } from './firebase';
+import { FirebasePost, Post } from '../types/Post';
 import { Profile } from '../types/Profile';
 import { Comment } from '../types/Comment';
 import { Conversation } from '../types/Conversation';
 import { Report, ReportedUser } from '../types/Report';
+import { randomString } from './helpers';
+import { collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref, uploadBytes,  } from 'firebase/storage';
 
 
 export const listenOnTimeline = (
@@ -14,11 +16,11 @@ export const listenOnTimeline = (
     blockedList: string []
 ) => {
     
-    const db = firebase.firestore(firebaseApp);
-    return db.collection('posts').where('creatorId', 'in', following).orderBy('dateCreated', 'desc').limit(50).onSnapshot((querysnapshot)=>{
+    const q = query(collection(firestore,'posts'), where('creatorId', 'in', following), orderBy('dateCreated', 'desc'), limit(50))
+    return onSnapshot(q, (querysnapshot)=>{
         const data: any[] = [];
         querysnapshot.forEach((snap) => {
-            const dat = snap.data() as Post;
+            const dat = snap.data() as FirebasePost;
             if(!blockedList.includes(dat.creatorId)){
                 dat.postId = snap.id;
                 data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
@@ -31,39 +33,54 @@ export const listenOnTimeline = (
 
 
 export const explorePosts = async (blockedList: string[])=>{
-    const db = firebase.firestore(firebaseApp)
-    const snapshot =  await  db.collection('posts').orderBy('dateCreated', 'desc').orderBy('likes', 'desc').limit(50).get();
+    const q = query(collection(firestore, 'posts'),orderBy('dateCreated', 'desc'), orderBy('likes', 'desc'), limit(50) )
+    const snapshot = await getDocs(q);
     const data: (Post & {id?: string})[] = [];
     snapshot.forEach((snap)=>{
-        const post: Post & {id?: string} = snap.data() as Post;
+        const post: FirebasePost & {id?: string} = snap.data() as FirebasePost;
         if(!blockedList.includes(post.creatorId)){
             post.postId = snap.id;
-            data.push(post)
-        };
+            
+{            data.push({...post , dateCreated: post.dateCreated.toMillis()})
+}        };
     });
 
     return data;
 }
 
+export const listenOnExplorePost = async (blockedList: string[], callback: (post: Post[], err: string) => void) => {
+    const q = query(collection(firestore, 'posts'),orderBy('dateCreated', 'desc'), orderBy('likes', 'desc'), limit(100) )
+    return onSnapshot(q, (snapshot)=>{
+        const data: Post[] = [];
+        snapshot.forEach((snap) => {
+            const dat = snap.data() as FirebasePost ;
+            if(!blockedList.includes(dat.creatorId)){
+                dat.postId = snap.id;
+                data.push({...dat, dateCreated: dat.dateCreated.toMillis()});
+            }
+
+    })
+    callback(data, "")
+    }, (error)=> {console.log("errorr");callback([], error.message)})
+}
+
 export const addPostTolikes = async (userId: string, postId: string) => {
-    const db = firebase.firestore(firebaseApp);
-    const docRef = db.collection(`users/${userId}/likes`).doc(postId);
+    const docRef = doc(firestore, `users/${userId}/likes/${postId}`);
     const likeData: any = {
         postId,
-        dateLiked: firebase.firestore.Timestamp.now()
+        dateLiked: Timestamp.now()
     }
-    await docRef.set(likeData);
+    await setDoc(docRef, likeData);
 }
 
 export const removePostFromLikes = async(userId: string, postId: string) =>{
-    const db = firebase.firestore(firebaseApp);
-    const docRef = db.doc(`users/${userId}/likes/${postId}`);
-    await docRef.delete();
+    const docRef = doc(firestore,`users/${userId}/likes/${postId}`);
+    await deleteDoc(docRef)
 }
 
 export const listenOnlikes = (userId: string, onSuccessCallback: (data: any)=> void) => {
-    const db = firebase.firestore(firebaseApp);
-    return db.collection(`users/${userId}/likes/`).onSnapshot((snapshot)=>{
+    const likes = collection(firestore, `users/${userId}/likes/`)
+    return onSnapshot(likes, (snapshot)=>{
         const likes: string[] = [];
         snapshot.forEach((snap)=> {
             likes.push(snap.id);
@@ -73,11 +90,11 @@ export const listenOnlikes = (userId: string, onSuccessCallback: (data: any)=> v
 }
 
 export const listenOnChats = (userId: string, onSuccessCallback: (data: any)=> void) =>{
-    const db = firebase.firestore(firebaseApp);
-    return db.collection(`users/${userId}/conversations/`).orderBy('dateUpdated',"desc" ).onSnapshot((snapshot)=> {
+    const q = query(collection(firestore, `users/${userId}/conversations/`), orderBy('dateUpdated',"desc" ))
+    return onSnapshot(q, (snapshot)=> {
         const chats: Conversation[] = [];
         snapshot.forEach((snap)=>{
-            let chat = snap.data() as (Omit<Conversation,"dateCreated" | "dateUpdated"> & {dateCreated: firebase.firestore.Timestamp, dateUpdated: firebase.firestore.Timestamp});
+            let chat = snap.data() as (Omit<Conversation,"dateCreated" | "dateUpdated"> & {dateCreated: Timestamp, dateUpdated: Timestamp});
            
             chats.push({...chat, dateCreated: chat.dateCreated.toMillis(), dateUpdated: chat.dateUpdated.toMillis()})
         });
@@ -86,14 +103,12 @@ export const listenOnChats = (userId: string, onSuccessCallback: (data: any)=> v
 }
 
 export const exploreUsers = async (following: string[] = [], servingState?: string,)=>{
-    const db = firebase.firestore(firebaseApp);
-    let  query = db.collection('users').where('userId', 'not-in', following);
-    query = query.orderBy('userId', 'desc');
-    query = query.orderBy('followerships.followers', 'desc');
+    const q = query(collection(firestore, "users"), where('userId', 'not-in', following), orderBy('userId', 'desc'), orderBy('followerships.followers', 'desc'))
+   
     // if(servingState){
     //     query = query.where('profile.servingState', '==', servingState);
     // }
-    const snapshot = await query.get();
+    const snapshot = await getDocs(q);
 
     const data: Profile[] = [];
     snapshot.forEach((snap)=>{
@@ -105,8 +120,7 @@ export const exploreUsers = async (following: string[] = [], servingState?: stri
 }
 
 export const listenOnFollowers = (userId: string, onSuccessCallback: (data: any) => void) => {
-    const db = firebase.firestore(firebaseApp);
-    return db.collection(`users/${userId}/followers`).onSnapshot((snapshot)=>{
+    return onSnapshot(collection(firestore, `users/${userId}/followers`),(snapshot)=>{
         const data:any[] = [];
 
         snapshot.forEach((snap) => {
@@ -117,8 +131,7 @@ export const listenOnFollowers = (userId: string, onSuccessCallback: (data: any)
 };
 export const listenonFollowing = (userId: string, onSuccessCallback: (data: any) => void) => {
 
-    const db = firebase.firestore(firebaseApp);
-    return db.collection(`users/${userId}/following`).onSnapshot((snapshot)=>{
+    return onSnapshot(collection(firestore, `users/${userId}/following`),(snapshot)=>{
         const data:any[] = [];
         snapshot.forEach((snap) => {
             data.push(snap.data());
@@ -139,30 +152,35 @@ type SendPostArgs = {
     }
  };
 
+export const removeUploadedPic = async (postId: string, index: number, type: Post['mediaType']) => {
+    const path = type === 'Image' ? `posts/${postId}-${index}` : `posts/${postId}`
+    const storageRef = ref(storage, path)
+    await deleteObject(storageRef)
+}
+
+
 export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaType }: SendPostArgs) => {
-    const db = firebase.firestore(firebaseApp);
-    const newPostRef = db.collection('posts').doc();
-    const imageUrls = [];
+    const newPostRef = doc(collection(firestore, 'posts'));
+    const imageUrls: any [] = [];
     if(blobs&& blobs.length){
-        let i = 0;
         for(const blob of blobs){
-            const storage = firebase.storage().ref(`posts/${newPostRef.id}-${i}`);
-            const snapshot = await storage.put(blob);
-            const downloadUrl = await snapshot.ref.getDownloadURL();
-            imageUrls.push(downloadUrl);
-            i++
+            const storageKey = randomString(5);
+            const storageRef = ref(storage, `posts/${newPostRef.id}-${storageKey}`);
+            const snapshot = await uploadBytes(storageRef, blob);
+            const downloadUrl = await getDownloadURL(snapshot.ref);
+            imageUrls.push({url: downloadUrl, storageKey });
         }
     }
-    let videoUrl = null
+    let videoUrl: null | string = null
     if(videoBlob){
-        const storage = firebase.storage().ref(`posts/${newPostRef.id}`);
-        const snapshot = await storage.put(videoBlob);
-         videoUrl = await snapshot.ref.getDownloadURL();
+        const storageRef = ref(storage, `posts/${newPostRef.id}`);
+        const snapshot = await uploadBytes(storageRef,  videoBlob);
+         videoUrl = await getDownloadURL(snapshot.ref);
 
     }
     
-    const postData: Post = {
-        dateCreated: firebase.firestore.Timestamp.now(),
+    const postData: FirebasePost = {
+        dateCreated: Timestamp.now(),
         ...(text ? { text } : {}),
         ...(imageUrls.length ? { imageUrl: imageUrls}: {}),
         ...(videoUrl ? {videoUrl} : {}),
@@ -172,12 +190,50 @@ export const sendPost = async ({ text, blobs, userId, videoBlob, avartar, mediaT
         mediaType,
         avartar
     };
-    await newPostRef.set(postData)
+    await setDoc(newPostRef, postData)
+};
+
+export const editPost = async (
+    { blobs, videoBlob, text, mediaType, avartar }: SendPostArgs,
+    post: Partial<Pick<Post, 'imageUrl' | 'videoUrl' | 'text' | 'postId'>>,
+    removedImages: string [],
+) => {
+    if (!post.postId) return;
+    const imageUrls = [...(post.imageUrl || [])];
+    if (blobs && blobs.length) {
+    
+        for (const blob of blobs) {
+            const storageKey = randomString(5);
+            const storageRef = ref(storage, `posts/${post.postId}-${storageKey}`);
+            const snapshot = await uploadBytes(storageRef, blob);
+            const downloadUrl = await getDownloadURL(snapshot.ref);
+                imageUrls.push({ url: downloadUrl , storageKey });
+        }
+    }
+    
+    let videoUrl:string | null = null;
+    if (videoBlob) {
+        const storageRef = ref(storage, `posts/${post.postId}`);
+        const snapshot = await uploadBytes(storageRef, videoBlob);
+        videoUrl = await getDownloadURL(snapshot.ref);
+    }
+    const docRef = doc(firestore, `posts/${post.postId}`);
+    for (const key of removedImages){
+     const deleteRef  = ref(storage, `posts/${post.postId}-${key}`)
+     deleteObject(deleteRef)
+    }
+    return updateDoc(docRef, {
+        ...(text ? { text } : {}),
+        ...(imageUrls.length ? { imageUrl: imageUrls } : {}),
+        ...(videoUrl ? { videoUrl } : {}),
+        mediaType,
+        avartar,
+    });
 };
 
 export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Comment[]) => void) =>{
-    const db = firebase.firestore(firebaseApp);
-    return db.collection('comments').where('postId', '==', postId).onSnapshot((snapshot) => {
+    const q = query(collection(firestore, 'comments'), where('postId', '==', postId))
+    return onSnapshot(q, (snapshot) => {
         const data : Comment[] = [];
         snapshot.forEach((snap)=>{
             const comment = snap.data() as Comment;
@@ -191,29 +247,28 @@ export const listenOnComments = ( postId: string, onSuccessCallback:  (data: Com
 }
 
 export const commentOnPost = (comment: Comment) => {
-    const db = firebase.firestore(firebaseApp);
-    return db.collection('comments').doc().set(comment);
+    const commentRef = doc(collection(firestore, 'comments'))
+    return setDoc(commentRef, comment);
 }
 
 
 export const removePost = async (postId: string) => {
-        const db = firebase.firestore(firebaseApp);
-        await db.doc(`posts/${postId}`).delete(); 
+        // const db = firebase.firestore(firebaseApp);
+        await deleteDoc(doc(firestore, `posts/${postId}`)); 
 }
 
 
 export const reportPost = async (report: Report) =>{
     try {
-        const db = firebase.firestore(firebaseApp);
-        await db.collection('reports').doc().set(report);
+        const reportRef = doc(collection(firestore, 'reports'))
+        await setDoc(reportRef, report);
     } catch (error) {
         console.log(error);
     }
 }
 
 export const reportUser = async (report: ReportedUser) => {
-    const db = firebase.firestore(firebaseApp);
-    return db.collection("userReports").doc().set(report);
+    const userReportRef = doc(collection(firestore, 'userReports'));
+    return setDoc(userReportRef, report)
 }
-
 

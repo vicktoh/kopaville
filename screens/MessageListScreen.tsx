@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlatList, Flex, Heading } from 'native-base';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { ChatListItem } from '../components/ChatlistItem';
 import { EmptyState } from '../components/EmptyeState';

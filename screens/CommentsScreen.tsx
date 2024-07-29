@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react';
-import firebase from 'firebase';
 import { Entypo } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -21,6 +20,7 @@ import { commentOnPost, listenOnComments } from '../services/postsServices';
 import { HomeStackParamList } from '../types';
 import { Comment } from '../types/Comment';
 import { PostComment } from '../components/PostComment';
+import { Timestamp } from 'firebase/firestore';
 
 type CommentScreenProps = NativeStackScreenProps<
     HomeStackParamList,
@@ -54,7 +54,6 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
             console.log(error);
             toast.show({
                 title: 'Error Occured',
-                status: 'error',
                 description:
                     'Could not post comment, make sure you have good internet connection',
             });
@@ -72,7 +71,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                 photoUrl: profile?.profileUrl || '',
                 username: profile?.loginInfo?.username || '',
                 fullname: profile?.loginInfo?.fullname || '',
-                date: firebase.firestore.Timestamp.now(),
+                date: Timestamp.now(),
             };
             setCommenting(true);
             await commentOnPost(commentToPost);
@@ -87,7 +86,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
         return <PostComment comment = {info.item}  />
     };
     return (
-        <KeyboardAvoidingView flex={1}  bg="white"  behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView flex={1} flexShrink={1}  bg="white"  behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Flex flex={1} p={5} pb={10}>
                 <Flex direction="row" justifyContent="flex-end">
                     <IconButton
@@ -96,7 +95,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                     />
                 </Flex>
                 <Heading fontSize="md">{`Comment on ${postUsername}'s post`}</Heading>
-                <Flex flex={1}>
+                <Flex flex={1} flexShrink={1}>
                     {loading ? (
                         <Flex flex={1} alignItems="center">
                             <ActivityIndicator />
@@ -123,6 +122,7 @@ export const CommentsScreen: FC<CommentScreenProps> = ({
                                 borderColor="primary.400"
                                 borderWidth={1}
                                 placeholder="Your comment goes here"
+                                autoCompleteType="off"
                             />
                             <Button
                                 variant="solid"

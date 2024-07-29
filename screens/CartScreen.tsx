@@ -26,7 +26,6 @@ import {
 } from '../reducers/cartSlice';
 import { MarketStackParamList } from '../types';
 import { CartItem } from '../types/Product';
-import firebase from 'firebase';
 import { BillingForm } from '../components/BillingForm';
 import { PAY_STACK_SK_KEY } from '../constants/Storage';
 import * as WebBrowser from 'expo-web-browser';
@@ -34,6 +33,7 @@ import { Order } from '../types/Billing';
 import { listenOnConfirmedOrder, makeOrder } from '../services/productServices';
 import { string } from 'yup';
 import { Platform } from 'react-native';
+import { Timestamp } from 'firebase/firestore';
 
 const fallbackProductImage = require('../assets/images/placeholder.jpeg');
 
@@ -166,7 +166,7 @@ export const CartScreen: FC<CartScreenProps> = ({ navigation }) => {
                     paymentStatus: 'pending',
                     transactionRef: res.data?.reference,
                     cart,
-                    date: firebase.firestore.Timestamp.now(),
+                    date: Timestamp.now(),
                     amount: cartSum,
                     ...(billing ? { billing } : {}),
                 };

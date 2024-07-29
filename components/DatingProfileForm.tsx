@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Business, Education, Profile } from '../types/Profile';
+import { Business, Education, Gender, GenoType, Profile, RelationshipStatus } from '../types/Profile';
 import {
     Button,
     Checkbox,
@@ -47,11 +47,11 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
     const initialValues: Profile['datingProfile'] = {
         profile: datingProfile?.profile || '',
         interest: datingProfile?.interest || [],
-        status: datingProfile?.status || '',
+        status: datingProfile?.status || RelationshipStatus.single,
         alias: datingProfile?.alias || '',
         currentCity: datingProfile?.currentCity || '',
         bloodGroup: datingProfile?.bloodGroup || '',
-        genotype: datingProfile?.genotype || '',
+        genotype: datingProfile?.genotype || GenoType.AA,
         showBloodGroup: datingProfile?.showBloodGroup || false,
         smoking: datingProfile?.smoking || false,
         kids: datingProfile?.kids || false,
@@ -82,7 +82,6 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                 );
                 let { checkList = {} } = systemInfo || {};
                 if (!checkList?.['Complete Dating Profile']) {
-                    console.log('blah');
                     const newChecklist: Checklist = {
                         ...(checkList || {}),
                         'Complete Dating Profile': true,
@@ -146,11 +145,11 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                             onChangeText={handleChange('profile')}
                             variant="outline"
                             borderColor="primary.400"
+                            autoCompleteType=""
                         />
                         <FormControl.ErrorMessage>
                             {touched.profile && errors.profile}
                         </FormControl.ErrorMessage>
-                        <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
                     <FormControl
                         _text={{ fontSize: 'lg' }}
@@ -168,15 +167,18 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                                 value={values.status}
                                 onChange={handleChange('status')}
                             >
-                                <Radio value="single" my={1} size="sm">
-                                    Single
-                                </Radio>
-                                <Radio value="married" my={1} size="sm">
-                                    Married
-                                </Radio>
-                                <Radio value="complicated" my={1} size="sm">
-                                    It's Complicated
-                                </Radio>
+                                {Object.keys(RelationshipStatus).map(
+                                    (value) => (
+                                        <Radio
+                                            key={`relationship-status-${value}`}
+                                            value={value}
+                                            my={1}
+                                            size="sm"
+                                        >
+                                            {value}
+                                        </Radio>
+                                    )
+                                )}
                             </Radio.Group>
                         </Flex>
 
@@ -189,7 +191,9 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                         _text={{ fontSize: 'lg' }}
                         isRequired
                         mb={3}
-                        isInvalid={!!touched.currentCity && !!errors.currentCity}
+                        isInvalid={
+                            !!touched.currentCity && !!errors.currentCity
+                        }
                     >
                         <FormControl.Label>Current City</FormControl.Label>
                         <Input
@@ -208,8 +212,8 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                         </FormControl.ErrorMessage>
                         <FormControl.HelperText></FormControl.HelperText>
                     </FormControl>
-                    <Flex direction="row">
-                        <HStack space={3}>
+                    <Flex direction="row" justifyContent="space-between">
+                        <HStack space={3} alignItems="center">
                             <Checkbox
                                 accessibilityLabel="smoking"
                                 value="smoking"
@@ -218,9 +222,9 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                                     setFieldValue('smoking', checked)
                                 }
                             />
-                            <FormControl.Label>Smoking?</FormControl.Label>
+                            <FormControl.Label>🚬Smoke?</FormControl.Label>
                         </HStack>
-                        <HStack space={3}>
+                        <HStack ml={2} space={3} alignItems="center">
                             <Checkbox
                                 accessibilityLabel="Kids"
                                 value="agreed"
@@ -230,42 +234,40 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                                 }
                             />
                             <FormControl.Label>
-                                Consume Alcohol
+                                🥃Consume Alcohol?
                             </FormControl.Label>
                         </HStack>
                     </Flex>
-                        <HStack space={3} mt={5} mb={3}>
-                            <Checkbox
-                                accessibilityLabel="have kids"
-                                value="agreed"
-                                isChecked={values.kids}
-                                onChange={(checked) =>
-                                    setFieldValue('kids', checked)
-                                }
-                            />
-                            <FormControl.Label>Have Kids ?</FormControl.Label>
-                        </HStack>
-                        <FormControl
-                            _text={{ fontSize: 'lg' }}
-                            isInvalid={!!touched.noOfKids && !!errors.noOfKids}
-                        >
-                            <FormControl.Label>
-                                Number of Kids
-                            </FormControl.Label>
-                            <Input
-                                keyboardType="numeric"
-                                size="md"
-                                value={values.noOfKids || ''}
-                                onBlur={handleBlur('noOfKids')}
-                                onChangeText={handleChange('noOfKids')}
-                                variant="outline"
-                                borderColor="primary.400"
-                            />
-                            <FormControl.ErrorMessage>
-                                {touched.noOfKids && errors.noOfKids}
-                            </FormControl.ErrorMessage>
-                            <FormControl.HelperText></FormControl.HelperText>
-                        </FormControl>
+                    <HStack space={3} mt={5} mb={3}>
+                        <Checkbox
+                            accessibilityLabel="have kids"
+                            value="agreed"
+                            isChecked={values.kids}
+                            onChange={(checked) =>
+                                setFieldValue('kids', checked)
+                            }
+                        />
+                        <FormControl.Label>Have Kids ?</FormControl.Label>
+                    </HStack>
+                    <FormControl
+                        _text={{ fontSize: 'lg' }}
+                        isInvalid={!!touched.noOfKids && !!errors.noOfKids}
+                    >
+                        <FormControl.Label>Number of Kids</FormControl.Label>
+                        <Input
+                            keyboardType="numeric"
+                            size="md"
+                            value={values.noOfKids || ''}
+                            onBlur={handleBlur('noOfKids')}
+                            onChangeText={handleChange('noOfKids')}
+                            variant="outline"
+                            borderColor="primary.400"
+                        />
+                        <FormControl.ErrorMessage>
+                            {touched.noOfKids && errors.noOfKids}
+                        </FormControl.ErrorMessage>
+                        <FormControl.HelperText></FormControl.HelperText>
+                    </FormControl>
 
                     <FormControl
                         _text={{ fontSize: 'lg' }}
@@ -295,17 +297,13 @@ export const DatingProfileForm: FC<DatingFormProps> = ({
                         isInvalid={!!touched.genotype && !!errors.genotype}
                     >
                         <FormControl.Label>Genotype</FormControl.Label>
-                        <Input
-                            placeholder="AA"
-                            size="md"
-                            value={values.genotype}
-                            onBlur={handleBlur('genotype')}
-                            onChangeText={handleChange('genotype')}
-                            variant="outline"
-                            borderColor="primary.400"
-                            flex={5}
-                            mr={2}
-                        />
+                        <Select placeholder="AA"  variant="outline" selectedValue = {values.genotype} onValueChange={handleChange('genotype')}>
+                            {
+                                Object.keys(GenoType).map((value)=> (
+                                    <Select.Item value={value} label={value} key={`genetype-${value}`} />
+                                ))
+                            }
+                        </Select>
                         <FormControl.ErrorMessage>
                             {touched.genotype && errors.genotype}
                         </FormControl.ErrorMessage>

@@ -51,20 +51,8 @@ const ProfileSchema = yup.object().shape({
         .string()
         .min(10, 'Must be at least 10 characters')
         .max(200, 'Must be at most 200 characters'),
-    dateOfBirth: yup.object().shape({
-        day: yup
-            .string()
-            .max(2, 'Must be at least two characters')
-            .min(2, 'Must be at most two characters'),
-        month: yup
-            .string()
-            .max(2, 'Must be at least two characters')
-            .min(2, 'Must be at most two characters'),
-        year: yup
-            .string()
-            .max(4, 'Must be at least four characters')
-            .min(4, 'Must be at most four characters'),
-    }),
+        dateOfBirthTimestamp: yup.number().required("Date of bith is required!"),
+    
     instagram: yup.string().matches(
         /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
         'Enter correct url!'
@@ -85,11 +73,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
         twitter: '',
         instagram: '',
         stateOfOrigin: '',
-        dateOfBirth: {
-            day: '',
-            month: '',
-            year: '',
-        },
+       
         step: 1,
         ppa: '',
         bio: '',
@@ -133,10 +117,22 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                 onSubmit={async (values, { setFieldValue, setSubmitting }) => {
                     const { step, formError, languageInput, ...rest} = values;
                     const res = await updateProfileInfo(auth?.userId || '', {
-                        profile: rest,
+                        profile: {
+                            ...rest,
+                            dateOfBirthTimestamp: values.dateOfBirthTimestamp,
+                        },
                     });
                     if (res.status === 'success') {
-                        dispatch(setProfile({ ...profile, profile: values }));
+                        dispatch(
+                            setProfile({
+                                ...profile,
+                                profile: {
+                                    ...values,
+                                    dateOfBirthTimestamp: values.dateOfBirthTimestamp
+                                    ,
+                                },
+                            })
+                        );
                         const { checkList = {} } = systemInfo || {};
                         if (!checkList?.['Complete Profile']) {
                             const newChecklist: Checklist = {
@@ -235,7 +231,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                         </Flex>
 
                         {getForm(values.step || 1)}
-                        <Button
+                        {isValid ? <Button
                             isLoading={isSubmitting}
                             onPress={() => submitForm()}
                             size="lg"
@@ -245,7 +241,7 @@ export const EditProfileForm: FC<EditProfileFormProps> = ({ onCancel }) => {
                             disabled={!isValid}
                         >
                             Save
-                        </Button>
+                        </Button>: null}
                         <Button
                             onPress={() => onCancel()}
                             size="lg"

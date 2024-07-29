@@ -5,7 +5,8 @@ import {
 } from '@react-navigation/native';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
-
+import * as Notifications from 'expo-notifications';
+// import { Notifications } from 'expo';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setAuth } from '../reducers/authSlice';
 import { StoreType } from '../reducers/store';
@@ -35,7 +36,14 @@ import { Profile } from '../types/Profile';
 import { checkListFromProfile } from '../services/helpers';
 import { listenOnBlocks } from '../services/authServices';
 import { setBlock } from '../reducers/blockSlice';
-
+import { registerForPushNotificationsAsync } from '../services/notification';
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
 export default function Navigation({
     colorScheme,
     localAuth,
@@ -48,6 +56,8 @@ export default function Navigation({
     const { auth, systemInfo, followerships, block } =
         useAppSelector<StoreType>((store) => store);
     const dispatch = useAppDispatch();
+    const notificationListener = React.useRef<any>();
+  const responseListener = React.useRef<any>();
     React.useEffect(() => {
         if (localAuth && !auth) {
             dispatch(setAuth(localAuth));
@@ -93,7 +103,7 @@ export default function Navigation({
         if (auth) {
             try {
                 const unsubscribe = listenOnFollowers(auth.userId, (data) => {
-                    console.log({ data }, "from follower");
+                    // console.log({ data }, "from follower");
                     dispatch(
                         setFollowership({ ...followerships, followers: data })
                     );
@@ -179,7 +189,7 @@ export default function Navigation({
                 const unsubscribe = listenOnBlocks(auth.userId, (data) => {
                     dispatch(setBlock(data));
                 });
-                return () => unsubscribe();
+                // return () => unsubscribe();
             } catch (error) {
                 console.log(error);
             }
@@ -197,6 +207,24 @@ export default function Navigation({
             }
         }
     }, []);
+    React.useEffect(()=> {
+        if(auth){
+            registerForPushNotificationsAsync(auth.userId);
+            notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+                console.log(notification)
+              });
+          
+              responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+                console.log(response);
+              });
+          
+              return () => {
+                Notifications.removeNotificationSubscription(notificationListener.current);
+                Notifications.removeNotificationSubscription(responseListener.current);
+              };
+
+        }
+    }, [auth])
     return (
         <NavigationContainer
             linking={LinkingConfiguration}

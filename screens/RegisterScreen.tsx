@@ -4,19 +4,16 @@ import {
     Heading,
     ScrollView,
     Flex,
-    Button,
     Divider,
     ArrowBackIcon,
     KeyboardAvoidingView,
     IconButton,
-    Icon
 } from 'native-base';
 import { Platform } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../types';
 import { RegisterForm } from '../components/RegisterForm';
-const corperTwins = require('../assets/images/corpertwins.png');
 type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 export const RegisterScreen: FC<RegisterScreenProps> = ({ navigation }) => {
     const { width, height } = useWindowDimensions();

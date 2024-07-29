@@ -1,115 +1,118 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { DatingStackParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
     Button,
-    ChevronDownIcon,
     FlatList,
     Flex,
-    FormControl,
     Heading,
-    PresenceTransition,
-    Select,
     Text,
+    useDisclose,
     useToast,
 } from 'native-base';
 import { useAppSelector } from '../hooks/redux';
-import { Profile } from '../types/Profile';
+import { Gender, Profile } from '../types/Profile';
 import { EmptyState } from '../components/EmptyeState';
-import { ActivityIndicator, ListRenderItemInfo } from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, Modal, Pressable } from 'react-native';
 import { DatingCard } from '../components/DatingCard';
-import { fetchDatingProfiles } from '../services/datingServices';
-
+import { convertFilterToAlgolier, fetchDatingProfiles } from '../services/datingServices';
+import { useSearchIndex } from '../hooks/useSearchIndex';
+import { DatingFilter, DatingFilterForm, DEFAULT_DATING_FILTER } from '../components/DatingFilterForm';
+import { sub } from 'date-fns';
+const PROFILE_PERPPAGE = 20;
 const states = require('../assets/static/states.json');
 
-type DatingListScreenProps = NativeStackScreenProps<DatingStackParamList, 'Main'>;
+type DatingListScreenProps = NativeStackScreenProps<
+    DatingStackParamList,
+    'Main'
+>;
 
-export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
-    const { profile } = useAppSelector(({ auth, profile }) => ({ profile, auth }));
-    const [datingProfiles, setDatingProfiles] = useState<Profile[]>();
-    const [loading, setLoading] = useState<boolean>(false);
-    const [showFilter, setShowFilter] = useState<boolean>(false);
-    const [locationFilter, setLocationFilter] = useState<string>();
-    const [fetchData, setFetchData] = useState<boolean>(false);
+export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation, route }) => {
+    const { profile } = useAppSelector(({ auth, profile }) => ({
+        profile,
+        auth,
+    }));
+    const { filter: paramFilters } = route?.params || {};
+    const oppSiteGender = profile?.loginInfo.gender == Gender.male ? Gender.female : Gender.male;
+    const [filter, setFilter] = useState<DatingFilter>({...DEFAULT_DATING_FILTER, gender: oppSiteGender});
+    const filterString = useMemo(()=> {
+        return convertFilterToAlgolier({...DEFAULT_DATING_FILTER, gender: oppSiteGender});
+
+    }, [])
+    const {loading, data: datingProfiles, pageStat, setFilters, page, setPage } = useSearchIndex<Profile>("users", filterString, PROFILE_PERPPAGE, true);
+  
     const toast = useToast();
-    useEffect(() => {
-        const fetchDatingProfile = async () => {
-            try {
-                setLoading(true);
-                const profiles = await fetchDatingProfiles('', locationFilter || undefined);
-                setDatingProfiles(profiles);
-            } catch (error) {
-                console.log(error);
-                const err: any = error;
-                toast.show({
-                    title: 'Could not fetch profiles',
-                    description: err?.message || 'Could not fetch profile, please try again',
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDatingProfile();
-    }, [fetchData]);
+    
 
     const renderItem = (listItem: ListRenderItemInfo<Profile>) => {
-        return <DatingCard profile={listItem.item} />;
+        return (
+            <DatingCard
+                profile={listItem.item}
+                key={listItem.item.userId || `dating-card-${listItem.index}`}
+            />
+        );
     };
 
     const clearFilter = () => {
-        setLocationFilter('');
-        setFetchData((fetch)=> !fetch)
-        setShowFilter(false);
+        setFilter(DEFAULT_DATING_FILTER);
     };
+
+    
+
+    useEffect(()=> {
+        const onSearch = ()=> {
+            if(!paramFilters) return;
+            setFilter(paramFilters);
+            setPage(0)
+            const filterString = convertFilterToAlgolier(paramFilters);
+            setFilters(filterString);
+        }
+        onSearch();
+    }, [paramFilters])
+    const onOpenAdvanceSearch = ()=> {
+        navigation.navigate("Search", {
+            filter,
+        })
+    }
+    const renderFooter = ()=> {
+        return (
+            <>
+            {page > 0 && (pageStat?.total || 0) > page * PROFILE_PERPPAGE ? (
+            <Button
+                size="sm"
+                alignSelf="center"
+                my={5}
+                onPress={()=> setPage(page + 1)}
+                isLoading={loading}
+            >
+                Load More
+            </Button>
+        ) : null}
+            </>
+        )
+        
+    }
 
     return (
         <Flex flex={1} bg="white">
             <Flex px={5} pt={3}>
                 <Heading>Find Love ❤️</Heading>
                 <Text>
-                    Find the love of your life, we show you dating profiles of single people around you, feel free to send a message
-                    to any one of your choices
+                    Find the love of your life, we show you dating profiles of
+                    single people around you, feel free to send a message to any
+                    one of your choices
                 </Text>
-                <Flex direction="row" alignItems="center">
-                    <Button variant="link" size="sm" onPress={() => setShowFilter((filter) => !filter)}>
-                        {showFilter ? 'Hide filter' : 'Show filter'}
-                    </Button>
-                </Flex>
-                {showFilter ? (
-                    <PresenceTransition
-                        visible={showFilter}
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: 1, scaleY: 1, transition: { duration: 250 } }}
-                    >
-                        <FormControl>
-                            <FormControl.Label>Location</FormControl.Label>
-                            <Select
-                                onValueChange={(value) => setLocationFilter(value)}
-                                _actionSheetContent={{ bg: 'white' }}
-                                _selectedItem={{ bg: 'primary.100', color: 'gray.700' }}
-                                dropdownIcon={<ChevronDownIcon color="primary.300" />}
-                                accessibilityLabel="Choose account type"
-                                size="sm"
-                                selectedValue={locationFilter}
-                                variant="outline"
-                                borderColor="primary.400"
-                            >
-                                {states.map((name: string, i: number) => (
-                                    <Select.Item value={name} label={name} key={`filter-location-${i}`} />
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        <Flex direction="row" py={2} alignItems="center">
-                            <Button variant="outline" size="sm" onPress={clearFilter}>
-                                Clear
-                            </Button>
-                            <Button ml={3} variant="solid" size="sm" onPress={ ()=> setFetchData((fetch)=> !fetch) }>
-                                Filter
-                            </Button>
-                        </Flex>
-                    </PresenceTransition>
-                ) : null}
+            </Flex>
+            <Flex pt={3}>
+                <Button
+                    size="sm"
+                    onPress={onOpenAdvanceSearch}
+                    disabled={loading}
+                    variant="link"
+                    colorScheme="primary"
+                >
+                    Advanced Search
+                </Button>
             </Flex>
 
             {loading ? (
@@ -121,15 +124,18 @@ export const DatingListScreen: FC<DatingListScreenProps> = ({ navigation }) => {
                 <FlatList
                     data={datingProfiles}
                     renderItem={renderItem}
-                    keyExtractor={(item, i) => item?.userId || `dating-card-${i}`}
+                    keyExtractor={(item, i) =>
+                        item?.userId || `dating-card-${i}`
+                    }
                     flex={1}
-                    contentContainerStyle={{paddingLeft: 5, paddingRight: 5}}
+                    contentContainerStyle={{ paddingLeft: 5, paddingRight: 5 }}
+                    ListFooterComponent={renderFooter()}
                 />
             ) : (
                 <Flex flex={1} p={5}>
                     <EmptyState
                         title="No Dating Profiles Found"
-                        description="No Dating Profiles to show please refresh or Select another location"
+                        description="No Dating Profiles to show. Please refresh or select another location"
                     />
                 </Flex>
             )}

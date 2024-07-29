@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import firebase from 'firebase';
 import { HomeStackParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -12,6 +11,7 @@ import { reportPost, reportUser } from '../services/postsServices';
 import { useAppSelector } from '../hooks/redux';
 import { Report, ReportedUser } from '../types/Report';
 import { EmptyState } from '../components/EmptyeState';
+import { Timestamp } from 'firebase/firestore';
 
 const REPORT_REASONS = [
     'Malicious Content',
@@ -52,7 +52,7 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                 userId: auth?.userId || ""
             },
             reason: REPORT_REASONS[seletedReason],
-            date: firebase.firestore.Timestamp.now(),
+            date: Timestamp.now(),
         };
         setReporting(true);
         await reportPost(report);
@@ -64,7 +64,7 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
         try {
             const report: ReportedUser = {
                 user,
-                date: firebase.firestore.Timestamp.now(),
+                date: Timestamp.now(),
                 reporter: {
                     displayName: auth?.displayName || '',
                     photoUrl: profile?.profileUrl || '',
@@ -95,6 +95,8 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                             key={`reason-${i}`}
                             my={2}
                             size="lg"
+                            variant="unstyled"
+                            color="primary.500"
                             bg={
                                 i === selectedUserReason
                                     ? 'primary.200'
@@ -134,6 +136,8 @@ export const ReportPostScreen: FC<ReportScreenProps> = ({
                             key={`reason-${i}`}
                             my={2}
                             size="lg"
+                            variant="unstyled"
+                            color="primary.500"
                             bg={
                                 i === seletedReason
                                     ? 'primary.200'

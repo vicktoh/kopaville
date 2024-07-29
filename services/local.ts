@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { User } from "../types/User";
 import { LOCAL_USER_INFO } from "../constants/Storage";
 export const  getLocalUserData = async ()=>{
     try {

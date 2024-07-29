@@ -20,7 +20,7 @@ import { Profile } from '../types/Profile';
 import { Linking, Modal, useWindowDimensions, View } from 'react-native';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { DrawerParamList, HomeStackParamList } from '../types';
+import { AppStackParamList, DrawerParamList, HomeStackParamList, MessageStackParamList, RootTabParamList } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import {
     updateProfileInfo,
@@ -39,6 +39,9 @@ import { ProfileBlock } from './ProfileBlock';
 import { setBlock } from '../reducers/blockSlice';
 import { setFollowership } from '../reducers/followershipSlice';
 import { ImagePickCropper } from './GalleryPicker/ImagePickCropper';
+import { Recipient } from '../types/Conversation';
+import { conversationExists } from '../services/messageServices';
+import { sendNotification } from '../services/notifications';
 
 const placeHolderImage = require('../assets/images/placeholder.jpeg');
 type GeneralProfileProps = {
@@ -55,11 +58,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         profile: localProfile,
         followerships,
         block,
-    } = useAppSelector(({ auth, profile, followerships, block }) => ({
+        
+        chats
+    } = useAppSelector(({ auth, profile, followerships, block, chats, }) => ({
         auth,
         profile,
         followerships,
         block,
+        chats
     }));
     const {
         profile: generalProfile,
@@ -97,18 +103,14 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
 
     const dispatch = useAppDispatch();
     const navigation =
-        useNavigation<NavigationProp<DrawerParamList & HomeStackParamList>>();
-    const dateOfBirth = generalProfile?.dateOfBirth;
+        useNavigation<NavigationProp<AppStackParamList>>();
+    const dateOfBirth = generalProfile?.dateOfBirthTimestamp;
     const age = useMemo(
         () =>
             dateOfBirth
                 ? differenceInCalendarYears(
                       new Date(),
-                      new Date(
-                          parseInt(dateOfBirth.year),
-                          parseInt(dateOfBirth.month),
-                          parseInt(dateOfBirth.day)
-                      )
+                      dateOfBirth
                   )
                 : '',
         [profile.profile]
@@ -128,6 +130,13 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
             ),
         [block]
     );
+    const blockedBy = useMemo(
+        () =>
+            (block?.blockedBy || []).filter(
+                (userId, i) => userId === profile?.userId
+            ),
+        [block]
+    );
     const { openLink } = useOpenLink();
 
     const pickImageFromCamera = async () => {
@@ -143,13 +152,13 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 quality: 0.2,
                 allowsEditing: true,
             });
-            if (pickerResult.cancelled) {
+            if (pickerResult.canceled) {
                 setUploadingFromCamera(false);
                 return;
             }
             const url = await uploadProfilePicture(
                 auth?.userId || '',
-                pickerResult?.uri || ''
+                pickerResult.assets[0].uri || ''
             );
             updateProfileInfo(auth?.userId || '', { profileUrl: url });
             dispatch(setProfile({ ...profile, profileUrl: url }));
@@ -168,14 +177,17 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         }
         try {
             setUploadingFromLibrary(true);
-            let pickerResult: any = await ImagePicker.launchImageLibraryAsync({
+            let pickerResult = await ImagePicker.launchImageLibraryAsync({
                 aspect: [1, 1],
                 quality: 0.2,
                 allowsEditing: true,
             });
+            if(pickerResult.canceled){
+                return;
+            }
             const url = await uploadProfilePicture(
                 auth?.userId || '',
-                pickerResult?.uri || ''
+                pickerResult.assets[0].uri || ''
             );
             updateProfileInfo(auth?.userId || '', { profileUrl: url });
             dispatch(setProfile({ ...profile, profileUrl: url }));
@@ -208,6 +220,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 following: [...(followerships?.following || []), follower],
             };
             dispatch(setFollowership(newfollowership));
+            const notificationMessage = `${localProfile?.loginInfo.fullname || ""} followed you`;
+            sendNotification(notificationMessage, follower.userId);
             setLoading(false);
         } catch (error) {
             let err: any = error;
@@ -215,7 +229,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: 'error',
+                color: "white",
+                backgroundColor: "red.500",
             });
         } finally {
             setLoading(false);
@@ -239,7 +254,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: 'error',
+                backgroundColor: "red.500",
+                color: "white",
             });
         } finally {
             setLoading(false);
@@ -251,8 +267,33 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
         onCloseReportView();
         toast.show({
             title: `You have blocked ${profile.loginInfo.fullname} successfully`,
-            status: 'success',
+            variant: "subtle",
+            color: "white",
+            backgroundColor: "primary.300",
         });
+    };
+    const message = () => {
+        if (blocked.length) return;
+        if (profile?.userId === auth?.userId) {
+            return;
+        }
+        const to: Recipient = {
+            userId: profile?.userId || '',
+            photoUrl: profile?.profileUrl || '',
+            fullname: profile?.loginInfo?.fullname || '',
+            username: profile?.loginInfo?.username || '',
+        };
+
+        const conversationId = conversationExists(profile?.userId || '', chats);
+
+        navigation.navigate('Message', {
+            screen: 'MessageBubble',
+            params: {
+                conversationId: conversationId || undefined,
+                recipient: to,
+            },
+        });
+        // navigation.navigate("");
     };
     if (blocked?.length) {
         return <BlockedProfile profile={profile} />;
@@ -298,7 +339,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 promptAvatarChange={onOpen}
             />
 
-            <HStack my={3} alignItems="center">
+            <HStack flexShrink={1} my={3} alignItems="center" space={2}>
                 {auth?.userId === userId ? (
                     <Button
                         variant="outline"
@@ -357,7 +398,8 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         }
                     />
                 ) : null}
-                {generalProfile?.phoneNumber && generalProfile.displayPhoneNumber ? (
+                {generalProfile?.phoneNumber &&
+                generalProfile.displayPhoneNumber ? (
                     <IconButton
                         variant="ghost"
                         ml={3}
@@ -374,8 +416,18 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                         }
                     />
                 ) : null}
+                {
+                    auth?.userId !== profile?.userId && !blockedBy.length ? 
+                            <Button
+                                size="md"
+                                onPress={() => message()}
+                                variant="outline"
+                            >
+                                Message
+                            </Button> : null
+                }
             </HStack>
-            {generalProfile?.displayAge && generalProfile?.dateOfBirth ? (
+            {generalProfile?.displayAge && generalProfile?.dateOfBirthTimestamp ? (
                 <>
                     <Heading fontSize="sm" mt={5} mb={2}>
                         Age
@@ -388,7 +440,7 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     <Heading fontSize="sm" mt={5} mb={2}>
                         L.G.A of Origin
                     </Heading>
-                    <Text fontSize="md">{generalProfile.lga}</Text>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.lga}</Text>
                 </>
             ) : null}
             {generalProfile?.corperStatus ? (
@@ -404,78 +456,83 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                 {generalProfile?.servingState ? (
                     <VStack>
                         <Heading fontSize="sm">Serving State</Heading>
-                        <Text fontSize="md">{generalProfile.servingState}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.servingState}</Text>
                     </VStack>
                 ) : null}
                 {generalProfile?.servingLGA ? (
                     <VStack ml={generalProfile?.servingState ? 8 : 0}>
                         <Heading fontSize="sm">Serving L.G.A</Heading>
-                        <Text fontSize="md">{generalProfile.servingLGA}</Text>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.servingLGA}</Text>
                     </VStack>
                 ) : null}
             </Flex>
-            <Flex alignItems="center" direction="row" mt={5} mb={2}>
-
             {generalProfile?.ppa ? (
-                <VStack>
-                    <Heading fontSize="sm">
-                        Place of Primary Assignment
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.ppa}</Text>
+                <VStack flexShrink={1}>
+                    <Heading fontSize="sm">Place of Primary Assignment</Heading>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.ppa}</Text>
                 </VStack>
             ) : null}
-            {generalProfile?.platoon ? (
-                <VStack>
-                    <Heading fontSize="sm">
-                        Platoon
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.platoon}</Text>
-                </VStack>
-            ) : null}
-            {generalProfile?.camp ? (
-                <VStack>
-                    <Heading fontSize="sm">
-                        Camp Location
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.camp}</Text>
-                </VStack>
-            ) : null}
-            </Flex>
-            
-                {generalProfile?.saedCourse ? (
-                    <VStack>
-                        <Heading fontSize="sm" mt={5} mb={2}>
-                            SAED Course
-                        </Heading>
-                        <Text fontSize="md">{generalProfile.saedCourse}</Text>
+            <Flex
+                alignItems="center"
+                direction="row"
+                justifyContent="space-between"
+                mt={5}
+                mb={2}
+            >
+                {generalProfile?.platoon ? (
+                    <VStack flexShrink={1}>
+                        <Heading fontSize="sm">Platoon</Heading>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.platoon}</Text>
                     </VStack>
                 ) : null}
-            
-            <Flex direction='row'>
-            {generalProfile?.languages ? (
-                <VStack>
+                {generalProfile?.camp ? (
+                    <VStack flexShrink={1}>
+                        <Heading fontSize="sm">Camp Location</Heading>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.camp}</Text>
+                    </VStack>
+                ) : null}
+            </Flex>
+
+            {generalProfile?.saedCourse ? (
+                <VStack flexShrink={1}>
                     <Heading fontSize="sm" mt={5} mb={2}>
-                        Languages 
+                        SAED Course
                     </Heading>
-                    <Text fontSize="md">{generalProfile.languages.join(",")}</Text>
+                    <Text fontSize="md" flexWrap="wrap">{generalProfile.saedCourse}</Text>
                 </VStack>
             ) : null}
-            {generalProfile?.height ? (
-                <VStack>
-                    <Heading fontSize="sm" mt={5} mb={2}>
-                        Height 
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.height}</Text>
-                </VStack>
-            ) : null}
-            {generalProfile?.shoeSize ? (
-                <VStack>
-                    <Heading fontSize="sm" mt={5} mb={2}>
-                        Shoe Size 
-                    </Heading>
-                    <Text fontSize="md">{generalProfile.shoeSize}</Text>
-                </VStack>
-            ) : null}
+
+            <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+            >
+                {generalProfile?.languages?.length ? (
+                    <VStack flexShrink={1}>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Languages
+                        </Heading>
+                        <Text fontSize="md" flexWrap="wrap">
+                            {generalProfile.languages.join(',')}
+                        </Text>
+                    </VStack>
+                ) : null}
+                {generalProfile?.height ? (
+                    <VStack flexShrink={1}>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Height
+                        </Heading>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.height}</Text>
+                    </VStack>
+                ) : null}
+                {generalProfile?.shoeSize ? (
+                    <VStack flexShrink={1}>
+                        <Heading fontSize="sm" mt={5} mb={2}>
+                            Shoe Size
+                        </Heading>
+                        <Text fontSize="md" flexWrap="wrap">{generalProfile.shoeSize}</Text>
+                    </VStack>
+                ) : null}
             </Flex>
 
             <Flex direction="row" justifyContent="space-between" mt={5}>
@@ -555,7 +612,12 @@ export const GeneralProfile: FC<GeneralProfileProps> = ({
                     >
                         Pick From Camera
                     </Button>
-                    <Button disabled={isUploadingFromLibrary || isLoadingFromCamera} size="lg" variant="outline" onPress={onClose}>
+                    <Button
+                        disabled={isUploadingFromLibrary || isLoadingFromCamera}
+                        size="lg"
+                        variant="outline"
+                        onPress={onClose}
+                    >
                         Cancel
                     </Button>
                 </Flex>

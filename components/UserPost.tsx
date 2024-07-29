@@ -9,12 +9,12 @@ import {
     Text,
     useToast,
 } from 'native-base';
-import { Post } from '../types/Post';
+import { Post, PostWithId } from '../types/Post';
 import { Pressable, useWindowDimensions } from 'react-native';
 import { DEFAULT_AVATAR_IMAGE } from '../constants/files';
 import { ImageScroller } from './ImageScroller';
-import { AVPlaybackStatus, Video, VideoProps } from 'expo-av';
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
+import { AVPlaybackStatus, ResizeMode, Video, VideoProps } from 'expo-av';
+import { AntDesign, Entypo, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, HomeStackParamList } from '../types';
 import { useAppSelector } from '../hooks/redux';
@@ -27,11 +27,13 @@ import {
 import { addLike, removeLike } from '../reducers/likesSlice';
 import InviewPort from './InView';
 import { useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 type PostProps = {
     post: Post;
+    onOpenOption: (post: PostWithId) => void;
 };
 
-export const UserPost: FC<PostProps> = ({ post }) => {
+export const UserPost: FC<PostProps> = ({ post, onOpenOption }) => {
     const { auth, likes: likedPosts } = useAppSelector(({ auth, likes }) => ({
         auth,
         likes,
@@ -45,6 +47,8 @@ export const UserPost: FC<PostProps> = ({ post }) => {
     );
     const [isLiking, setIsLiking] = useState<boolean>();
     const [isRemoving, setRemoving] = useState<boolean>();
+    const [muted, setMuted] = useState<boolean>(false);
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const dispatch = useDispatch();
     const toast = useToast();
     const {
@@ -57,6 +61,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
         postId = '',
         creatorId,
     } = post;
+
 
     const [videoPlaybackStatus, setPlayBackStatus] =
         useState<AVPlaybackStatus>();
@@ -75,7 +80,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 title: 'Could not Like Post',
                 description:
                     'Something went wrong. Please ensure you have good internet connection',
-                status: 'error',
+                variant: 'subtle'
             });
         } finally {
             setIsLiking(false);
@@ -97,7 +102,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             let err: any = error;
             toast.show({
                 title: 'Couldnot un-like post',
-                status: 'error',
+                variant: 'subtle',
                 description:
                     'Something went wrong. Please ensure you have good internet connection',
             });
@@ -117,7 +122,7 @@ export const UserPost: FC<PostProps> = ({ post }) => {
             toast.show({
                 title: 'Could not remove post',
                 description: err?.message || 'Unexpected Error Try again',
-                status: 'error',
+                variant: 'subtle',
             });
         }
     };
@@ -127,86 +132,86 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                 videoPlaybackStatus?.isLoaded &&
                 videoPlaybackStatus.isPlaying
             ) {
-                console.log("out of view", postId)
+                // console.log("out of view", postId)
                 await videoRef.current?.stopAsync();
                 return;
             }
         }
+        // else{
+        //     if(videoPlaybackStatus?.isLoaded && !videoPlaybackStatus.isPlaying){
+        //         await videoRef.current?.playAsync()
+        //     }
+        // }
     };
+    const muteVideo = ()=> {
+        if (
+            videoPlaybackStatus?.isLoaded &&
+            videoPlaybackStatus.isPlaying &&
+            videoRef.current
+        ) {
+            // console.log("mute")
+            videoRef.current.setIsMutedAsync(!muted);
+            videoRef.current.playAsync();
+            setMuted(!muted);
+        }
+    }
     return (
-        <Flex width={windowWidth} px={2} mb={5}>
-            <Pressable
-                onPress={() =>
-                    auth?.userId === post.creatorId
-                        ? navigation.navigate('General Profile', {})
-                        : navigation.navigate('ProfilePreview', {
-                              userId: post.creatorId,
-                          })
-                }
+        <Flex width={windowWidth} px={2} mb={5} position="relative">
+            <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
             >
-                <HStack space={2} alignItems="center" py={1}>
-                    <Avatar size="md" source={{ uri: avatarUrl }}>
-                        {username.slice(0, 2)}
-                    </Avatar>
-                    <Text fontSize="sm" fontWeight="bold">
-                        {username}
-                    </Text>
-                </HStack>
-            </Pressable>
+                <Pressable
+                    onPress={() =>
+                        auth?.userId === post.creatorId
+                            ? navigation.navigate('General Profile', {})
+                            : navigation.navigate('ProfilePreview', {
+                                  userId: post.creatorId,
+                              })
+                    }
+                >
+                    <HStack space={2} alignItems="center" py={1}>
+                        <Avatar size="md" source={{ uri: avatarUrl }}>
+                            {username.slice(0, 2)}
+                        </Avatar>
+                        <Text fontSize="sm" fontWeight="bold">
+                            {username}
+                        </Text>
+                    </HStack>
+                </Pressable>
+                {
+                    post?.dateCreated ? 
+                    <Text fontSize="xs" color="primary.400">{formatDistanceToNow(post.dateCreated as number)}</Text> : null
+                }
+            </Flex>
 
             {imageUrl.length ? (
                 <ImageScroller
-                    images={imageUrl}
+                    images={typeof imageUrl === 'string' ? imageUrl : imageUrl.map(({url }) => url)} 
                     onLike={() => 'hello'}
                     postId=""
                 />
             ) : null}
             {videoUrl ? (
-                // <Pressable
-                //     onPress={async () => {
-                //         if (
-                //             videoPlaybackStatus &&
-                //             videoPlaybackStatus.isLoaded &&
-                //             videoPlaybackStatus.isPlaying
-                //         ) {
-                //             await videoRef.current?.pauseAsync();
-                //             return;
-                //         }
-                //         if (
-                //             videoPlaybackStatus &&
-                //             videoPlaybackStatus.isLoaded &&
-                //             !videoPlaybackStatus.isPlaying
-                //         ) {
-                //             if (
-                //                 videoPlaybackStatus &&
-                //                 videoPlaybackStatus.isLoaded &&
-                //                 videoPlaybackStatus.didJustFinish
-                //             ) {
-                //                 await videoRef.current?.replayAsync();
-                //                 return;
-                //             }
-                //             await videoRef.current?.playAsync();
-                //         }
-                //     }}
-                // >
-                    <InviewPort onChange={isInView}>
-                        <Video
-                            useNativeControls={true}
-                            ref={videoRef}
-                            style={{
-                                width: windowWidth - 20,
-                                height: (windowWidth * 5) / 4,
-                                alignSelf: 'center',
-                            }}
-                            source={{ uri: videoUrl }}
-                            resizeMode="cover"
-                            onPlaybackStatusUpdate={(status) => {
-                                setPlayBackStatus(() => status);
-                            }}
-                        />
-                    </InviewPort>
-                // </Pressable>
-            ) : null}
+                <InviewPort onChange={isInView}>
+                    <Video
+                        useNativeControls={true}
+                        ref={videoRef}
+                        style={{
+                            width: windowWidth - 20,
+                            height: (windowWidth * 5) / 4,
+                            alignSelf: 'center',
+                        }}
+                        source={{ uri: videoUrl }}
+                        resizeMode={ResizeMode.COVER}
+                        onPlaybackStatusUpdate={(status) => {
+                            setPlayBackStatus(() => status);
+                        }}
+                    />
+                </InviewPort>
+            ) : // </Pressable>
+            null}
             {text ? <Text my={1}>{text}</Text> : null}
             <Flex direction="row" justifyContent="space-between">
                 <HStack space={3} alignItems="center">
@@ -227,7 +232,6 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     </HStack>
                     <HStack space={1} alignItems="center">
                         <IconButton
-                            
                             icon={
                                 <Icon
                                     size="sm"
@@ -250,35 +254,36 @@ export const UserPost: FC<PostProps> = ({ post }) => {
                     </HStack>
                 </HStack>
                 <HStack alignItems="center">
-                    {auth?.userId === creatorId ? (
+                    {
+                        videoUrl && videoPlaybackStatus?.isLoaded && videoPlaybackStatus.isPlaying ? 
                         <IconButton
-                            disabled={ isRemoving }
                             icon={
                                 <Icon
-                                    as={Feather}
-                                    name="trash-2"
-                                    color="red.300"
+                                    as={Octicons}
+                                    name={muted ? "mute":  "unmute"}
+                                    color="primary.400"
+                            
                                     size="4"
                                 />
                             }
-                            onPress={() => deletePost()}
-                        />
-                    ) : null}
+                            onPress={muteVideo}
+                        />: 
+                        null
+                    }
 
                     <IconButton
                         icon={
                             <Icon
-                                color="red.500"
-                                as={MaterialIcons}
-                                name="report"
+                                color="primary.500"
+                                as={Entypo}
+                                name="dots-three-vertical"
                             />
                         }
                         onPress={() =>
-                            navigation.navigate('Report', {
-                                post,
-                            })
+                           onOpenOption(post as PostWithId)
                         }
                     />
+                    
                 </HStack>
             </Flex>
         </Flex>

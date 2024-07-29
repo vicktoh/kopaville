@@ -1,5 +1,5 @@
-import firebase from 'firebase';
 import { CartItem } from "./Product";
+import { Timestamp } from 'firebase/firestore';
 
 export type Billing = {
    address: string;
@@ -14,9 +14,9 @@ export type Billing = {
 export type Order = {
    cart: CartItem[]
    userId: string;
-   date: firebase.firestore.Timestamp | number | Date;
+   date: Timestamp | number | Date;
    paymentStatus: 'pending' | 'paid' | 'pending';
-   deliveryDate?: firebase.firestore.Timestamp | number | Date;
+   deliveryDate?: Timestamp | number | Date;
    deliveryStatus?: 'shipped' | 'delivered' | 'ending';
    transactionRef : string;
    amount: number;

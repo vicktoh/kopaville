@@ -97,7 +97,7 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
         if (result.status === 'failed') {
             toast.show({
                 title: 'Upload Failed',
-                status: 'error',
+                variant: 'solid',
                 description:
                     (result?.message as string) ||
                     'unexpected error, Make sure you have a good internet connection',
@@ -106,18 +106,18 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
     };
     const _uploadImages = async () => {
         const coverpath = `dating_covers/${auth?.userId}`;
-        const covers = [];
+        const covers: string[] = [];
         setIsUploadingImages(true);
         for (let i = 0; i < datingCovers.length; i++) {
             const result = await uploadFileToFirestore(
                 `${coverpath}-${i}`,
                 datingCovers[i]
             );
-            if (result.status === 'success') {
+            if (result.status === 'success' && result.url) {
                 covers.push(result.url);
                 setUploadProgress(uploadProgress + 1);
             } else {
-                console.log(result);
+                // console.log(result);
             }
         }
         if (covers.length) {
@@ -147,9 +147,10 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
             aspect: [16, 9],
             quality: 0.2,
             allowsEditing: true,
+            selectionLimit: 1,
         });
-        if (!pickerResult.cancelled) {
-            setDatingCovers((covers) => [...(covers || []), pickerResult.uri]);
+        if (!pickerResult.canceled) {
+            setDatingCovers((covers) => [...(covers || []), pickerResult.assets[0].uri]);
         }
     };
 
@@ -162,9 +163,10 @@ export const DatingProfile: FC<{ profile?: Profile }> = ({ profile }) => {
             aspect: [16, 9],
             quality: 0.2,
             allowsEditing: true,
+            selectionLimit: 1,
         });
-        if (!pickerResult.cancelled) {
-            setDatingCovers((covers) => [...(covers || []), pickerResult.uri]);
+        if (!pickerResult.canceled) {
+            setDatingCovers((covers) => [...(covers || []), pickerResult.assets[0].uri]);
         }
     };
     const message = () => {

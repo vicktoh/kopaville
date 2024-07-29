@@ -20,7 +20,7 @@ export const DatingCard : FC<{profile: Profile}> = ({ profile})=>{
             <Image fallbackSource={datingCover} borderRadius="2xl" alt="dating cover" source={ datingCoverUrl ? {uri: datingCoverUrl} : datingCover } flex = {1} />
             <Flex bg="rgba(255,255,255,0.4)" width="100%" px={2} justifyContent="space-between" direction='row' py={3}  alignItems="center" position="absolute" bottom={0}>
                 <VStack>
-                    <Heading fontSize="md" color="white">{`${profile?.loginInfo?.fullname || ""} ${age}`}</Heading>
+                    <Heading fontSize="md" color="white">{`${profile?.datingProfile?.alias || profile?.loginInfo?.fullname || ""} ${age}`}</Heading>
                     <Text fontSize="sm" color="white">{`${profile?.profile?.servingState || ""}`}</Text>
                 </VStack>
                 <Button variant="solid" size="sm" onPress={()=> navigation.navigate("Profile", {profile}) }>View Profile</Button>

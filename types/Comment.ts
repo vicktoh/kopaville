@@ -1,8 +1,8 @@
-import firebase from "firebase"
+import { Timestamp } from "firebase/firestore";
 
 export type Comment = {
    id?: string;
-   date: firebase.firestore.Timestamp
+   date: Timestamp
    userId: string;
    postId: string;
    photoUrl: string;

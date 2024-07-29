@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { Timestamp } from "firebase/firestore";
 export interface Job {
     id?: string;
     creatorId: string;
@@ -7,8 +7,8 @@ export interface Job {
     location: string;
     organisation: string;
     criteria: string[];
-    link: string;
-    dateAdded?: firebase.firestore.Timestamp;
+    link?: string;
+    dateAdded?: Timestamp;
     verified?: boolean
     bannerUrl?: string;
 }
@@ -22,7 +22,7 @@ export interface Business {
     twitter?: string;
     link?: string;
     services?: string [];
-    dateAdded?: firebase.firestore.Timestamp;
+    dateAdded?: Timestamp;
     verified?: boolean;
     bannerUrl?: string;
     creatorId: string;

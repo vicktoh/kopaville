@@ -24,7 +24,6 @@ export const CareerReviewScreen : FC<CareerReviewScreenProps> = ({navigation, ro
             try {
                setLoading(true);
                const user = await fetchUserProfile(userId);
-               console.log(user);
                if(user) setProfile(user as Profile);
             } catch (error) {
                let err: any = error;

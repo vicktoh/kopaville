@@ -18,7 +18,7 @@ class InViewPort extends Component {
     this.stopWatching()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.disabled) {
       this.stopWatching()
     } else {

@@ -10,10 +10,13 @@ import {
     Select,
     TextArea,
 } from 'native-base';
-import React from 'react';
+import React, { useState } from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
 import { EditFormValuesType } from '.';
 const states: string[] = require('../../assets/static/states.json');
-
+import DatePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { date } from 'yup';
+import { format } from 'date-fns';
 const GeneralInfoForm = () => {
     const {
         values,
@@ -25,6 +28,9 @@ const GeneralInfoForm = () => {
         handleChange,
         handleSubmit,
     } = useFormikContext<EditFormValuesType>();
+    const { width: WINDO_WIDTH } = useWindowDimensions();
+    const [showDatePicker, setShowDatePicker] = useState(false)
+     console.log(values.dateOfBirthTimestamp, "🌹")
     return (
         <>
             <FormControl
@@ -41,6 +47,7 @@ const GeneralInfoForm = () => {
                     variant="outline"
                     borderColor="primary.400"
                     height={20}
+                    autoCompleteType
                 />
                 <FormControl.ErrorMessage>
                     {touched.bio && errors.bio}
@@ -104,43 +111,68 @@ const GeneralInfoForm = () => {
                 _text={{ fontSize: 'lg' }}
                 isRequired
                 mb={3}
-                isInvalid={!!touched.dateOfBirth && !!errors.dateOfBirth}
+                isInvalid={
+                    !!touched.dateOfBirthTimestamp &&
+                    !!errors.dateOfBirthTimestamp
+                }
             >
                 <FormControl.Label>
-                    date of birth (DD - MM - YYYY)
+                    Date of birth (DD - MM - YYYY)
                 </FormControl.Label>
-                <HStack alignItems="center" space={5}>
-                    <Input
-                        size="lg"
-                        value={values.dateOfBirth.day}
-                        onBlur={handleBlur('dateOfBirth.day')}
-                        onChangeText={handleChange('dateOfBirth.day')}
-                        variant="outline"
-                        borderColor="primary.400"
-                        placeholder="DD"
-                    />
-                    <Input
-                        size="lg"
-                        value={values.dateOfBirth.month}
-                        onBlur={handleBlur('dateOfBirth.month')}
-                        onChangeText={handleChange('dateOfBirth.month')}
-                        variant="outline"
-                        borderColor="primary.400"
-                        placeholder="MM"
-                    />
-                    <Input
-                        size="lg"
-                        value={values.dateOfBirth.year}
-                        onBlur={handleBlur('dateOfBirth.year')}
-                        onChangeText={handleChange('dateOfBirth.year')}
-                        variant="outline"
-                        borderColor="primary.400"
-                        placeholder="YYYY"
-                    />
+                <HStack alignItems="center" space={2}>
+                    {Platform.OS === 'android' ? (
+                        showDatePicker ? (
+                            <DatePicker
+                                value={
+                                    values.dateOfBirthTimestamp
+                                        ? new Date(values.dateOfBirthTimestamp)
+                                        : new Date()
+                                }
+                                onChange={(event, date) => {
+                                    setShowDatePicker(false);
+                                    setFieldValue(
+                                        'dateOfBirthTimestamp',
+                                        event.nativeEvent.timestamp
+                                    );
+                                }}
+                            />
+                        ) : (
+                            <Input
+                                size="md"
+                                
+                                onPress={() => setShowDatePicker(true)}
+                                value={
+                                    values.dateOfBirthTimestamp
+                                        ? format(
+                                              values.dateOfBirthTimestamp,
+                                              'dd MMM yyyy'
+                                          )
+                                        : ''
+                                }
+                                variant="outline"
+                                borderColor="primary.400"
+                            />
+                        )
+                    ) : (
+                        <DatePicker
+                            value={
+                                values.dateOfBirthTimestamp
+                                    ? new Date(values.dateOfBirthTimestamp)
+                                    : new Date()
+                            }
+                            onChange={(event, date) =>
+                                setFieldValue(
+                                    'dateOfBirthTimestamp',
+                                    event.nativeEvent.timestamp
+                                )
+                            }
+                        />
+                    )}
                 </HStack>
 
                 <FormControl.ErrorMessage>
-                    {touched.dateOfBirth?.month && errors.dateOfBirth?.month}
+                    {touched.dateOfBirthTimestamp &&
+                        errors.dateOfBirthTimestamp}
                 </FormControl.ErrorMessage>
                 <FormControl.HelperText></FormControl.HelperText>
             </FormControl>
@@ -194,7 +226,7 @@ const GeneralInfoForm = () => {
                     <FormControl.Label>Shoe Size</FormControl.Label>
                     <Input
                         size="md"
-                        type="number"
+                        type="text"
                         value={values.shoeSize}
                         onBlur={handleBlur('shoeSize')}
                         onChangeText={handleChange('shoeSize')}
@@ -214,7 +246,7 @@ const GeneralInfoForm = () => {
                     <FormControl.Label>Height</FormControl.Label>
                     <Input
                         size="md"
-                        type="number"
+                        type="text"
                         value={values.height}
                         onBlur={handleBlur('height')}
                         onChangeText={handleChange('height')}

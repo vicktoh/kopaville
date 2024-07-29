@@ -112,7 +112,7 @@ export const FollowersList: FC<FollowerListProps> = ({
         </Flex>
     ):
     <Flex flex={1} alignItems="center" justifyContent="center">
-      <Heading my={3}>No followers yest📭 </Heading>
+      <Heading my={3}>No followers yet📭 </Heading>
       <Text my={3}>You do not have any followers yet</Text>
     </Flex>
     ;

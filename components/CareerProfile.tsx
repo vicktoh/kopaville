@@ -76,7 +76,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
         try {
             await WebBrowser.openBrowserAsync(link);
         } catch (error) {
-            toast.show({ title: 'Invalid Link', description: 'cannot open this link', status: 'error' });
+            toast.show({ title: 'Invalid Link', description: 'cannot open this link', variant: 'subtle' });
         }
     };
     const follow = async () => {
@@ -92,7 +92,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: "error"
+                
             });
         } finally {
             setLoading(false);
@@ -110,7 +110,7 @@ export const CareerProfile: FC<CareerProfileProps> = ({ profile }) => {
                 placement: 'top',
                 title: 'error',
                 description: err?.message || 'Could not follow user, Try again',
-                status: "error"
+                variant: "subtle"
             });
         } finally {
             setLoading(false);
